@@ -2,4 +2,24 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- ~~ Main Color ~~ -->
+    <!-- Theme Color -->
+    <color name="green_700">#15AB6C</color>     <!-- 진한 초록 -->
+    <color name="green_100">#D8EDE4</color>     <!-- 연한 초록 -->
+
+    <!-- Dark Background -->
+    <color name="gray_950">#121212</color>
+    <color name="gray_900">#212124</color>
+
+    <!-- Medium Gray -->
+    <color name="gray_800">#2F2F2F</color>
+    <color name="gray_700">#4F4F4F</color>
+    <color name="gray_600">#808080</color>
+    <color name="gray_500">#A4A4A4</color>
+    <color name="gray_400">#CFCFCF</color>
+
+    <!-- Light Gray -->
+    <color name="gray_200">#F0F0F0</color>
+    <color name="gray_100">#F3F3F3</color>
 </resources>
