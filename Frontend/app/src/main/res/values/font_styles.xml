@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- ~~ Pretendard ~~ -->
+
+    <!-- SemiBold -->
+    <style name="Text.Pretendard.SemiBold.18">
+        <item name="android:fontFamily">@font/pretendard_semibold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Text.Pretendard.SemiBold.20">
+        <item name="android:fontFamily">@font/pretendard_semibold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="Text.Pretendard.SemiBold.22">
+        <item name="android:fontFamily">@font/pretendard_semibold</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <!-- Medium -->
+    <style name="Text.Pretendard.Medium.14">
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Text.Pretendard.Medium.16">
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Text.Pretendard.Medium.18">
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!-- Regular -->
+    <style name="Text.Pretendard.Regular.10">
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="Text.Pretendard.Regular.11">
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">11sp</item>
+    </style>
+
+    <style name="Text.Pretendard.Regular.12">
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+</resources>
