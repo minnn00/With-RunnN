@@ -5,49 +5,49 @@
     <!-- ~~ Pretendard ~~ -->
 
     <!-- SemiBold -->
-    <style name="Text.Pretendard.SemiBold.18">
+    <style name="Text_Pretendard_SemiBold_18">
         <item name="android:fontFamily">@font/pretendard_semibold</item>
         <item name="android:textSize">18sp</item>
     </style>
 
-    <style name="Text.Pretendard.SemiBold.20">
+    <style name="Text_Pretendard_SemiBold_20">
         <item name="android:fontFamily">@font/pretendard_semibold</item>
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="Text.Pretendard.SemiBold.22">
+    <style name="Text_Pretendard_SemiBold_22">
         <item name="android:fontFamily">@font/pretendard_semibold</item>
         <item name="android:textSize">22sp</item>
     </style>
 
     <!-- Medium -->
-    <style name="Text.Pretendard.Medium.14">
+    <style name="Text_Pretendard_Medium_14">
         <item name="android:fontFamily">@font/pretendard_medium</item>
         <item name="android:textSize">14sp</item>
     </style>
 
-    <style name="Text.Pretendard.Medium.16">
+    <style name="Text_Pretendard_Medium_16">
         <item name="android:fontFamily">@font/pretendard_medium</item>
         <item name="android:textSize">16sp</item>
     </style>
 
-    <style name="Text.Pretendard.Medium.18">
+    <style name="Text_Pretendard_Medium_18">
         <item name="android:fontFamily">@font/pretendard_medium</item>
         <item name="android:textSize">18sp</item>
     </style>
 
     <!-- Regular -->
-    <style name="Text.Pretendard.Regular.10">
+    <style name="Text_Pretendard_Regular_10">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textSize">10sp</item>
     </style>
 
-    <style name="Text.Pretendard.Regular.11">
+    <style name="Text_Pretendard_Regular_11">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textSize">11sp</item>
     </style>
 
-    <style name="Text.Pretendard.Regular.12">
+    <style name="Text_Pretendard_Regular_12">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textSize">12sp</item>
     </style>
