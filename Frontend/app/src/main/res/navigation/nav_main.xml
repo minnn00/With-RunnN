@@ -10,4 +10,31 @@
         android:name="com.with_runn.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
+
+    <fragment
+        android:id="@+id/localMoreFragment"
+        android:name="com.with_runn.LocalMoreFragment"
+        android:label="Local More"
+        tools:layout="@layout/fragment_local_more" />
+
+    <fragment
+        android:id="@+id/hotMoreFragment"
+        android:name="com.with_runn.HotMoreFragment"
+        android:label="Hot More"
+        tools:layout="@layout/fragment_hot_more" />
+
+    <fragment
+        android:id="@+id/walkCourseFragment"
+        android:name="com.with_runn.WalkCourseFragment"
+        android:label="Walk Course"
+        tools:layout="@layout/fragment_walk_course">
+
+        <action
+            android:id="@+id/action_walkCourse_to_localMoreFragment"
+            app:destination="@id/localMoreFragment" />
+
+        <action
+            android:id="@+id/action_walkCourse_to_hotMoreFragment"
+            app:destination="@id/hotMoreFragment" />
+    </fragment>
 </navigation>
