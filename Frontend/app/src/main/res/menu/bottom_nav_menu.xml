@@ -2,20 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/friend_graph"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/ic_friends"
         android:title="@string/friend" />
     <item
         android:id="@+id/course_graph"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/ic_course"
         android:title="@string/course" />
     <item
         android:id="@+id/map_graph"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/ic_map"
         android:title="@string/map" />
     <item
         android:id="@+id/mypage_graph"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/ic_mypage"
         android:title="@string/my_page" />
 </menu>
-
-    <!-- TODO: 각 메뉴 아이콘 Figma의 Icon으로 수정 -->
