@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">With_Runn</string>
+    <string name="my_page">마이페이지</string>
+    <string name="map">지도</string>
+    <string name="course">산책코스</string>
+    <string name="friend">친구</string>
 </resources>
