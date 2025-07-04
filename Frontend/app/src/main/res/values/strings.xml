@@ -4,4 +4,6 @@
     <string name="map">지도</string>
     <string name="course">산책코스</string>
     <string name="friend">친구</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
