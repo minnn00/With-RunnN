@@ -3,11 +3,89 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/mapFragment">
+    app:startDestination="@id/friend_graph">
 
+    <!-- 친구 탭 메인 컨테이너 -->
     <fragment
-        android:id="@+id/mapFragment"
+        android:id="@+id/friend_graph"
+        android:name="com.with_runn.ui.friends.FriendsTabFragment"
+        android:label="친구"
+        tools:layout="@layout/fragment_friends_tab">
+        
+        <!-- 위치 변경으로 이동 -->
+        <action
+            android:id="@+id/action_friends_to_location"
+            app:destination="@id/locationActivity" />
+            
+        <!-- 알림으로 이동 -->
+        <action
+            android:id="@+id/action_friends_to_notification"
+            app:destination="@id/notificationFragment" />
+            
+        <!-- 채팅 목록으로 이동 -->
+        <action
+            android:id="@+id/action_friends_to_chat_list"
+            app:destination="@id/chatListFragment" />
+    </fragment>
+    
+    <!-- 채팅 목록 Fragment -->
+    <fragment
+        android:id="@+id/chatListFragment"
+        android:name="com.with_runn.ui.chat.ChatListFragment"
+        android:label="채팅"
+        tools:layout="@layout/fragment_chat_list">
+        
+        <!-- 채팅방으로 이동 -->
+        <action
+            android:id="@+id/action_chat_list_to_chat_room"
+            app:destination="@id/chatRoomActivity" />
+    </fragment>
+    
+    <!-- 알림 Fragment (임시) -->
+    <fragment
+        android:id="@+id/notificationFragment"
         android:name="com.with_runn.MapFragment"
-        android:label="fragment_map"
+        android:label="알림"
         tools:layout="@layout/fragment_map" />
+        
+    <!-- 산책 코스 -->
+    <fragment
+        android:id="@+id/course_graph"
+        android:name="com.with_runn.MapFragment"
+        android:label="산책코스"
+        tools:layout="@layout/fragment_map" />
+        
+    <!-- 지도 -->
+    <fragment
+        android:id="@+id/map_graph"
+        android:name="com.with_runn.MapFragment"
+        android:label="지도"
+        tools:layout="@layout/fragment_map" />
+        
+    <!-- 마이페이지 -->
+    <fragment
+        android:id="@+id/mypage_graph"
+        android:name="com.with_runn.MapFragment"
+        android:label="마이페이지"
+        tools:layout="@layout/fragment_map" />
+
+    <!-- Activities -->
+    <activity
+        android:id="@+id/locationActivity"
+        android:name="com.with_runn.ui.location.LocationActivity"
+        android:label="지역 변경"
+        tools:layout="@layout/activity_location" />
+        
+    <activity
+        android:id="@+id/chatRoomActivity"
+        android:name="com.with_runn.ui.chat.ChatRoomActivity"
+        android:label="채팅"
+        tools:layout="@layout/activity_chat_room" />
+        
+    <activity
+        android:id="@+id/reportUserActivity"
+        android:name="com.with_runn.ui.report.ReportUserActivity"
+        android:label="신고하기"
+        tools:layout="@layout/activity_report" />
+
 </navigation>

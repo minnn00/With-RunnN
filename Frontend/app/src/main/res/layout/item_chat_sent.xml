@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/margin_medium"
+    android:paddingVertical="@dimen/margin_small">
+
+    <!-- Message Container -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvMessageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        app:cardCornerRadius="18dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
+        app:cardBackgroundColor="@color/green_700"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0">
+
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="안녕하세요! 오늘 산책 어떠세요?"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:padding="@dimen/margin_medium"
+            android:maxWidth="250dp"
+            tools:text="안녕하세요! 오늘 산책 어떠세요?" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Message Time -->
+    <TextView
+        android:id="@+id/tvMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="오후 2:30"
+        android:textColor="@color/gray_500"
+        android:textSize="12sp"
+        android:fontFamily="@font/pretendard_regular"
+        android:layout_marginEnd="@dimen/margin_small"
+        app:layout_constraintBottom_toBottomOf="@+id/cvMessageContainer"
+        app:layout_constraintEnd_toStartOf="@+id/cvMessageContainer"
+        tools:text="오후 2:30" />
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

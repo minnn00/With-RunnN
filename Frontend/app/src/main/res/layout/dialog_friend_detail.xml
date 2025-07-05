@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
+    android:padding="@dimen/dialog_padding">
+
+    <!-- Close Button -->
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_cross"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        app:tint="@color/gray_600"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Kebab Menu Button -->
+    <ImageView
+        android:id="@+id/ivKebabMenu"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_menu"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="4dp"
+        app:tint="@color/gray_600"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/ivClose"
+        android:layout_marginEnd="@dimen/margin_small" />
+
+    <!-- Profile Image -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivProfileImage"
+        android:layout_width="@dimen/profile_image_size"
+        android:layout_height="@dimen/profile_image_size"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.CircleImageView"
+        app:layout_constraintTop_toBottomOf="@+id/ivClose"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginTop="@dimen/margin_medium"
+        tools:src="@drawable/img_app_logo" />
+
+    <!-- Name and Gender Container -->
+    <LinearLayout
+        android:id="@+id/llNameGender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="@dimen/margin_medium"
+        app:layout_constraintTop_toBottomOf="@+id/ivProfileImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tvProfileName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="마루"
+            android:textColor="@color/gray_900"
+            android:textSize="20sp"
+            android:fontFamily="@font/pretendard_semibold"
+            tools:text="마루" />
+
+        <ImageView
+            android:id="@+id/ivGender"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_male"
+            android:layout_marginStart="@dimen/margin_small"
+            app:tint="@color/blue_500" />
+
+    </LinearLayout>
+
+    <!-- Bio Text -->
+    <TextView
+        android:id="@+id/tvProfileBio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="안녕하세요! 저는 활발하고 친근한 골든리트리버 마루입니다."
+        android:textColor="@color/gray_700"
+        android:textSize="14sp"
+        android:fontFamily="@font/pretendard_regular"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/margin_small"
+        app:layout_constraintTop_toBottomOf="@+id/llNameGender"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="안녕하세요! 저는 활발하고 친근한 골든리트리버 마루입니다." />
+
+    <!-- Buttons Container -->
+    <LinearLayout
+        android:id="@+id/llButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_large"
+        app:layout_constraintTop_toBottomOf="@+id/tvProfileBio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Follow Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFollow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="팔로우"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:fontFamily="@font/pretendard_medium"
+            android:backgroundTint="@color/green_700"
+            app:cornerRadius="@dimen/button_corner_radius"
+            android:layout_marginEnd="@dimen/dialog_button_spacing" />
+
+        <!-- Message Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMessage"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="메시지"
+            android:textColor="@color/gray_800"
+            android:textSize="14sp"
+            android:fontFamily="@font/pretendard_medium"
+            app:strokeColor="@color/gray_400"
+            app:strokeWidth="1dp"
+            app:cornerRadius="@dimen/button_corner_radius"
+            android:layout_marginStart="@dimen/dialog_button_spacing" />
+
+    </LinearLayout>
+
+    <!-- Detail Information -->
+    <LinearLayout
+        android:id="@+id/llDetailInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/margin_large"
+        app:layout_constraintTop_toBottomOf="@+id/llButtons"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Age Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/margin_small">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="나이"
+                android:textColor="@color/gray_600"
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_regular" />
+
+            <TextView
+                android:id="@+id/tvAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2년 4개월"
+                android:textColor="@color/gray_800"
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_medium"
+                tools:text="2년 4개월" />
+
+        </LinearLayout>
+
+        <!-- Breed Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="@dimen/margin_small">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="견종"
+                android:textColor="@color/gray_600"
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_regular" />
+
+            <TextView
+                android:id="@+id/tvBreed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="골든리트리버"
+                android:textColor="@color/gray_800"
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_medium"
+                tools:text="골든리트리버" />
+
+        </LinearLayout>
+
+        <!-- Category Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="분류"
+                android:textColor="@color/gray_600"
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_regular" />
+
+            <TextView
+                android:id="@+id/tvCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="중형견"
+                android:textColor="@color/gray_800"
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_medium"
+                tools:text="중형견" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

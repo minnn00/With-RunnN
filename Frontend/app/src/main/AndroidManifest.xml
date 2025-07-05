@@ -21,6 +21,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".ui.location.LocationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.With_Runn" />
+            
+        <activity
+            android:name=".ui.report.ReportUserActivity"
+            android:exported="false"
+            android:theme="@style/Theme.With_Runn" />
+            
+        <activity
+            android:name=".ui.chat.ChatRoomActivity"
+            android:exported="false"
+            android:theme="@style/Theme.With_Runn" />
     </application>
 
 </manifest>

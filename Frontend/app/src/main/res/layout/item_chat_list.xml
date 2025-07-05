@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="@dimen/margin_medium">
+
+    <!-- Profile Image -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/ivProfileImage"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.CircleImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:src="@drawable/img_app_logo" />
+
+    <!-- Chat Room Name -->
+    <TextView
+        android:id="@+id/tvChatRoomName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="마루"
+        android:textColor="@color/gray_900"
+        android:textSize="16sp"
+        android:fontFamily="@font/pretendard_semibold"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginEnd="@dimen/margin_small"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintTop_toTopOf="@+id/ivProfileImage"
+        app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
+        app:layout_constraintEnd_toStartOf="@+id/tvLastMessageTime"
+        tools:text="마루" />
+
+    <!-- Last Message -->
+    <TextView
+        android:id="@+id/tvLastMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="안녕하세요! 오늘 산책 어떠세요?"
+        android:textColor="@color/gray_600"
+        android:textSize="14sp"
+        android:fontFamily="@font/pretendard_regular"
+        android:layout_marginStart="@dimen/margin_medium"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        app:layout_constraintTop_toBottomOf="@+id/tvChatRoomName"
+        app:layout_constraintStart_toEndOf="@+id/ivProfileImage"
+        app:layout_constraintEnd_toStartOf="@+id/tvUnreadCount"
+        app:layout_constraintBottom_toBottomOf="@+id/ivProfileImage"
+        tools:text="안녕하세요! 오늘 산책 어떠세요?" />
+
+    <!-- Last Message Time -->
+    <TextView
+        android:id="@+id/tvLastMessageTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="오후 2:30"
+        android:textColor="@color/gray_500"
+        android:textSize="12sp"
+        android:fontFamily="@font/pretendard_regular"
+        app:layout_constraintTop_toTopOf="@+id/tvChatRoomName"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="오후 2:30" />
+
+    <!-- Unread Count Badge -->
+    <TextView
+        android:id="@+id/tvUnreadCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="20dp"
+        android:minHeight="20dp"
+        android:text="3"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:fontFamily="@font/pretendard_medium"
+        android:gravity="center"
+        android:background="@drawable/badge_unread_count"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/tvLastMessageTime"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/ivProfileImage"
+        tools:text="3"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Card and Dialog Dimensions -->
+    <dimen name="card_corner_radius">12dp</dimen>
+    <dimen name="dialog_corner_radius">20dp</dimen>
+    
+    <!-- Grid Layout Dimensions -->
+    <dimen name="grid_item_spacing">8dp</dimen>
+    
+    <!-- Common Margins and Paddings -->
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_large">24dp</dimen>
+    <dimen name="margin_extra_large">32dp</dimen>
+    
+    <!-- Search View Dimensions -->
+    <dimen name="search_view_corner_radius">8dp</dimen>
+    <dimen name="search_view_padding">12dp</dimen>
+    
+    <!-- Button Dimensions -->
+    <dimen name="button_corner_radius">8dp</dimen>
+    <dimen name="button_padding_horizontal">16dp</dimen>
+    <dimen name="button_padding_vertical">8dp</dimen>
+    
+    <!-- Image View Dimensions -->
+    <dimen name="friend_card_image_height">120dp</dimen>
+    <dimen name="profile_image_size">80dp</dimen>
+    
+    <!-- Chip Dimensions -->
+    <dimen name="chip_corner_radius">12dp</dimen>
+    <dimen name="chip_padding_horizontal">8dp</dimen>
+    <dimen name="chip_padding_vertical">4dp</dimen>
+    
+    <!-- Dialog Dimensions -->
+    <dimen name="dialog_padding">20dp</dimen>
+    <dimen name="dialog_button_spacing">8dp</dimen>
+    
+    <!-- Indicator Dimensions -->
+    <dimen name="indicator_size">8dp</dimen>
+    <dimen name="indicator_margin">4dp</dimen>
+</resources> 

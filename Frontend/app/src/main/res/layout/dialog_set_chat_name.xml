@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/dialog_background">
+
+    <!-- 제목 -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="채팅방 이름 설정"
+        android:textSize="20sp"
+        android:textColor="@color/gray_900"
+        android:fontFamily="@font/pretendard_semibold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <!-- 입력 필드 -->
+    <EditText
+        android:id="@+id/etChatName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="채팅방 이름을 입력하세요"
+        android:background="@drawable/search_background"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:textColor="@color/gray_800"
+        android:textColorHint="@color/gray_500"
+        android:fontFamily="@font/pretendard_regular"
+        android:layout_marginBottom="24dp"
+        android:maxLines="1"
+        android:imeOptions="actionDone"
+        android:inputType="text" />
+
+    <!-- 설정 버튼 -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="설정"
+        android:textColor="@color/white"
+        android:fontFamily="@font/pretendard_semibold"
+        android:backgroundTint="@color/gray_400"
+        android:enabled="false"
+        app:cornerRadius="8dp" />
+
+</LinearLayout> 

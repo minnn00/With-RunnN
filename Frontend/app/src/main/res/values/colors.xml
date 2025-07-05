@@ -12,6 +12,7 @@
     <!-- Accent Colors -->
     <color name="red_500">#FF554C</color>       <!-- 빨강 -->
     <color name="blue_500">#1E90FF</color>      <!-- 파랑 -->
+    <color name="orange_500">#FF9500</color>    <!-- 주황 -->
 
     <!-- Dark Background -->
     <color name="gray_950">#121212</color>
@@ -26,7 +27,9 @@
     <color name="gray_400">#CFCFCF</color>
 
     <!-- Light Gray -->
+    <color name="gray_300">#E0E0E0</color>
     <color name="gray_200">#F0F0F0</color>
     <color name="gray_100">#F3F3F3</color>
     <color name="gray_050">#FEFEFE</color>
+    <color name="gray_50">#FAFAFA</color>
 </resources>
