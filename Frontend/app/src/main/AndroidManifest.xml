@@ -13,7 +13,7 @@
         android:theme="@style/Theme.With_Runn"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".TestActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,6 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        
         
         <activity
             android:name=".ui.location.LocationActivity"
@@ -34,6 +39,11 @@
             
         <activity
             android:name=".ui.chat.ChatRoomActivity"
+            android:exported="false"
+            android:theme="@style/Theme.With_Runn" />
+            
+        <activity
+            android:name=".ui.friends.FriendsActivity"
             android:exported="false"
             android:theme="@style/Theme.With_Runn" />
     </application>
