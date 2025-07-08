@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.with_runn.databinding.FragmentMapBinding
+import com.with_runn.databinding.ViewSearchBoxBinding
 
 class MapFragment : Fragment() {
 
@@ -35,6 +37,8 @@ class MapFragment : Fragment() {
         ){
             chip -> onChipClick(chip)
         }
+
+        setListeners()
     }
 
     override fun onDestroyView() {
@@ -42,8 +46,16 @@ class MapFragment : Fragment() {
         _binding = null;
     }
 
-    fun onChipClick(chip: Chip){
+    private fun onChipClick(chip: Chip){
         Log.d("ChipClick", "${chip.text} Clicked")
         // TODO: Naver API에 키워드로 검색 요청해서 결과 표시하기
+    }
+
+    private fun setListeners(){
+        binding.apply{
+            viewSearchBox.searchBox.setOnClickListener{
+                findNavController().navigate(R.id.action_mapFragment_to_searchFragment);
+            }
+        }
     }
 }
