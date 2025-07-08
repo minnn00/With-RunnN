@@ -8,12 +8,13 @@ fun populateChips(
     chipGroup: ChipGroup,
     inflater: LayoutInflater,
     keywords: List<String>,
+    chipLayoutRes: Int = R.layout.view_chip,
     onClick: ((Chip) -> Unit)? = null
 ){
     chipGroup.removeAllViews();
 
     for (keyword in keywords){
-        val chip = inflater.inflate(R.layout.view_chip, chipGroup, false) as Chip
+        val chip = inflater.inflate(chipLayoutRes, chipGroup, false) as Chip
         chip.text = keyword
         chip.setOnClickListener { onClick?.invoke(chip) }
         chipGroup.addView(chip)

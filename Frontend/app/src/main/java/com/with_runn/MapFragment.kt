@@ -30,7 +30,8 @@ class MapFragment : Fragment() {
         populateChips(
             chipGroup = binding.chipGroup,
             inflater = layoutInflater,
-            keywords = keywords
+            keywords = keywords,
+            chipLayoutRes = R.layout.view_chip
         ){
             chip -> onChipClick(chip)
         }
