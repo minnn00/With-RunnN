@@ -17,13 +17,14 @@
         /><!--Todo: Embed Naver Dynamic Map Here-->
 
     <LinearLayout
-        android:id="@+id/search_box"
+        android:id="@+id/search_box_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
         <include
             layout="@layout/view_search_box"
+            android:id="@+id/view_search_box"
             android:layout_marginHorizontal="18dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
