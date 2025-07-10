@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+    implementation(libs.speed.dial)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
