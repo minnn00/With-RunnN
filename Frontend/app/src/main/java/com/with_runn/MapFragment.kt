@@ -6,10 +6,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.with_runn.databinding.FragmentMapBinding
-import com.with_runn.databinding.ViewSearchBoxBinding
 
 class MapFragment : Fragment() {
 
@@ -39,6 +39,8 @@ class MapFragment : Fragment() {
         }
 
         setListeners()
+
+        setupSpeedDial()
     }
 
     override fun onDestroyView() {
@@ -58,4 +60,72 @@ class MapFragment : Fragment() {
             }
         }
     }
+
+    private fun setupSpeedDial() {
+        val speedDialView = binding.speedDial
+
+        speedDialView.addActionItem(
+            createSpeedDialActionItem(
+                id = R.id.create_course,
+                icon = R.drawable.ic_add_course,
+                label = "산책 코스 생성하기"
+            )
+        )
+        speedDialView.addActionItem(
+            createSpeedDialActionItem(
+                id = R.id.load_course,
+                icon = R.drawable.ic_load_course,
+                label = "산책 코스 불러오기"
+            )
+        )
+        speedDialView.addActionItem(
+            createSpeedDialActionItem(
+                id = R.id.edit_course,
+                icon = R.drawable.ic_edit_course,
+                label = "산책 코스 수정하기"
+            )
+        )
+
+        // 서브 메뉴 클릭 시 로그 송출
+        speedDialView.setOnActionSelectedListener { actionItem ->
+            when (actionItem.id) {
+                //TODO: 화면 연결
+                R.id.create_course -> {
+                    Log.d("FAB", "테스트 1 클릭됨")
+                    speedDialView.close();
+                    return@setOnActionSelectedListener true
+                }
+                R.id.load_course -> {
+                    Log.d("FAB", "테스트 2 클릭됨")
+                    speedDialView.close();
+                    return@setOnActionSelectedListener true
+                }
+                R.id.edit_course -> {
+                    Log.d("FAB", "테스트 3 클릭됨")
+                    speedDialView.close();
+                    return@setOnActionSelectedListener true
+                }
+                else -> false
+            }
+        }
+
+
+    }
+    private fun createSpeedDialActionItem(
+        id: Int,
+        icon: Int,
+        label: String
+    ): com.leinardi.android.speeddial.SpeedDialActionItem{
+        return com.leinardi.android.speeddial.SpeedDialActionItem
+            .Builder(id, icon)
+            .setLabel(label)
+            .setFabBackgroundColor(ContextCompat.getColor(requireContext(),R.color.green_700))
+            .setLabelBackgroundColor(ContextCompat.getColor(requireContext(),R.color.gray_050))
+            .setLabelColor(ContextCompat.getColor(requireContext(),R.color.gray_950))
+            .setFabImageTintColor(ContextCompat.getColor(requireContext(),R.color.gray_050))
+            .create()
+    }
+
+
+
 }
