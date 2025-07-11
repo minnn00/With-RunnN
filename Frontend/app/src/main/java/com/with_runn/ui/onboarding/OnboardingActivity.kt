@@ -8,10 +8,12 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 //온보딩 종료 후 이동할 액티비티
-import com.with_runn.ui.onboarding.OnboardingLoginActivity
 import com.with_runn.R
+import com.with_runn.databinding.ActivityOnboardingBinding
 
 class OnboardingActivity : AppCompatActivity() {
+
+    private lateinit var binding:ActivityOnboardingBinding
 
     private lateinit var viewPager: ViewPager2
     private lateinit var dotLayout: LinearLayout
@@ -19,15 +21,24 @@ class OnboardingActivity : AppCompatActivity() {
     private val dots = mutableListOf<ImageView>()
     private val NUM_PAGES = 3
 
+    val title = listOf("우리 동네\n" + "산책메이트 찾기",
+        "산책코스 추천",
+        "내 주변 반려 동물 시설")
+    val description = listOf("함께 산책할 반려견을 찾아보아요!",
+        "내가 만든 산책 코스를 \n" + "산책 메이트와 공유해요",
+        "병원, 미용 시설 뿐만 아니라\n" + "반려동물과 함께 입장할 수 있는 시설을 알려줄게요")
+    val images = listOf(R.drawable.img_onboarding1, R.drawable.img_onboarding2, R.drawable.img_onboarding3)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_onboarding)
+        binding = ActivityOnboardingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        viewPager = findViewById(R.id.viewPager2)
-        dotLayout = findViewById(R.id.dotLayout)
-        nextButton = findViewById(R.id.btn_next)
+        viewPager = binding.viewPager2
+        dotLayout = binding.dotLayout
+        nextButton = binding.btnNext
 
-        viewPager.adapter = OnboardingPagerAdapter(this)
+        viewPager.adapter = OnboardingPagerAdapter(this, title, description, images)
         setupDots()
         setCurrentDot(0)
 

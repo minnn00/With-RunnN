@@ -4,7 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.with_runn.databinding.ActivityOnboardingLoginBinding
 import com.with_runn.databinding.ActivityOnboardingProfileBinding
 
 class OnboardingProfileActivity : AppCompatActivity() {
