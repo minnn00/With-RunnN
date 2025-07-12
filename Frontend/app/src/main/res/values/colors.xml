@@ -11,7 +11,9 @@
 
     <!-- Accent Colors -->
     <color name="red_500">#FF554C</color>       <!-- 빨강 -->
+    <color name="red_050">#FFE1DF</color>       <!-- 연한 빨강 -->
     <color name="blue_500">#1E90FF</color>      <!-- 파랑 -->
+    <color name="blue_050">#DBEDFF</color>      <!-- 연한 파랑 -->
 
     <!-- Dark Background -->
     <color name="gray_950">#121212</color>

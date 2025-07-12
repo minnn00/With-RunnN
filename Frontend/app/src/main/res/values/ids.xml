@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="create_course" type="id" />
+    <item name="load_course" type="id" />
+    <item name="edit_course" type="id" />
+</resources>
