@@ -20,3 +20,10 @@ fun populateChips(
         chipGroup.addView(chip)
     }
 }
+
+fun formatToHHMM(time: Int): String {
+    val s = time.toString().padStart(4, '0')
+    val hour = s.substring(0, 2)
+    val minute = s.substring(2, 4)
+    return "$hour:$minute"
+}
