@@ -316,6 +316,7 @@
                         android:stateListAnimator="@null"
                         android:background="@drawable/bg_switch_active"/>
                 </LinearLayout>
+                <!-- chip group 사용하여 다시 구현 -->
             </LinearLayout>
 
         </LinearLayout>

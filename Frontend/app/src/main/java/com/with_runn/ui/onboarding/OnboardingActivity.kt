@@ -13,7 +13,7 @@ import com.with_runn.databinding.ActivityOnboardingBinding
 
 class OnboardingActivity : AppCompatActivity() {
 
-    private lateinit var binding:ActivityOnboardingBinding
+    private lateinit var binding: ActivityOnboardingBinding
 
     private lateinit var viewPager: ViewPager2
     private lateinit var dotLayout: LinearLayout

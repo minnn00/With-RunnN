@@ -19,5 +19,10 @@ class OnboardingProfileActivity : AppCompatActivity() {
             val intent = Intent(this, OnboardingProfileDefultActivity::class.java)
             startActivity(intent)
         }
+        binding.entryPersonality.setOnClickListener {
+            val intent = Intent(this, OnboardingProfilePersonalityActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 }
