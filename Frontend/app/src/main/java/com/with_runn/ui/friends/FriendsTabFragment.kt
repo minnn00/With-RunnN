@@ -1,6 +1,5 @@
 package com.with_runn.ui.friends
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +10,12 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.with_runn.R
 import com.with_runn.databinding.FragmentFriendsTabBinding
-import com.with_runn.ui.location.LocationActivity
 
 class FriendsTabFragment : Fragment() {
 
     private var _binding: FragmentFriendsTabBinding? = null
     private val binding get() = _binding!!
+    private lateinit var tabLayoutMediator: TabLayoutMediator
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,28 +34,26 @@ class FriendsTabFragment : Fragment() {
 
     private fun setupViewPager() {
         val adapter = FriendsTabAdapter(this)
-        binding.viewPager.adapter = adapter
-        
-        // 탭 간 스와이프 기능 비활성화
-        binding.viewPager.isUserInputEnabled = false
+        binding.viewPager.apply {
+            this.adapter = adapter
+            // 탭 간 스와이프 기능 비활성화
+            isUserInputEnabled = false
+            // 페이지 캐싱 설정
+            offscreenPageLimit = 1
+        }
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+        tabLayoutMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = when (position) {
                 0 -> "추천 친구"
                 1 -> "모두 보기"
                 else -> ""
             }
-        }.attach()
+        }
+        tabLayoutMediator.attach()
     }
 
     private fun setupClickListeners() {
         binding.apply {
-            // 위치 클릭 - LocationActivity로 이동
-            llLocation.setOnClickListener {
-                val intent = Intent(requireContext(), LocationActivity::class.java)
-                startActivity(intent)
-            }
-
             // 알림 클릭 - NotificationFragment로 이동
             ivNotifications.setOnClickListener {
                 findNavController().navigate(R.id.action_friends_to_notification)
@@ -66,11 +63,19 @@ class FriendsTabFragment : Fragment() {
             ivChat.setOnClickListener {
                 findNavController().navigate(R.id.action_friends_to_chat_list)
             }
+
+            // 위치 클릭 - LocationActivity로 이동
+            llLocation.setOnClickListener {
+                findNavController().navigate(R.id.action_friends_to_location)
+            }
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        if (::tabLayoutMediator.isInitialized) {
+            tabLayoutMediator.detach()
+        }
         _binding = null
     }
 
@@ -80,7 +85,7 @@ class FriendsTabFragment : Fragment() {
         override fun createFragment(position: Int): Fragment {
             return when (position) {
                 0 -> RecommendedFriendsFragment()
-                1 -> FriendsSeeAllFragment() // 기존에 구현된 Fragment 재사용
+                1 -> FriendsSeeAllFragment()
                 else -> throw IllegalArgumentException("Invalid position: $position")
             }
         }

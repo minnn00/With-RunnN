@@ -15,6 +15,8 @@ import com.with_runn.data.ChatRoom
 import com.with_runn.data.Message
 import com.with_runn.data.MessageType
 import com.with_runn.databinding.ActivityChatRoomBinding
+import com.with_runn.data.Friend
+import com.with_runn.data.Gender
 
 class ChatRoomActivity : AppCompatActivity() {
 
@@ -238,7 +240,20 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun showFriendProfile(userId: String) {
         // 실제로는 API에서 사용자 정보를 가져와야 하지만, 임시로 더미 데이터 사용
-        val friend = createDummyFriendFromUserId(userId)
+        val friend = Friend(
+            id = "1",
+            name = "조니",
+            imageUrl = "",
+            tags = listOf("친근함", "활발함"),
+            bio = "안녕하세요! 조니입니다.",
+            age = "3살",
+            ageInMonths = 36,
+            breed = "골든리트리버",
+            category = "대형견",
+            gender = Gender.MALE,
+            personality = listOf("활발함", "친근함", "사교적"),
+            walkingStyle = listOf("장거리 산책", "달리기", "공놀이")
+        )
         val dialog = com.with_runn.ui.friends.FriendDetailDialogFragment.newInstance(friend)
         dialog.show(supportFragmentManager, "FriendProfile")
     }
@@ -252,10 +267,13 @@ class ChatRoomActivity : AppCompatActivity() {
             tags = listOf("친화적", "활발함"),
             bio = "안녕하세요! 함께 산책하며 즐거운 시간을 보내요.",
             age = "2년 3개월",
+            ageInMonths = 27,
             breed = "골든리트리버",
             category = "대형견",
-            isFollowing = false,
-            gender = com.with_runn.data.Gender.MALE
+            gender = com.with_runn.data.Gender.MALE,
+            personality = listOf("친화적", "활발함", "사교적"),
+            walkingStyle = listOf("장거리 산책", "공놀이"),
+            isFollowing = false
         )
     }
 } 

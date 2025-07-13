@@ -32,119 +32,126 @@ class RecommendedFriendsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.tabLayoutIndicator.removeAllTabs()
         loadRecommendedFriends()
         setupViewPager()
-        setupClickListeners()
     }
 
     private fun setupViewPager() {
+        binding.tabLayoutIndicator.removeAllTabs()
+        
         viewPagerAdapter = RecommendedFriendsAdapter(friends) { friend ->
-            // 카드 클릭 시 프로필 상세 보기
             showFriendDetail(friend)
         }
 
-        binding.viewPagerRecommendedFriends.adapter = viewPagerAdapter
-        binding.viewPagerRecommendedFriends.orientation = ViewPager2.ORIENTATION_HORIZONTAL
-        binding.viewPagerRecommendedFriends.offscreenPageLimit = 1
-        // 카드 스와이프 기능 유지 (기본값이 true이므로 명시적 설정)
-        binding.viewPagerRecommendedFriends.isUserInputEnabled = true
+        binding.viewPagerRecommendedFriends.apply {
+            adapter = viewPagerAdapter
+            orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            offscreenPageLimit = 1
+            isUserInputEnabled = true
 
-        // 페이지 변경 리스너
-        binding.viewPagerRecommendedFriends.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                currentPosition = position
-            }
-        })
+            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageSelected(position: Int) {
+                    super.onPageSelected(position)
+                    currentPosition = position
+                }
+            })
+        }
 
-        // TabLayoutMediator로 ViewPager2와 TabLayout 연결
         tabLayoutMediator = TabLayoutMediator(
             binding.tabLayoutIndicator,
             binding.viewPagerRecommendedFriends
-        ) { tab, position ->
-            // 탭에 텍스트를 설정할 필요가 없으므로 비워둠
-            // 점 인디케이터는 tabBackground에서 자동으로 처리됨
-        }
+        ) { _, _ -> }
         tabLayoutMediator.attach()
+
+        // 인디케이터 점들 사이 간격 12dp(좌우 6dp) 적용
+        addTabIndicatorMargin()
 
         updateEmptyState()
     }
 
-    private fun setupClickListeners() {
-        // FAB 버튼들이 제거되었으므로 클릭 리스너 불필요
-        // 카드 스와이프 기능은 ViewPager2에서 자동으로 처리
-    }
-
     private fun loadRecommendedFriends() {
-        // 임시 데이터 (실제로는 API에서 가져와야 함)
         val sampleFriends = listOf(
             Friend(
                 id = "1",
-                name = "마루",
+                name = "조니",
                 imageUrl = "",
-                tags = listOf("활발함", "친화적", "실외활동"),
-                bio = "안녕하세요! 마루입니다. 공원에서 뛰어다니는 걸 좋아해요.",
-                age = "2년 4개월",
+                tags = listOf("도그워커", "산책메이트"),
+                bio = "안녕하세요! 달리기를 좋아하는 3살 조니예요 :)",
+                age = "3살",
+                ageInMonths = 36,
                 breed = "골든리트리버",
                 category = "대형견",
-                gender = Gender.MALE
+                gender = Gender.MALE,
+                personality = listOf("활발함", "친근함", "사교적"),
+                walkingStyle = listOf("장거리 산책", "달리기", "공놀이")
             ),
             Friend(
                 id = "2",
-                name = "루나",
+                name = "홍이",
                 imageUrl = "",
-                tags = listOf("온순함", "조용함", "실내활동"),
-                bio = "루나예요! 집에서 조용히 지내는 걸 좋아해요.",
-                age = "1년 8개월",
+                tags = listOf("조용함", "사교적"),
+                bio = "홍이예요! 조용하지만 사교적인 강아지입니다.",
+                age = "8개월",
+                ageInMonths = 8,
                 breed = "포메라니안",
                 category = "소형견",
-                gender = Gender.FEMALE
+                gender = Gender.FEMALE,
+                personality = listOf("조용함", "애교많음", "온순함"),
+                walkingStyle = listOf("짧은 산책", "천천히 걷기")
             ),
             Friend(
                 id = "3",
-                name = "바둑이",
+                name = "마루",
                 imageUrl = "",
-                tags = listOf("사교적", "영리함", "훈련"),
-                bio = "바둑이입니다! 다른 강아지들과 어울리는 걸 좋아해요.",
-                age = "3년 1개월",
-                breed = "믹스견",
+                tags = listOf("친절함", "똑똑함"),
+                bio = "마루입니다! 친절하고 똑똑한 강아지예요.",
+                age = "2살",
+                ageInMonths = 24,
+                breed = "웰시코기",
                 category = "중형견",
-                gender = Gender.MALE
+                gender = Gender.MALE,
+                personality = listOf("똑똑함", "활발함", "친근함"),
+                walkingStyle = listOf("중거리 산책", "훈련하며 산책")
             ),
             Friend(
                 id = "4",
-                name = "초코",
+                name = "보리",
                 imageUrl = "",
-                tags = listOf("차분함", "애교", "간식"),
-                bio = "초코예요! 간식을 좋아하고 애교가 많아요.",
-                age = "4년 2개월",
-                breed = "래브라도",
-                category = "대형견",
-                gender = Gender.FEMALE
+                tags = listOf("똑바로", "에너지 폭발"),
+                bio = "보리에요! 에너지 넘치는 강아지입니다.",
+                age = "1살",
+                ageInMonths = 12,
+                breed = "시바견",
+                category = "중형견",
+                gender = Gender.MALE,
+                personality = listOf("장난꾸러기", "활발함", "호기심많음"),
+                walkingStyle = listOf("장거리 산책", "산책하며 훈련")
             ),
             Friend(
                 id = "5",
-                name = "코코",
+                name = "몽이",
                 imageUrl = "",
-                tags = listOf("장난스러움", "호기심", "모험"),
-                bio = "코코입니다! 새로운 곳을 탐험하는 걸 좋아해요.",
-                age = "1년 6개월",
-                breed = "비글",
-                category = "중형견",
-                gender = Gender.MALE
+                tags = listOf("에너지 폭발", "강아지 친구 찾기중"),
+                bio = "몽이입니다! 같이 놀 친구를 찾고 있어요!",
+                age = "1살 6개월",
+                ageInMonths = 18,
+                breed = "말티즈",
+                category = "소형견",
+                gender = Gender.FEMALE,
+                personality = listOf("애교많음", "사교적", "활발함"),
+                walkingStyle = listOf("짧은 산책", "공원 산책")
             )
         )
 
+        friends.clear()
         friends.addAll(sampleFriends)
         if (::viewPagerAdapter.isInitialized) {
             viewPagerAdapter.notifyDataSetChanged()
         }
     }
 
-
-
     private fun showFriendDetail(friend: Friend) {
-        // 친구 상세 정보 다이얼로그 표시
         val dialog = FriendDetailDialogFragment.newInstance(friend)
         dialog.show(parentFragmentManager, "FriendDetail")
     }
@@ -157,10 +164,29 @@ class RecommendedFriendsFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // TabLayoutMediator 해제
+        binding.tabLayoutIndicator.removeAllTabs()
         if (::tabLayoutMediator.isInitialized) {
             tabLayoutMediator.detach()
         }
         _binding = null
     }
+
+    // TabLayout의 각 탭에 마진을 주는 함수
+    private fun addTabIndicatorMargin() {
+        val tabLayout = binding.tabLayoutIndicator
+        tabLayout.post {
+            for (i in 0 until tabLayout.tabCount) {
+                val tab = (tabLayout.getChildAt(0) as? ViewGroup)?.getChildAt(i)
+                val layoutParams = tab?.layoutParams as? ViewGroup.MarginLayoutParams
+                layoutParams?.let {
+                    it.setMargins(6.dp, 0, 6.dp, 0)
+                    tab.layoutParams = it
+                }
+            }
+        }
+    }
+
+    // dp to px 변환 확장 함수
+    private val Int.dp: Int
+        get() = (this * resources.displayMetrics.density).toInt()
 } 

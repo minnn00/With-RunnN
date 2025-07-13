@@ -1,13 +1,10 @@
 package com.with_runn.ui.friends
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.with_runn.databinding.ActivityFriendsBinding
-import com.with_runn.ui.chat.ChatListFragment
-import com.with_runn.ui.location.LocationActivity
 
 class FriendsActivity : AppCompatActivity() {
 
@@ -40,12 +37,6 @@ class FriendsActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         binding.apply {
-            // 위치 클릭 - LocationActivity로 이동
-            llLocation.setOnClickListener {
-                val intent = Intent(this@FriendsActivity, LocationActivity::class.java)
-                startActivity(intent)
-            }
-
             // 알림 클릭 - 임시로 토스트 메시지
             ivNotifications.setOnClickListener {
                 // TODO: 알림 기능 구현

@@ -77,9 +77,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                 tags = listOf("온순함", "조용함"),
                 bio = "루나예요!",
                 age = "1년 8개월",
+                ageInMonths = 20,
                 breed = "포메라니안",
                 category = "소형견",
-                gender = Gender.FEMALE
+                gender = Gender.FEMALE,
+                personality = listOf("온순함", "조용함", "애교많음"),
+                walkingStyle = listOf("짧은 산책", "천천히 걷기")
             ),
             Friend(
                 id = "f2",
@@ -88,9 +91,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                 tags = listOf("사교적", "영리함"),
                 bio = "바둑이입니다!",
                 age = "3년 1개월",
+                ageInMonths = 37,
                 breed = "믹스견",
                 category = "중형견",
-                gender = Gender.MALE
+                gender = Gender.MALE,
+                personality = listOf("사교적", "영리함", "활발함"),
+                walkingStyle = listOf("중거리 산책", "공놀이")
             ),
             Friend(
                 id = "f3",
@@ -99,9 +105,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                 tags = listOf("차분함", "애교"),
                 bio = "초코예요!",
                 age = "4년 2개월",
+                ageInMonths = 50,
                 breed = "래브라도",
                 category = "대형견",
-                gender = Gender.FEMALE
+                gender = Gender.FEMALE,
+                personality = listOf("차분함", "애교많음", "친근함"),
+                walkingStyle = listOf("장거리 산책", "훈련하며 산책")
             ),
             Friend(
                 id = "f4",
@@ -110,9 +119,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                 tags = listOf("장난스러움", "호기심"),
                 bio = "코코입니다!",
                 age = "1년 6개월",
+                ageInMonths = 18,
                 breed = "비글",
                 category = "중형견",
-                gender = Gender.MALE
+                gender = Gender.MALE,
+                personality = listOf("장난스러움", "호기심많음", "활발함"),
+                walkingStyle = listOf("중거리 산책", "장난감 놀이")
             ),
             Friend(
                 id = "f5",
@@ -121,9 +133,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                 tags = listOf("활발함", "친화적"),
                 bio = "몰리예요!",
                 age = "2년 6개월",
+                ageInMonths = 30,
                 breed = "보더콜리",
                 category = "중형견",
-                gender = Gender.FEMALE
+                gender = Gender.FEMALE,
+                personality = listOf("활발함", "친화적", "똑똑함"),
+                walkingStyle = listOf("장거리 산책", "훈련하며 산책")
             )
         )
         friendsAdapter.submitList(allFriends)

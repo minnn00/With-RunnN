@@ -1,92 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:padding="@dimen/margin_medium"
-    tools:context=".ui.friends.RecommendedFriendsFragment">
+    android:background="@color/white">
 
-    <!-- 상단 설명 텍스트 -->
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="나와 성향이 맞는 친구를 추천해드려요!"
-        android:textColor="@color/gray_700"
-        android:textSize="16sp"
-        android:fontFamily="@font/pretendard_medium"
-        android:layout_marginTop="@dimen/margin_large"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- 추천 친구 카드 뷰페이저 -->
+    <!-- ViewPager2 for dog profiles -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPagerRecommendedFriends"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/margin_large"
-        app:layout_constraintTop_toBottomOf="@+id/tvDescription"
-        app:layout_constraintBottom_toTopOf="@+id/tabLayoutIndicator"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp"/>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/tabLayoutIndicator" />
 
-    <!-- 점 인디케이터 (TabLayout 사용) -->
+    <!-- Tab layout for indicators -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutIndicator"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="@dimen/margin_large"
-        android:background="@android:color/transparent"
+        android:layout_height="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="60dp"
         app:tabBackground="@drawable/tab_selector_indicator"
+        app:tabGravity="center"
+        android:minHeight="0dp"
         app:tabIndicatorHeight="0dp"
-        app:tabRippleColor="@null" />
+        app:tabPaddingStart="4dp"
+        app:tabPaddingEnd="4dp" />
 
-
-
-    <!-- 카드가 없을 때 표시할 뷰 -->
+    <!-- Empty state layout -->
     <LinearLayout
         android:id="@+id/llEmptyState"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:orientation="vertical"
+        android:visibility="gone">
 
         <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:src="@drawable/ic_friends"
-            android:layout_marginBottom="@dimen/margin_medium"
-            app:tint="@color/gray_400" />
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_friends" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="더 이상 추천할 친구가 없어요"
-            android:textColor="@color/gray_500"
-            android:textSize="16sp"
-            android:fontFamily="@font/pretendard_medium"
-            android:layout_marginBottom="@dimen/margin_small" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="잠시 후 다시 확인해보세요!"
-            android:textColor="@color/gray_400"
-            android:textSize="14sp"
-            android:fontFamily="@font/pretendard_regular" />
-
+            android:layout_marginTop="16dp"
+            android:text="추천 친구가 없습니다"
+            android:textColor="@color/gray_700"
+            android:textSize="16sp" />
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout> 
+</RelativeLayout> 

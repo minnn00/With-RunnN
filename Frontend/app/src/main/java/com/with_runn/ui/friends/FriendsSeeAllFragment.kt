@@ -88,9 +88,12 @@ class FriendsSeeAllFragment : Fragment() {
                 tags = listOf("장난꾸러기", "대인관계", "활발함"),
                 bio = "안녕하세요! 저는 활발하고 친근한 골든리트리버 마루입니다.",
                 age = "2년 4개월",
+                ageInMonths = 28,
                 breed = "골든리트리버",
                 category = "중형견",
                 gender = Gender.MALE,
+                personality = listOf("장난꾸러기", "활발함", "친근함"),
+                walkingStyle = listOf("장거리 산책", "공놀이"),
                 isFollowing = false
             ),
             Friend(
@@ -100,9 +103,12 @@ class FriendsSeeAllFragment : Fragment() {
                 tags = listOf("조용함", "차분함", "온순함"),
                 bio = "차분하고 온순한 성격의 보리입니다. 조용한 곳을 좋아해요.",
                 age = "1년 8개월",
+                ageInMonths = 20,
                 breed = "시바견",
                 category = "소형견",
                 gender = Gender.FEMALE,
+                personality = listOf("조용함", "차분함", "온순함"),
+                walkingStyle = listOf("짧은 산책", "천천히 걷기"),
                 isFollowing = true
             ),
             Friend(
@@ -112,9 +118,12 @@ class FriendsSeeAllFragment : Fragment() {
                 tags = listOf("똑똑함", "민첩함", "훈련잘함"),
                 bio = "똑똑하고 민첩한 초코입니다. 훈련받는 것을 좋아해요!",
                 age = "3년 1개월",
+                ageInMonths = 37,
                 breed = "보더콜리",
                 category = "중형견",
                 gender = Gender.MALE,
+                personality = listOf("똑똑함", "민첩함", "훈련잘함"),
+                walkingStyle = listOf("중거리 산책", "훈련하며 산책"),
                 isFollowing = false
             ),
             Friend(
@@ -124,9 +133,12 @@ class FriendsSeeAllFragment : Fragment() {
                 tags = listOf("사교적", "친화적", "에너지넘침"),
                 bio = "사교적이고 친화적인 루비입니다. 모든 친구들과 잘 어울려요!",
                 age = "2년 7개월",
+                ageInMonths = 31,
                 breed = "래브라도 리트리버",
                 category = "대형견",
                 gender = Gender.FEMALE,
+                personality = listOf("사교적", "친화적", "활발함"),
+                walkingStyle = listOf("장거리 산책", "공놀이"),
                 isFollowing = false
             ),
             Friend(
@@ -136,9 +148,12 @@ class FriendsSeeAllFragment : Fragment() {
                 tags = listOf("귀여움", "애교", "작은체구"),
                 bio = "작지만 애교가 많은 코코입니다. 귀여운 매력으로 가득해요!",
                 age = "1년 3개월",
+                ageInMonths = 15,
                 breed = "치와와",
                 category = "소형견",
                 gender = Gender.FEMALE,
+                personality = listOf("귀여움", "애교많음", "사교적"),
+                walkingStyle = listOf("짧은 산책", "실내 놀이"),
                 isFollowing = true
             ),
             Friend(
@@ -148,9 +163,12 @@ class FriendsSeeAllFragment : Fragment() {
                 tags = listOf("충성심", "보호본능", "든든함"),
                 bio = "충성심이 강하고 든든한 맥스입니다. 언제나 가족을 보호해요.",
                 age = "4년 2개월",
+                ageInMonths = 50,
                 breed = "저먼 셰퍼드",
                 category = "대형견",
                 gender = Gender.MALE,
+                personality = listOf("충성심", "보호본능", "든든함"),
+                walkingStyle = listOf("장거리 산책", "훈련하며 산책"),
                 isFollowing = false
             )
         )
