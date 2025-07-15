@@ -27,6 +27,7 @@
         <activity android:name=".ui.onboarding.OnboardingProfileActivity" />
         <activity android:name=".ui.onboarding.OnboardingProfileDefultActivity" />
         <activity android:name=".ui.onboarding.OnboardingProfilePersonalityActivity" />
+        <activity android:name=".ui.onboarding.OnboardingProfileWalkingStyleActivity" />
     </application>
 
 </manifest>

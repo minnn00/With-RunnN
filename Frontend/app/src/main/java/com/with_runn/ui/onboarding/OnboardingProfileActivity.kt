@@ -23,6 +23,10 @@ class OnboardingProfileActivity : AppCompatActivity() {
             val intent = Intent(this, OnboardingProfilePersonalityActivity::class.java)
             startActivity(intent)
         }
+        binding.entryWalkingStyle.setOnClickListener {
+            val intent = Intent(this, OnboardingProfileWalkingStyleActivity::class.java)
+            startActivity(intent)
+        }
 
     }
 }

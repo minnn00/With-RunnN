@@ -11,25 +11,24 @@ import androidx.core.content.ContextCompat
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.with_runn.R
-import com.with_runn.databinding.ActivityOnboardingProfilePersonalityBinding
+import com.with_runn.databinding.ActivityOnboardingProfileWalkingstyleBinding
 
-class OnboardingProfilePersonalityActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityOnboardingProfilePersonalityBinding
+class OnboardingProfileWalkingStyleActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityOnboardingProfileWalkingstyleBinding
 
     private lateinit var notice_text: TextView
     private lateinit var chipGroup: ChipGroup
 
-    val items = listOf("활발함", "차분함", "에너지 폭발",
-        "느긋함", "사교적", "낯가림",
-        "의존적", "겁쟁이", "낯가림",
-        "고집 셈", "보호자 중심", "호기심 왕성",
-        "독립적", "조용함", "장난꾸러기",
-        "방어적", "스킨십 좋아함",
-        "스킨십 싫어함", "직접 입력")
+    val items = listOf("빠른 산책","느긋한 산책","속도균형",
+        "냄새 탐험","앞서 걷는 타입",
+        "보호자 옆 걷기","보호자보다 뒤처지는 타입",
+        "강아지 친구 찾기형","사람 친화형",
+        "보호자 밀착형","주변 경계형",
+        "직접 입력")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityOnboardingProfilePersonalityBinding.inflate(layoutInflater)
+        binding = ActivityOnboardingProfileWalkingstyleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         notice_text = binding.noticeText

@@ -35,7 +35,7 @@ class OnboardingFragment1 : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val title = arguments?.getString("title")
         val description = arguments?.getString("description")
-        val imgID = arguments?.getInt("imgID") ?: R.drawable.img_app_logo
+        val imgID = arguments?.getInt("imgID") ?: R.drawable.ic_app_logo
         binding.textView.text = title
         binding.textView2.text = description
         binding.imageView.setImageResource(imgID)

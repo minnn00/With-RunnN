@@ -145,7 +145,7 @@
             android:textSize="14sp" />
 
         <LinearLayout
-            android:id="@+id/entry3"
+            android:id="@+id/entry_walkingStyle"
             android:layout_width="377dp"
             android:layout_height="56dp"
             android:layout_marginStart="18dp"
