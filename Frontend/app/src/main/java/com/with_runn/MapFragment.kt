@@ -157,6 +157,7 @@ class MapFragment : Fragment() {
                 }
                 R.id.load_course -> {
                     Log.d("FAB", "테스트 2 클릭됨")
+                    findNavController().navigate(R.id.action_mapFragment_to_courseManageFragment)
                     speedDialView.close()
                     return@setOnActionSelectedListener true
                 }

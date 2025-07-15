@@ -37,7 +37,6 @@ class RecentSearchAdapter(
                 }
             }
         }
-
     }
 
     inner class ViewHolder(val binding: ItemRecentSearchBinding) : RecyclerView.ViewHolder(binding.root)

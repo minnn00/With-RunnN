@@ -14,4 +14,5 @@
     <string name="place_service_inavailable">영업 종료</string>
     <string name="park_able">주차 가능</string>
     <string name="park_inable">주차 불가능</string>
+    <string name="connect_pin">핀 연결</string>
 </resources>
