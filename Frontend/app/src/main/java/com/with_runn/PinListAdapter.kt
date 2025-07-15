@@ -1,5 +1,6 @@
 package com.with_runn
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -29,6 +30,7 @@ class PinListAdapter (
         return ViewHolder(binding)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(
         holder: ViewHolder,
         position: Int
