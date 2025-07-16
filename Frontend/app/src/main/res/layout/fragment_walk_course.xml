@@ -1,56 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#FFFFFF">
+    android:background="@color/white"
+    android:orientation="vertical">
 
-    <!-- 상단 위치 & 알림 -->
-    <RelativeLayout
+    <!-- 상단 위치 & 알림/채팅 아이콘 -->
+    <LinearLayout
+        android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_height="66dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingStart="18dp"
+        android:paddingEnd="18dp">
 
-        <TextView
-            android:id="@+id/text_location"
-            android:layout_width="wrap_content"
+        <!-- 위치 정보 -->
+        <LinearLayout
+            android:id="@+id/layout_location"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:drawableStart="@drawable/Vector"
-            android:drawablePadding="4dp"
-            android:gravity="center_vertical"
-            android:text="서울 마포구"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/icon_location"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/Vector" />
+
+            <TextView
+                android:id="@+id/text_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="서울 마포구"
+                android:textColor="@color/gray_950"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- 알림 아이콘 -->
+
+        <!-- 채팅 아이콘 -->
 
         <ImageView
             android:id="@+id/btn_alert"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginStart="8dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="20dp"
             android:src="@drawable/ic_bell" />
 
         <ImageView
             android:id="@+id/btn_chat"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_toStartOf="@id/btn_alert"
-            android:layout_marginEnd="8dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/ic_chat" />
+    </LinearLayout>
 
-
-
-
-    </RelativeLayout>
-
-    <!-- 우리 동네 산책 코스 섹션 헤더 -->
+    <!-- 우리 동네 산책 코스 섹션 -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
-        android:paddingEnd="16dp"
         android:paddingTop="8dp"
+        android:paddingEnd="16dp"
         android:paddingBottom="4dp">
 
         <TextView
@@ -58,41 +74,59 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="우리 동네 산책 코스"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_alignParentStart="true" />
+            android:textColor="@color/gray_950"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/text_local_more"
+        <!-- 더보기 -->
+        <LinearLayout
+            android:id="@+id/layout_local_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="더보기 >"
-            android:textSize="14sp"
-            android:textColor="#888888"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/text_local_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="더보기"
+                android:textColor="@color/gray_500"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/icon_local_more_arrow"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/arrow"/>
+        </LinearLayout>
     </RelativeLayout>
 
-    <!-- 우리 동네 산책 코스 RecyclerView -->
+    <!-- 가로 스크롤 RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_local_course"
         android:layout_width="match_parent"
-        android:layout_height="180dp"
+        android:layout_height="187dp"
+        android:orientation="horizontal"
+        android:overScrollMode="never"
+        android:clipToPadding="false"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:layout_marginBottom="16dp"
-        android:orientation="horizontal"
-        android:overScrollMode="never" />
+        android:layout_marginBottom="16dp" />
 
-    <!-- 떠오르는 산책 코스 섹션 헤더 -->
+
+    <!-- 떠오르는 산책 코스 섹션 -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
+        android:paddingTop="8dp"
         android:paddingEnd="16dp"
-        android:paddingTop="4dp"
         android:paddingBottom="4dp">
 
         <TextView
@@ -100,28 +134,46 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="떠오르는 산책 코스"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_alignParentStart="true" />
+            android:textColor="@color/gray_950"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/text_hot_more"
+        <!-- 더보기 -->
+        <LinearLayout
+            android:id="@+id/layout_hot_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="더보기 >"
-            android:textSize="14sp"
-            android:textColor="#888888"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:clickable="true"
-            android:focusable="true" />
+            android:focusable="true">
+
+            <TextView
+                android:id="@+id/text_hot_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="더보기"
+                android:textColor="@color/gray_500"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/icon_hot_more_arrow"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/arrow"/>
+        </LinearLayout>
     </RelativeLayout>
 
-    <!-- 떠오르는 산책 코스 RecyclerView -->
+    <!-- 세로 스크롤 RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_hot_course"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
+        android:clipToPadding="false"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:overScrollMode="never" />

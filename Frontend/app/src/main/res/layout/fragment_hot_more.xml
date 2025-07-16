@@ -10,7 +10,7 @@
         <!-- 상단 타이틀 & 뒤로가기 -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="66dp"
             android:minHeight="56dp"
             android:padding="16dp"
             android:background="@android:color/white">
@@ -26,7 +26,7 @@
             <TextView
                 android:id="@+id/text_title"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="22dp"
                 android:text="떠오르는 산책 코스"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -39,12 +39,17 @@
             android:id="@+id/edit_search"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_margin="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:hint="산책하고 싶은 지역을 검색해보세요"
-            android:paddingStart="40dp"
             android:background="@drawable/search_edittext_background"
             android:drawableStart="@drawable/search"
-            android:drawablePadding="8dp"
+            android:drawablePadding="5dp"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:textSize="14sp"
             android:singleLine="true"
             android:inputType="text" />
@@ -57,7 +62,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textColor="#808080" />
 
         <!-- 산책코스 목록 RecyclerView -->
@@ -66,7 +71,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingHorizontal="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:overScrollMode="never" />
 
     </LinearLayout>

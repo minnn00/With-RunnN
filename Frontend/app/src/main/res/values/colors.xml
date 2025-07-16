@@ -18,7 +18,9 @@
     <color name="gray_900">#212124</color>
 
     <!-- Medium Gray -->
+    <color name="gray_850">#818181</color>
     <color name="gray_800">#2F2F2F</color>
+    <color name="gray_750">#979797</color>
     <color name="gray_700">#4F4F4F</color>
     <color name="gray_600">#808080</color>
     <color name="gray_550">#5D5D5D</color>
@@ -26,6 +28,9 @@
     <color name="gray_400">#CFCFCF</color>
 
     <!-- Light Gray -->
+    <color name="gray_350">#F5F5F5</color>
+    <color name="gray_300">#F8F8F8</color>
+    <color name="gray_250">#F9F9F9</color>
     <color name="gray_200">#F0F0F0</color>
     <color name="gray_100">#F3F3F3</color>
     <color name="gray_050">#FEFEFE</color>
