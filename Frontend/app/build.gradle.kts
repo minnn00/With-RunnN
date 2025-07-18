@@ -11,6 +11,7 @@ android {
         applicationId = "com.with_runn"
         minSdk = 24
         targetSdk = 35
+
         versionCode = 1
         versionName = "1.0"
 
@@ -26,16 +27,19 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
 
-    buildFeatures{
-        viewBinding = true;
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
     }
 }
 
@@ -50,9 +54,8 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
 
     implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("com.google.android:flexbox:3.0.0")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation ("com.google.android:flexbox:3.0.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

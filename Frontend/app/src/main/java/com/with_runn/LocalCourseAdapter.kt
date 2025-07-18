@@ -13,8 +13,10 @@ data class LocalCourse(
     val title: String
 )
 
-class LocalCourseAdapter(private val courseList: List<LocalCourse>) :
-    RecyclerView.Adapter<LocalCourseAdapter.LocalCourseViewHolder>() {
+class LocalCourseAdapter(
+    private val courseList: List<LocalCourse>,
+    private val onItemClick: (LocalCourse) -> Unit  // 클릭 콜백 추가
+) : RecyclerView.Adapter<LocalCourseAdapter.LocalCourseViewHolder>() {
 
     inner class LocalCourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageCourse: ImageView = itemView.findViewById(R.id.image_course)
@@ -33,6 +35,10 @@ class LocalCourseAdapter(private val courseList: List<LocalCourse>) :
         holder.imageCourse.setImageResource(course.imageRes)
         holder.tagText.text = course.tag
         holder.titleText.text = course.title
+
+        holder.itemView.setOnClickListener {
+            onItemClick(course)
+        }
     }
 
     override fun getItemCount(): Int = courseList.size

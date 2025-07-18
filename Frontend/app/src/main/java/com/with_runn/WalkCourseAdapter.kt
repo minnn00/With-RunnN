@@ -2,17 +2,17 @@ package com.with_runn
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.databinding.ItemWalkCourseMoreBinding
+import com.with_runn.WalkCourse
 
-class WalkCourseAdapter(private val items: List<WalkCourse>) :
-    RecyclerView.Adapter<WalkCourseAdapter.WalkCourseViewHolder>() {
+class WalkCourseAdapter(
+    private val items: List<WalkCourse>,
+    private val onItemClick: (WalkCourse) -> Unit  // 클릭 콜백 추가
+) : RecyclerView.Adapter<WalkCourseAdapter.WalkCourseViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WalkCourseViewHolder {
-        val binding = ItemWalkCourseMoreBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
+        val binding = ItemWalkCourseMoreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return WalkCourseViewHolder(binding)
     }
 
@@ -27,17 +27,14 @@ class WalkCourseAdapter(private val items: List<WalkCourse>) :
 
         fun bind(course: WalkCourse) {
             binding.imageCourse.setImageResource(course.imageResId)
-            binding.textTitle.text = course.title
+            binding.textCourseName.text = course.title
+            binding.tag1.text = course.tags.getOrNull(0) ?: ""
+            binding.tag2.text = course.tags.getOrNull(1) ?: ""
+            binding.distanceText.text = course.distance
+            binding.timeText.text = course.time
 
-            // 기존 tagFlow → layoutTags 로 변경
-            binding.layoutTags.removeAllViews()
-
-            course.tags.forEach { tag ->
-                val tagView = LayoutInflater.from(binding.root.context).inflate(
-                    R.layout.item_tag, binding.layoutTags, false
-                ) as TextView
-                tagView.text = tag // "#" 포함해서 넘겼으면 prefix 제거
-                binding.layoutTags.addView(tagView)
+            binding.root.setOnClickListener {
+                onItemClick(course)
             }
         }
     }

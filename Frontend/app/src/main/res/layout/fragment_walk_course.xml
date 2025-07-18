@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="66dp"
         android:orientation="horizontal"
-        android:background="@color/white"
         android:gravity="center_vertical"
+        android:layout_marginTop="20dp"
         android:paddingStart="18dp"
         android:paddingEnd="18dp">
 
@@ -27,9 +27,9 @@
 
             <ImageView
                 android:id="@+id/icon_location"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/Vector" />
+                android:layout_width="15dp"
+                android:layout_height="16dp"
+                android:src="@drawable/vector" />
 
             <TextView
                 android:id="@+id/text_location"
@@ -38,8 +38,8 @@
                 android:layout_marginStart="6dp"
                 android:text="서울 마포구"
                 android:textColor="@color/gray_950"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="18sp"
+                android:fontFamily="@font/pretendard_semibold" />
         </LinearLayout>
 
         <!-- 알림 아이콘 -->
@@ -48,15 +48,15 @@
 
         <ImageView
             android:id="@+id/btn_alert"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="18dp"
+            android:layout_height="15.75dp"
             android:layout_marginEnd="20dp"
             android:src="@drawable/ic_bell" />
 
         <ImageView
             android:id="@+id/btn_chat"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="18dp"
+            android:layout_height="15.75dp"
             android:src="@drawable/ic_chat" />
     </LinearLayout>
 
@@ -76,7 +76,7 @@
             android:text="우리 동네 산책 코스"
             android:textColor="@color/gray_950"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/pretendard_medium" />
 
         <!-- 더보기 -->
         <LinearLayout
@@ -96,12 +96,13 @@
                 android:layout_height="wrap_content"
                 android:text="더보기"
                 android:textColor="@color/gray_500"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_medium"/>
 
             <ImageView
                 android:id="@+id/icon_local_more_arrow"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
+                android:layout_width="23dp"
+                android:layout_height="23dp"
                 android:layout_marginStart="4dp"
                 android:src="@drawable/arrow"/>
         </LinearLayout>
@@ -136,7 +137,7 @@
             android:text="떠오르는 산책 코스"
             android:textColor="@color/gray_950"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/pretendard_medium" />
 
         <!-- 더보기 -->
         <LinearLayout
@@ -156,7 +157,8 @@
                 android:layout_height="wrap_content"
                 android:text="더보기"
                 android:textColor="@color/gray_500"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:fontFamily="@font/pretendard_medium" />
 
             <ImageView
                 android:id="@+id/icon_hot_more_arrow"

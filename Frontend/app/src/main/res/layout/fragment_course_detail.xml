@@ -12,24 +12,25 @@
 
         <!-- 코스 정보 (이미지 + 텍스트 + 해시태그) -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="232dp"
+            android:layout_height="64dp"
             android:orientation="horizontal"
             android:layout_marginBottom="12dp">
 
             <ImageView
                 android:id="@+id/image_course"
-                android:layout_width="64dp"
+                android:layout_width="64.5dp"
                 android:layout_height="64dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/dog"
                 android:layout_marginEnd="12dp" />
 
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="150dp"
+                android:layout_height="47dp"
                 android:orientation="vertical"
                 android:layout_weight="1"
+                android:layout_marginTop="10dp"
                 android:gravity="center_vertical">
 
                 <TextView
@@ -38,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:text="우리 동네 강아지 모임"
                     android:textSize="16sp"
-                    android:textStyle="bold"
+                    android:fontFamily="@font/pretendard_semibold"
                     android:textColor="@color/gray_950"
                     android:layout_marginBottom="4dp" />
 
@@ -50,18 +51,24 @@
                     android:layout_marginTop="2dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="62dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_tag"
                         android:text="#이웃사촌"
+                        android:paddingStart="6dp"
+                        android:layout_marginEnd="10dp"
                         android:textSize="12sp"
-                        android:textColor="@color/gray_600"
-                        android:layout_marginEnd="8dp" />
+                        android:fontFamily="@font/pretendard_regular"
+                        android:textColor="@color/gray_600" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:background="@drawable/bg_tag"
                         android:text="#같이산책해요"
+                        android:paddingStart="6dp"
                         android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
                         android:textColor="@color/gray_600" />
                 </LinearLayout>
 
@@ -74,6 +81,7 @@
             android:layout_height="wrap_content"
             android:text="산책코스 소개"
             android:textSize="12sp"
+            android:fontFamily="@font/pretendard_medium"
             android:textColor="@color/gray_500"
             android:layout_marginBottom="4dp" />
 
@@ -83,6 +91,7 @@
             android:layout_height="wrap_content"
             android:text="금요일에 시간 어때요 ~ 🎵\n우리 동네에 사는 댕댕이들 모두 경의선숲길에서 헤쳐모여!"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/gray_950"
             android:layout_marginBottom="20dp" />
 
@@ -93,7 +102,7 @@
             android:orientation="horizontal"
             android:gravity="center"
             android:weightSum="4"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="1dp">
 
             <!-- 버튼 1: 스크랩 -->
             <LinearLayout
@@ -120,6 +129,7 @@
                         android:text="스크랩"
                         android:textColor="@color/gray_800"
                         android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -149,6 +159,7 @@
                         android:text="좋아요"
                         android:textColor="@color/gray_800"
                         android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -178,6 +189,7 @@
                         android:text="공유하기"
                         android:textColor="@color/gray_800"
                         android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
                         android:layout_marginTop="6dp" />
                 </LinearLayout>
             </LinearLayout>
@@ -202,9 +214,10 @@
                         android:layout_height="wrap_content"
                         android:text="40M"
                         android:textColor="@color/blue_500"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:gravity="center" />
+                        android:fontFamily="@font/pretendard_medium"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:translationY="4dp"/>
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -212,7 +225,8 @@
                         android:text="소요 시간"
                         android:textColor="@color/gray_800"
                         android:textSize="12sp"
-                        android:layout_marginTop="6dp" />
+                        android:fontFamily="@font/pretendard_regular"
+                        android:layout_marginTop="11dp" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

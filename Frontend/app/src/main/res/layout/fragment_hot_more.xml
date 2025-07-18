@@ -4,16 +4,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#FFFFFF">
+        android:orientation="vertical">
 
         <!-- 상단 타이틀 & 뒤로가기 -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="66dp"
-            android:minHeight="56dp"
-            android:padding="16dp"
-            android:background="@android:color/white">
+            android:layout_marginTop="20dp"
+            android:padding="16dp">
 
             <ImageView
                 android:id="@+id/btn_back"
@@ -29,8 +27,8 @@
                 android:layout_height="22dp"
                 android:text="떠오르는 산책 코스"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
+                android:fontFamily="@font/pretendard_semibold"
+                android:textColor="@color/gray_950"
                 android:layout_centerInParent="true" />
         </RelativeLayout>
 
@@ -50,7 +48,9 @@
             android:paddingStart="12dp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            android:textSize="14sp"
+            android:textColor="@color/gray_500"
+            android:textSize="12sp"
+            android:fontFamily="@font/pretendard_regular"
             android:singleLine="true"
             android:inputType="text" />
 
@@ -63,7 +63,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
             android:textSize="12sp"
-            android:textColor="#808080" />
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/gray_600" />
 
         <!-- 산책코스 목록 RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView

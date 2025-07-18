@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="296dp"
+    android:layout_height="184dp"
     android:orientation="vertical"
     android:padding="20dp"
     android:background="@drawable/bg_place_popup"
@@ -30,8 +30,8 @@
             android:layout_weight="600"
             android:text="빵집"
             android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#000000" />
+            android:fontFamily="@font/pretendard_semibold"
+            android:textColor="@color/gray_950" />
 
         <ImageView
             android:id="@+id/btn_close"
@@ -46,6 +46,8 @@
         android:layout_height="96dp"
         android:orientation="vertical"
         android:padding="12dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/bg_comment_box">
 
         <TextView
@@ -53,7 +55,8 @@
             android:layout_height="wrap_content"
             android:text="견주의 한 마디 🐶"
             android:textSize="10sp"
-            android:textColor="#666666"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/gray_550"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -62,7 +65,9 @@
             android:layout_height="wrap_content"
             android:text="빵집 들러서 공원에서 먹을 빵 함께 골라요\n참고로 저는 치아바타가 좋아요 같이 빵 먹어요 "
             android:textSize="12sp"
-            android:textColor="#333333"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/gray_950"
+            android:layout_marginTop="2dp"
             android:lineSpacingExtra="4dp" />
     </LinearLayout>
 

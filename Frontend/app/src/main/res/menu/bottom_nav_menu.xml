@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_friends"
         android:title="@string/friend" />
     <item
-        android:id="@+id/course_graph"
+        android:id="@+id/walkCourseFragment"
         android:icon="@drawable/ic_course"
         android:title="@string/course" />
     <item
@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_map"
         android:title="@string/map" />
     <item
-        android:id="@+id/mypage_graph"
+        android:id="@+id/myPageFragment"
         android:icon="@drawable/ic_mypage"
         android:title="@string/my_page" />
 </menu>
