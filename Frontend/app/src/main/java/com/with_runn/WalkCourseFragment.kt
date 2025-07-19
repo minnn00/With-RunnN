@@ -45,8 +45,24 @@ class WalkCourseFragment : Fragment() {
 
         // 떠오르는 산책코스 - HotCourseAdapter 연결
         val hotAdapter = HotCourseAdapter(getDummyHotCourses()) { course ->
-            Log.d("HotCourse", "Clicked: ${course.title}")
+            // 1. HotCourse -> WalkCourse로 변환
+            val walkCourse = WalkCourse(
+                title = course.title,
+                tags = course.tags,
+                imageResId = course.imageRes,
+                distance = course.distance,
+                time = course.time
+            )
+
+            // 2. Bundle에 담아서 전달
+            val bundle = Bundle().apply {
+                putParcelable("course", walkCourse)
+            }
+            findNavController().navigate(R.id.mapContainerFragment, bundle)
+
+
         }
+
         binding.recyclerHotCourse.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = hotAdapter

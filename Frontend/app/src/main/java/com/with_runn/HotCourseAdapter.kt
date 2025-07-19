@@ -7,6 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 data class HotCourse(
     val imageRes: Int,
     val title: String,
@@ -14,6 +17,7 @@ data class HotCourse(
     val distance: String,
     val time: String
 )
+
 
 class HotCourseAdapter(
     private val hotCourses: List<HotCourse>,

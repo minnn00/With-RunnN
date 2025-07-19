@@ -30,13 +30,31 @@ class MyPageFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        when (currentTab) {
+            TabType.SCRAP -> {
+                Log.d("MyPageFragment", "갱신: scrap=${CourseStorage.scrapList.size}")
+                adapter.setTabType(TabType.SCRAP, isDeleteMode)
+                adapter.submitList(CourseStorage.scrapList.toList())
+            }
+            TabType.LIKE -> {
+                Log.d("MyPageFragment", "갱신: like=${CourseStorage.likeList.size}")
+                adapter.setTabType(TabType.LIKE, isDeleteMode)
+                adapter.submitList(CourseStorage.likeList.toList())
+            }
+            else->{}
+        }
+    }
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val (scrap, like, mine) = getDummyData()
-        scrapList = scrap
-        likeList = like
-        myCourseList = mine
+        scrapList = CourseStorage.scrapList
+        likeList = CourseStorage.likeList
+
 
         adapter = MyPageCourseAdapter(
             currentTab,
@@ -89,7 +107,7 @@ class MyPageFragment : Fragment() {
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(scrapList)
+            adapter.submitList(CourseStorage.scrapList)
             updateTabUI()
             hideDeleteButtons()
         }
@@ -99,10 +117,11 @@ class MyPageFragment : Fragment() {
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(likeList)
+            adapter.submitList(CourseStorage.likeList)
             updateTabUI()
             hideDeleteButtons()
         }
+
 
         binding.tabMycourses.setOnClickListener {
             currentTab = TabType.MY_COURSE

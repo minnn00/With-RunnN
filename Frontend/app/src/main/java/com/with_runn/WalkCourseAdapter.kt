@@ -7,9 +7,14 @@ import com.with_runn.databinding.ItemWalkCourseMoreBinding
 import com.with_runn.WalkCourse
 
 class WalkCourseAdapter(
-    private val items: List<WalkCourse>,
-    private val onItemClick: (WalkCourse) -> Unit  // 클릭 콜백 추가
+    private var items: List<WalkCourse>,  // var로 선언
+    private val onItemClick: (WalkCourse) -> Unit
 ) : RecyclerView.Adapter<WalkCourseAdapter.WalkCourseViewHolder>() {
+
+    fun updateItems(newItems: List<WalkCourse>) {
+        items = newItems
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WalkCourseViewHolder {
         val binding = ItemWalkCourseMoreBinding.inflate(LayoutInflater.from(parent.context), parent, false)

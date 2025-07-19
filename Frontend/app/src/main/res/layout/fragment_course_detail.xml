@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:fillViewport="true">
 
     <LinearLayout
@@ -97,6 +98,7 @@
 
         <!-- 아이콘 버튼 4개 -->
         <LinearLayout
+            android:id="@+id/btnScrap"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -136,17 +138,22 @@
 
             <!-- 버튼 2: 좋아요 -->
             <LinearLayout
+                android:id="@+id/btnLike"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:orientation="vertical"
                     android:background="@drawable/bg_action_box"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">>
 
                     <ImageView
                         android:layout_width="26dp"

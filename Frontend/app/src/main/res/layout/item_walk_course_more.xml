@@ -45,8 +45,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="#느긋한 산책"
-                android:textColor="@color/gray_500"
+                android:textColor="@color/gray_600"
                 android:textSize="10sp"
+                android:fontFamily="@font/pretendard_regular"
                 android:layout_marginEnd="8dp"
                 android:background="@drawable/bg_tag_label"
                 android:paddingHorizontal="6dp"
@@ -57,8 +58,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="#산책브금_on"
-                android:textColor="@color/gray_500"
+                android:textColor="@color/gray_600"
                 android:textSize="10sp"
+                android:fontFamily="@font/pretendard_regular"
                 android:background="@drawable/bg_tag_label"
                 android:paddingHorizontal="6dp"
                 android:paddingVertical="2dp" />
@@ -70,8 +72,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="쫄래쫄래 감성로드"
-            android:textColor="@color/black"
-            android:textStyle="bold"
+            android:textColor="@color/gray_950"
+            android:fontFamily="@font/pretendard_medium"
             android:textSize="14sp"
             android:maxLines="1"
             android:ellipsize="end"
@@ -89,21 +91,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3.0km"
+                android:textSize="12sp"
+                android:letterSpacing="0.025"
+                android:fontFamily="@font/pretendard_medium"
                 android:textColor="@color/gray_600"
-                android:textSize="12sp" />
+                android:layout_marginEnd="8dp" />
 
             <View
                 android:layout_width="1dp"
                 android:layout_height="9dp"
                 android:layout_marginHorizontal="8dp"
-                android:background="@color/gray_400" />
+                android:background="@drawable/rectangle"/>
 
             <TextView
                 android:id="@+id/time_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="32분"
-                android:textSize="11sp"
+                android:textSize="12sp"
+                android:letterSpacing="0.025"
+                android:fontFamily="@font/pretendard_medium"
                 android:textColor="@color/blue_500" />
         </LinearLayout>
     </LinearLayout>
