@@ -37,8 +37,9 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ScrollView
-        android:layout_width="409dp"
-        android:layout_height="663dp"
+        android:id="@+id/scrollView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         app:layout_constraintTop_toBottomOf="@+id/header"
         tools:layout_editor_absoluteX="1dp">
@@ -66,31 +67,31 @@
 
                 <TextView
                     android:id="@+id/text_name"
+                    style="@style/Text_Pretendard_Medium_14"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="11dp"
-                    android:text="이름 *"
-                    style="@style/Text_Pretendard_Medium_14" />
+                    android:text="이름 *" />
 
                 <LinearLayout
                     android:id="@+id/entry_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/bg_entry_error"
+                    android:background="@drawable/bg_entry_inactive"
                     android:orientation="horizontal"
                     android:padding="14dp">
 
                     <EditText
-                        android:id="@+id/edittext_name"
+                        android:id="@+id/nameEditText"
                         android:layout_width="267dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:textSize="14dp"
-                        android:background="@null"/>
+                        android:background="@null"
+                        android:textSize="14dp" />
 
                     <Button
-                        android:id="@+id/button2"
+                        android:id="@+id/name_check_button"
                         android:layout_width="69dp"
                         android:layout_height="30dp"
                         android:layout_weight="1"
@@ -100,27 +101,29 @@
                         android:text="중복 확인"
                         android:textColor="@color/gray_800"
                         android:textSize="10sp"
-                        app:cornerRadius="20dp"/>
+                        app:cornerRadius="20dp" />
 
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/name_log"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="8dp"
                     android:layout_marginTop="10dp"
                     android:gravity="center|left"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
 
                     <ImageView
-                        android:id="@+id/imageView5"
+                        android:id="@+id/error_img"
                         android:layout_width="5dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         app:srcCompat="@drawable/ic_warning" />
 
                     <TextView
-                        android:id="@+id/textView9"
+                        android:id="@+id/name_log_text"
                         android:layout_width="321dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -138,15 +141,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="32dp"
-                android:orientation="horizontal"
-                >
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/linerlayout_sex"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    >
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/textView7"
@@ -157,8 +158,8 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
                         android:background="@drawable/bg_entry_inactive"
+                        android:orientation="horizontal"
                         android:padding="4dp">
 
                         <android.widget.Button
@@ -166,25 +167,25 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="남"
-                            android:fontFamily="@font/pretendard_medium"
-                            android:textColor="@color/green_700"
                             android:background="@drawable/bg_switch_active"
-                            android:textSize="12sp"
-                            android:stateListAnimator="@null"/> <!-- inactive 변경: font, textcolor, background -->
+                            android:fontFamily="@font/pretendard_medium"
+                            android:stateListAnimator="@null"
+                            android:text="남"
+                            android:textColor="@color/green_700"
+                            android:textSize="12sp" /> <!-- inactive 변경: font, textcolor, background -->
 
                         <android.widget.Button
                             android:id="@+id/button_female"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="여"
-                            android:textSize="12sp"
-                            android:textColor="@color/gray_500"
-                            android:fontFamily="@font/pretendard_regular"
-
                             android:background="@drawable/bg_switch_inactive"
-                            android:stateListAnimator="@null"/>
+                            android:fontFamily="@font/pretendard_regular"
+                            android:stateListAnimator="@null"
+                            android:text="여"
+
+                            android:textColor="@color/gray_500"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -192,8 +193,8 @@
                     android:id="@+id/linerlayout_birthday"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="10dp">
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/text_birthday_title"
@@ -205,23 +206,23 @@
                         android:id="@+id/entry_birthday"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
                         android:background="@drawable/bg_entry_inactive"
+                        android:orientation="horizontal"
                         android:padding="18dp"
                         android:paddingStart="12dp">
 
                         <EditText
-                            android:id="@+id/edittext_birthday"
+                            android:id="@+id/birthdayEditText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:ems="10"
-                            android:inputType="date"
                             android:background="@null"
-                            android:text="YYYY/MM/DD"
+                            android:ems="10"
                             android:fontFamily="@font/pretendard_regular"
-                            android:textSize="14sp"
-                            android:textColor="@color/gray_400"/>
+                            android:inputType="date"
+                            android:text="YYYY/MM/DD"
+                            android:textColor="@color/gray_400"
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -235,12 +236,12 @@
 
                 <TextView
                     android:id="@+id/text_breed"
+                    style="@style/Text_Pretendard_Medium_14"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="11dp"
-                    android:text="견종 *"
-                    style="@style/Text_Pretendard_Medium_14" />
+                    android:text="견종 *" />
 
                 <LinearLayout
                     android:id="@+id/entry_breed"
@@ -252,16 +253,45 @@
                     android:paddingStart="14dp">
 
                     <EditText
-                        android:id="@+id/edittext_breed"
+                        android:id="@+id/breedEditText"
                         android:layout_width="267dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="15자 이내로 입력해주세요"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
                         android:background="@null"
-                        android:textColor="@color/gray_400"/>
+                        android:fontFamily="@font/pretendard_regular"
+                        android:text="15자 이내로 입력해주세요"
+                        android:textColor="@color/gray_400"
+                        android:textSize="12sp" />
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/breed_log"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center|left"
+                    android:orientation="horizontal"
+                    android:visibility="invisible">
+
+                    <ImageView
+                        android:id="@+id/breed_error_img"
+                        android:layout_width="5dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:srcCompat="@drawable/ic_warning" />
+
+                    <TextView
+                        android:id="@+id/breed_log_text"
+                        android:layout_width="321dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:text="15자 이내로 입력해주세요"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/red_500"
+                        android:textSize="12dp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -274,12 +304,12 @@
 
                 <TextView
                     android:id="@+id/text_size"
+                    style="@style/Text_Pretendard_Medium_14"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="8dp"
                     android:layout_marginBottom="11dp"
-                    android:text="크기"
-                    style="@style/Text_Pretendard_Medium_14" />
+                    android:text="크기" />
 
                 <LinearLayout
                     android:id="@+id/entry_size"
@@ -294,31 +324,48 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="소형견"
+                        android:background="@drawable/bg_switch_inactive"
                         android:stateListAnimator="@null"
-                        android:background="@drawable/bg_switch_inactive"/>
+                        android:text="소형견" />
 
                     <android.widget.Button
                         android:id="@+id/button_middle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="중형견"
+                        android:background="@drawable/bg_switch_inactive"
                         android:stateListAnimator="@null"
-                        android:background="@drawable/bg_switch_inactive"/>
+                        android:text="중형견" />
 
                     <android.widget.Button
                         android:id="@+id/button_big"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="대형견"
+                        android:background="@drawable/bg_switch_active"
                         android:stateListAnimator="@null"
-                        android:background="@drawable/bg_switch_active"/>
+                        android:text="대형견" />
                 </LinearLayout>
                 <!-- chip group 사용하여 다시 구현 -->
             </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
+
+    <android.widget.Button
+        android:id="@+id/save_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="16dp"
+        android:text="저장하기"
+        android:shadowColor="@null"
+        android:fontFamily="@font/pretendard_semibold"
+        android:textSize="14sp"
+        android:textColor="@color/gray_050"
+        android:background="@drawable/bg_button_main"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

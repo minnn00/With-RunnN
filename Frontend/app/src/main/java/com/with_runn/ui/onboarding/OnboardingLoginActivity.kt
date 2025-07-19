@@ -18,8 +18,6 @@ class OnboardingLoginActivity: AppCompatActivity() {
         binding = ActivityOnboardingLoginBinding.inflate(layoutInflater);
         setContentView(binding.root);
 
-        //버튼 클릭 시 OnboardingActivity로 이동
-
         binding.naverLoginButton.setOnClickListener {
             val intent = Intent(this, OnboardingProfileActivity::class.java)
             startActivity(intent)

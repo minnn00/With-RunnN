@@ -70,7 +70,7 @@
             android:paddingHorizontal="16dp">
 
             <TextView
-                android:id="@+id/entry_text1"
+                android:id="@+id/default_text"
                 style="@style/Text_Pretendard_Medium_14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
