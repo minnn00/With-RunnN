@@ -13,12 +13,14 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.with_runn.databinding.FragmentMapBinding
 import android.view.MotionEvent
+import com.naver.maps.map.NaverMap
 
 
 class MapFragment : Fragment() {
 
     private var _binding : FragmentMapBinding? = null
     private val binding get() = _binding!!
+    private lateinit var naverMap: NaverMap
 
     private val keywords = listOf("병원", "약국", "반려동물용품", "미용", "식당", "당식", "용미", "품용물동려반", "국약", "원병")
 
@@ -33,6 +35,17 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.mapView.onCreate(savedInstanceState)
+        binding.mapView.getMapAsync {
+            naverMap = it
+            naverMap.uiSettings.apply {
+                isZoomControlEnabled = false
+                isCompassEnabled = false
+            }
+
+        }
+
         populateChips(
             chipGroup = binding.chipGroup,
             inflater = layoutInflater,
@@ -49,9 +62,31 @@ class MapFragment : Fragment() {
         setupBottomSheet()
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding.mapView.onPause()
+    }
+
+
     override fun onDestroyView() {
-        super.onDestroyView()
+        binding.mapView.onDestroy()
         _binding = null
+        super.onDestroyView()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        binding.mapView.onSaveInstanceState(outState)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        binding.mapView.onLowMemory()
     }
 
     private fun onChipClick(chip: Chip){

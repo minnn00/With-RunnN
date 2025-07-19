@@ -12,6 +12,7 @@ constraintlayout = "2.2.1"
 navigation = "2.9.1"
 recyclerview = "1.4.0"
 speedDial = "3.3.0"
+naver-maps = "3.22.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -26,7 +27,7 @@ navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fr
 navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigation" }
 androidx-recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
 speed-dial = { module = "com.leinardi.android:speed-dial", version.ref = "speedDial" }
-
+naver-maps = { module = "com.naver.maps:map-sdk", version.ref = "naver-maps" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
