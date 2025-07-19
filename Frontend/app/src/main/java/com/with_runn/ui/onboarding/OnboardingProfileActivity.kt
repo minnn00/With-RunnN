@@ -48,6 +48,13 @@ class OnboardingProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.saveButton.setOnClickListener {
+//            val intent = Intent(this, MainActivity::class.java)
+//            startActivity(intent)
+            //todo: 유저 정보 저장, mainActivity 시작 로직 구현
+            finish()
+        }
+
         binding.backButton.setOnClickListener {
             finish()
         }

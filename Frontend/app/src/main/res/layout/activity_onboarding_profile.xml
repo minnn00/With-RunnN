@@ -39,6 +39,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="66dp"
@@ -48,14 +49,14 @@
 
         <TextView
             android:id="@+id/entry_title1"
+            style="@style/Text_Pretendard_Medium_14"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="18dp"
             android:layout_marginTop="24dp"
             android:layout_marginRight="18dp"
             android:layout_marginBottom="8dp"
-            android:text="기본 정보"
-            style="@style/Text_Pretendard_Medium_14"/>
+            android:text="기본 정보" />
 
         <LinearLayout
             android:id="@+id/entry_default"
@@ -99,9 +100,9 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="18dp"
             android:layout_marginBottom="8dp"
-            android:text="성격"
             android:fontFamily="@font/pretendard_medium"
-            android:textSize="14sp"/>
+            android:text="성격"
+            android:textSize="14sp" />
 
         <LinearLayout
             android:id="@+id/entry_personality"
@@ -115,14 +116,15 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp">
+
             <TextView
                 android:id="@+id/entry_text2"
+                style="@style/Text_Pretendard_Medium_14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="선택"
-                style="@style/Text_Pretendard_Medium_14"
-                android:textColor="@color/gray_400"/>
+                android:textColor="@color/gray_400" />
 
             <ImageView
                 android:id="@+id/entry_icon2"
@@ -142,8 +144,8 @@
             android:layout_marginTop="20dp"
             android:layout_marginRight="18dp"
             android:layout_marginBottom="8dp"
-            android:text="산책 스타일"
             android:fontFamily="@font/pretendard_medium"
+            android:text="산책 스타일"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -158,14 +160,15 @@
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp">
+
             <TextView
                 android:id="@+id/entry_text3"
+                style="@style/Text_Pretendard_Medium_14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="선택"
-                style="@style/Text_Pretendard_Medium_14"
-                android:textColor="@color/gray_400"/>
+                android:textColor="@color/gray_400" />
 
             <ImageView
                 android:id="@+id/entry_icon3"
@@ -178,5 +181,22 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <android.widget.Button
+        android:id="@+id/save_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginHorizontal="18dp"
+        android:background="@drawable/bg_button_main"
+        android:text="시작하기"
+        android:fontFamily="@font/pretendard_medium"
+        android:textSize="16sp"
+        android:textColor="@color/gray_050"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:shadowColor="@null"
+        android:stateListAnimator="@null"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
