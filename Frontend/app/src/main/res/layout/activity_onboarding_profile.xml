@@ -57,7 +57,7 @@
 
         <LinearLayout
             android:id="@+id/entry_default"
-            android:layout_width="377dp"
+            android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
@@ -103,7 +103,7 @@
 
         <LinearLayout
             android:id="@+id/entry_personality"
-            android:layout_width="377dp"
+            android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
@@ -146,7 +146,7 @@
 
         <LinearLayout
             android:id="@+id/entry_walkingStyle"
-            android:layout_width="377dp"
+            android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginStart="18dp"
             android:layout_marginEnd="18dp"
