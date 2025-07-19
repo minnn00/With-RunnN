@@ -190,7 +190,8 @@ class OnboardingProfileDefultActivity : AppCompatActivity() {
             }
             else{
                 binding.entryName.background = ContextCompat.getDrawable(this,R.drawable.bg_entry_inactive)
-                binding.errorImg.visibility = View.INVISIBLE
+                binding.errorImg.visibility = View.GONE
+                binding.nameLog.visibility = View.INVISIBLE
             }
         }
 
