@@ -68,6 +68,35 @@ class OnboardingProfilePersonalityActivity : AppCompatActivity() {
             chipGroup.addView(chip)
         }
 
+        binding.generateButton.setOnClickListener {
+            val inputText = binding.inputEditText.text.toString()
+            val chip = inflater.inflate(R.layout.view_onboarding_chip, chipGroup, false) as Chip
+            val id = View.generateViewId()
+            idOfChips.add(id)
+            chip.id = id
+            chip.text = inputText
+            chip.isCheckable = true
+            chip.isClickable = true
+            chip.setOnClickListener {
+                Toast.makeText(this, "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
+                if (chip.id == idOfChips[18]) {
+                    if (chip.isChecked) {
+                        binding.customLayout.visibility = View.VISIBLE
+                    } else {
+                        binding.customLayout.visibility = View.INVISIBLE
+                    }
+                }
+            }
+            chipGroup.addView(chip)
+            binding.inputEditText.text.clear()
+        }
+
+        binding.saveButton.setOnClickListener {
+            Toast.makeText(this, "저장 완료!", Toast.LENGTH_SHORT).show()
+            //todo: 저장 로직 구현
+            finish()
+        }
+
         binding.backButton.setOnClickListener {
             finish()
         }
