@@ -5,7 +5,9 @@ import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.google.android.material.chip.Chip
@@ -26,6 +28,7 @@ class OnboardingProfilePersonalityActivity : AppCompatActivity() {
         "독립적", "조용함", "장난꾸러기",
         "방어적", "스킨십 좋아함",
         "스킨십 싫어함", "직접 입력")
+    private var idOfChips: MutableList<Int> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,9 +49,22 @@ class OnboardingProfilePersonalityActivity : AppCompatActivity() {
         val inflater = LayoutInflater.from(ContextThemeWrapper(this, R.style.onboarding_chip))
         for (item in items) {
             val chip = inflater.inflate(R.layout.view_onboarding_chip, chipGroup, false) as Chip
+            val id = View.generateViewId()
+            idOfChips.add(id)
+            chip.id = id
             chip.text = item
             chip.isCheckable = true
             chip.isClickable = true
+            chip.setOnClickListener {
+                Toast.makeText(this, "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
+                if (chip.id == idOfChips[18]) {
+                    if (chip.isChecked) {
+                        binding.customLayout.visibility = View.VISIBLE
+                    } else {
+                        binding.customLayout.visibility = View.INVISIBLE
+                    }
+                }
+            }
             chipGroup.addView(chip)
         }
 

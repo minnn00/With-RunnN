@@ -28,6 +28,7 @@
         <activity android:name=".ui.onboarding.OnboardingProfileDefultActivity" />
         <activity android:name=".ui.onboarding.OnboardingProfilePersonalityActivity" />
         <activity android:name=".ui.onboarding.OnboardingProfileWalkingStyleActivity" />
+        <activity android:name=".ui.mypage.MypageFollowersActivity" />
     </application>
 
 </manifest>
