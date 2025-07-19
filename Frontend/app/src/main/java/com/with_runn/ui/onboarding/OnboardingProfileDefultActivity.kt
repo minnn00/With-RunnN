@@ -215,5 +215,8 @@ class OnboardingProfileDefultActivity : AppCompatActivity() {
                 breed_savable = true
             }
         }
+        binding.backButton.setOnClickListener {
+            finish()
+        }
     }
 }

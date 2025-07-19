@@ -50,6 +50,9 @@ class OnboardingProfileWalkingStyleActivity : AppCompatActivity() {
             chip.isClickable = true
             chipGroup.addView(chip)
         }
+        binding.backButton.setOnClickListener {
+            finish()
+        }
 
     }
 }

@@ -52,5 +52,8 @@ class OnboardingProfilePersonalityActivity : AppCompatActivity() {
             chipGroup.addView(chip)
         }
 
+        binding.backButton.setOnClickListener {
+            finish()
+        }
     }
 }

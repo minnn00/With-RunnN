@@ -48,5 +48,8 @@ class OnboardingProfileActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        binding.backButton.setOnClickListener {
+            finish()
+        }
     }
 }
