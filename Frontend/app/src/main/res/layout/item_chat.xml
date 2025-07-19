@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="82dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="?android:attr/selectableItemBackground"
+    android:paddingStart="18dp"
+    android:paddingEnd="18dp">
+
+    <!-- 프로필 이미지 -->
+    <FrameLayout
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:id="@+id/profile_image"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/circle_background_white"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:contentDescription="프로필 이미지" />
+
+        <!-- 두 번째 프로필 이미지 (겹친 이미지용) -->
+        <ImageView
+            android:id="@+id/profile_image_2"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/circle_background_white"
+            android:scaleType="centerCrop"
+            android:clipToOutline="true"
+            android:visibility="gone"
+            android:contentDescription="두 번째 프로필 이미지" />
+
+    </FrameLayout>
+
+    <!-- 채팅 정보 -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- 이름과 시간 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:id="@+id/chat_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="조니"
+                android:textColor="#212124"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/pretendard_medium" />
+
+            <TextView
+                android:id="@+id/chat_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="14:20"
+                android:textColor="#808080"
+                android:textSize="12sp"
+                android:fontFamily="@font/pretendard_regular" />
+
+        </LinearLayout>
+
+        <!-- 마지막 메시지 -->
+        <TextView
+            android:id="@+id/last_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="좋아요! 그럼 6시에 연남에서 보는 거 어떠세요?"
+            android:textColor="#808080"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/pretendard_regular" />
+
+    </LinearLayout>
+
+    <!-- 알림 배지 -->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp">
+
+        <View
+            android:id="@+id/notification_badge"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:background="@drawable/circle_background_red"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/notification_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="3"
+            android:textColor="#FFFFFF"
+            android:textSize="10sp"
+            android:fontFamily="@font/pretendard_medium"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+</LinearLayout> 

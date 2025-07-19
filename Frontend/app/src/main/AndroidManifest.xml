@@ -21,6 +21,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name=".FriendDetailActivity"
+            android:exported="false" />
+            
+        <activity
+            android:name=".AllFriendsActivity"
+            android:exported="false" />
+            
+        <activity
+            android:name=".ChatActivity"
+            android:exported="false" />
+            
+
     </application>
 
 </manifest>

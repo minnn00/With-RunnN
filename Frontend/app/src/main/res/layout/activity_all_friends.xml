@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="66dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="#FFFFFF"
@@ -78,7 +78,36 @@
         android:background="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/top_bar">
 
-        <!-- 추천 친구 탭 -->
+        <!-- 추천 친구 탭 (비활성) -->
+        <LinearLayout
+            android:id="@+id/recommended_tab"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?android:attr/selectableItemBackground">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="추천 친구"
+                android:textColor="#A4A4A4"
+                android:textSize="16sp"
+                android:gravity="center" />
+
+            <!-- 선택 표시선 (숨김) -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="2dp"
+                android:background="@android:color/transparent" />
+
+        </LinearLayout>
+
+        <!-- 모두 보기 탭 (활성) -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -89,7 +118,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="추천 친구"
+                android:text="모두 보기"
                 android:textColor="#121212"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -104,93 +133,69 @@
 
         </LinearLayout>
 
-        <!-- 모두 보기 탭 -->
-        <LinearLayout
-            android:id="@+id/all_friends_tab"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="모두 보기"
-                android:textColor="#A4A4A4"
-                android:textSize="16sp"
-                android:gravity="center" />
-
-            <!-- 선택 표시선 (숨김) -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginTop="2dp"
-                android:background="@android:color/transparent" />
-
-        </LinearLayout>
-
     </LinearLayout>
 
-    <!-- 카드 컨테이너 -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/card_viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="20dp"
+    <!-- 검색바 -->
+    <LinearLayout
+        android:id="@+id/search_container"
+        android:layout_width="0dp"
+        android:layout_height="46dp"
         android:layout_marginStart="18dp"
         android:layout_marginEnd="18dp"
-        android:layout_marginBottom="50dp"
-        app:layout_constraintTop_toBottomOf="@id/tab_container"
-        app:layout_constraintBottom_toTopOf="@id/pagination_container" />
-
-    <!-- 페이지네이션 인디케이터 -->
-    <LinearLayout
-        android:id="@+id/pagination_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        android:gravity="center_vertical"
+        android:background="@drawable/search_background"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/tab_container"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:id="@+id/indicator_0"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_indicator_active"
-            android:contentDescription="페이지 1" />
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_search"
+            android:contentDescription="검색" />
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="12dp"
+            android:hint="친구의 이름이나 성격을 검색하세요"
+            android:textColor="#4F4F4F"
+            android:textColorHint="#808080"
+            android:textSize="14sp"
+            android:background="@null"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:maxLines="1" />
 
         <ImageView
-            android:id="@+id/indicator_1"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_indicator_inactive"
-            android:contentDescription="페이지 2" />
-
-        <ImageView
-            android:id="@+id/indicator_2"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_indicator_inactive"
-            android:contentDescription="페이지 3" />
-
-        <ImageView
-            android:id="@+id/indicator_3"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:src="@drawable/ic_indicator_inactive"
-            android:contentDescription="페이지 4" />
+            android:id="@+id/clear_search_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_cancle"
+            android:contentDescription="검색 지우기"
+            android:visibility="gone" />
 
     </LinearLayout>
+
+    <!-- 강아지 카드 그리드 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/friends_grid"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintTop_toBottomOf="@id/search_container"
+        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- 하단 네비게이션 바 -->
     <LinearLayout
@@ -240,7 +245,7 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:src="@drawable/ic_course"
+                android:src="@drawable/ic_route"
                 android:contentDescription="산책코스"
                 android:tint="#CFCFCF" />
 
@@ -290,7 +295,7 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:src="@drawable/ic_mypage"
+                android:src="@drawable/ic_person"
                 android:contentDescription="마이페이지"
                 android:tint="#CFCFCF" />
 
