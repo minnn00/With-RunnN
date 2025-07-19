@@ -61,6 +61,11 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
     implementation(libs.speed.dial)
     implementation(libs.naver.maps)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
