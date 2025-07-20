@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <!-- 카드 컨테이너 (전체 채움) -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="0dp"
+        app:cardUseCompatPadding="true">
+
+        <!-- 강아지 이미지 -->
+        <ImageView
+            android:id="@+id/dog_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/jonny"
+            android:scaleType="centerCrop"
+            android:contentDescription="조니 강아지" />
+
+        <!-- 태그 칩들 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="14dp"
+            android:orientation="horizontal">
+
+            <!-- 첫 번째 태그 -->
+            <TextView
+                android:id="@+id/tag1"
+                android:layout_width="wrap_content"
+                android:layout_height="27dp"
+                android:layout_marginEnd="8dp"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:text="#에너지 폭발"
+                android:textColor="#FEFEFE"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:background="@drawable/tag_background" />
+
+            <!-- 두 번째 태그 -->
+            <TextView
+                android:id="@+id/tag2"
+                android:layout_width="wrap_content"
+                android:layout_height="27dp"
+                android:paddingStart="9dp"
+                android:paddingEnd="9dp"
+                android:text="#강아지 친구 찾기형"
+                android:textColor="#FEFEFE"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:background="@drawable/tag_background" />
+
+        </LinearLayout>
+
+        <!-- 텍스트 정보 -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginBottom="24dp"
+            android:layout_marginStart="24dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dog_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="#에너지 폭발"
+                android:textColor="#FEFEFE"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dog_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="조니"
+                android:textColor="#FEFEFE"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</FrameLayout> 
