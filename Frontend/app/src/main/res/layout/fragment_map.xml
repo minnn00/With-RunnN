@@ -81,5 +81,4 @@
     <include
         android:id="@+id/view_home_indicator"
         layout="@layout/view_home_indicator" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

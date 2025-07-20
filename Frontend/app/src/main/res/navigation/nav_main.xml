@@ -6,6 +6,12 @@
     app:startDestination="@id/mapFragment">
 
     <fragment
+        android:id="@+id/myPageFragment"
+        android:name="com.with_runn.MyPageFragment"
+        android:label="My Page"
+        tools:layout="@layout/fragment_mypage" />
+
+    <fragment
         android:id="@+id/mapFragment"
         android:name="com.with_runn.MapFragment"
         android:label="fragment_map"

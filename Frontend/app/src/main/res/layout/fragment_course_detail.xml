@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 코스 정보 (이미지 + 텍스트 + 해시태그) -->
+        <LinearLayout
+            android:layout_width="232dp"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:id="@+id/image_course"
+                android:layout_width="64.5dp"
+                android:layout_height="64dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/dog"
+                android:layout_marginEnd="12dp" />
+
+            <LinearLayout
+                android:layout_width="150dp"
+                android:layout_height="47dp"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginTop="10dp"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/text_title"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="우리 동네 강아지 모임"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/pretendard_semibold"
+                    android:textColor="@color/gray_950"
+                    android:layout_marginBottom="4dp" />
+
+                <LinearLayout
+                    android:id="@+id/layout_tags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="2dp">
+
+                    <TextView
+                        android:layout_width="62dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_tag"
+                        android:text="#이웃사촌"
+                        android:paddingStart="6dp"
+                        android:layout_marginEnd="10dp"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:textColor="@color/gray_600" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_tag"
+                        android:text="#같이산책해요"
+                        android:paddingStart="6dp"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:textColor="@color/gray_600" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 산책코스 소개 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="산책코스 소개"
+            android:textSize="12sp"
+            android:fontFamily="@font/pretendard_medium"
+            android:textColor="@color/gray_500"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:id="@+id/text_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="금요일에 시간 어때요 ~ 🎵\n우리 동네에 사는 댕댕이들 모두 경의선숲길에서 헤쳐모여!"
+            android:textSize="14sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/gray_950"
+            android:layout_marginBottom="20dp" />
+
+        <!-- 아이콘 버튼 4개 -->
+        <LinearLayout
+            android:id="@+id/btnScrap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="4"
+            android:layout_marginTop="1dp">
+
+            <!-- 버튼 1: 스크랩 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_action_box"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/bookmark" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="스크랩"
+                        android:textColor="@color/gray_800"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:layout_marginTop="6dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 버튼 2: 좋아요 -->
+            <LinearLayout
+                android:id="@+id/btnLike"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_action_box"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">>
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/like" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="좋아요"
+                        android:textColor="@color/gray_800"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:layout_marginTop="6dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 버튼 3: 공유하기 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_action_box"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/share" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="공유하기"
+                        android:textColor="@color/gray_800"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:layout_marginTop="6dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- 버튼 4: 소요 시간 -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center">
+
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_action_box"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/text_time_value"
+                        android:layout_width="39.75dp"
+                        android:layout_height="wrap_content"
+                        android:text="40M"
+                        android:textColor="@color/blue_500"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:translationY="4dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="소요 시간"
+                        android:textColor="@color/gray_800"
+                        android:textSize="12sp"
+                        android:fontFamily="@font/pretendard_regular"
+                        android:layout_marginTop="11dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
