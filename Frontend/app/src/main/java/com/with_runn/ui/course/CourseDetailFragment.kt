@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.with_runn.databinding.FragmentCourseDetailBinding
 import android.widget.TextView
 import android.util.Log
+import com.with_runn.R
 
 
 class CourseDetailFragment : Fragment() {

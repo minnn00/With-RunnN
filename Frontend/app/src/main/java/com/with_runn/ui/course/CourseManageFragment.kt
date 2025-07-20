@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.with_runn.PinItem
+import com.with_runn.PinListAdapter
 import com.with_runn.databinding.FragmentCourseManageBinding
 import com.with_runn.course_edit.PinItem
 import com.with_runn.course_edit.PinListAdapter

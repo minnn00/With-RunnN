@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,9 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentHotMoreBinding
-import com.with_runn.WalkCourseAdapter
-import com.with_runn.WalkCourse
-import androidx.navigation.fragment.findNavController
+import com.with_runn.R
 
 class HotMoreFragment : Fragment() {
 

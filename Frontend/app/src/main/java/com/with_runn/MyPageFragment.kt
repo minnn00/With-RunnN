@@ -9,6 +9,9 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentMypageBinding
+import com.with_runn.ui.course.CourseStorage
+import com.with_runn.ui.course.TabType
+import com.with_runn.ui.course.WalkCourse
 
 class MyPageFragment : Fragment() {
 
