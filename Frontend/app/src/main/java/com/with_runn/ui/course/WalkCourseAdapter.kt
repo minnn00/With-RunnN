@@ -1,10 +1,9 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.databinding.ItemWalkCourseMoreBinding
-import com.with_runn.WalkCourse
 
 class WalkCourseAdapter(
     private var items: List<WalkCourse>,  // var로 선언

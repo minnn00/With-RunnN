@@ -1,10 +1,11 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.with_runn.R
 import com.with_runn.databinding.FragmentCourseMapBinding
 
 class MapContainerFragment : Fragment() {

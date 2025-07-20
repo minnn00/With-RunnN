@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.os.Bundle
 import android.view.LayoutInflater

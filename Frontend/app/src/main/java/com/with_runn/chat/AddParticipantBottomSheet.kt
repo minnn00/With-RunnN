@@ -1,4 +1,4 @@
-package com.with_runn.ui.chat
+package com.with_runn.chat
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.with_runn.ui.friend.Friend
-import com.with_runn.ui.friend.FriendAddAdapter
+import com.with_runn.friend.Friend
+import com.with_runn.friend.FriendAddAdapter
 import com.with_runn.R
 
 class AddParticipantBottomSheet : BottomSheetDialogFragment() {

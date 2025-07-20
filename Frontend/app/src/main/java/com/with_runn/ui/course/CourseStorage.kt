@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 object CourseStorage {
     val scrapList = mutableListOf<WalkCourse>()  // 스크랩한 코스 목록

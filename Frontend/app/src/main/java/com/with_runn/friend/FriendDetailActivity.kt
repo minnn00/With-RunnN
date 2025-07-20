@@ -1,4 +1,4 @@
-package com.with_runn.ui.friend
+package com.with_runn.friend
 
 import android.content.Intent
 import android.os.Bundle

@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 data class PlaceItem(
     val type: String,

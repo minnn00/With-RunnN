@@ -1,4 +1,4 @@
-package com.with_runn.ui.friend
+package com.with_runn.friend
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.WindowCompat
 import com.with_runn.R
-import com.with_runn.ui.chat.ChatActivity
+import com.with_runn.chat.ChatActivity
 
 class AllFriendsActivity : AppCompatActivity() {
     

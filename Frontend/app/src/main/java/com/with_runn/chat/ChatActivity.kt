@@ -1,4 +1,4 @@
-package com.with_runn.ui.chat
+package com.with_runn.chat
 
 import android.os.Bundle
 import android.widget.ImageView

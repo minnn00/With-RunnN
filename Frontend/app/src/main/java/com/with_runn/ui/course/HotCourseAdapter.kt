@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.course
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,8 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.with_runn.R
 
 data class HotCourse(
     val imageRes: Int,
