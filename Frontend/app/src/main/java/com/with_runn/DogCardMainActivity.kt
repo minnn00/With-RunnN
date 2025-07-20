@@ -61,14 +61,14 @@ class DogCardMainActivity : AppCompatActivity() {
         )
         
         dogCardAdapter = DogCardAdapter(dogCards)
-        binding.cardViewpager.adapter = dogCardAdapter
+        //binding.cardViewpager.adapter = dogCardAdapter
         
         // 페이지 변경 리스너 추가
-        binding.cardViewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                updatePaginationIndicators(position)
-            }
-        })
+//        binding.cardViewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+//            override fun onPageSelected(position: Int) {
+//                updatePaginationIndicators(position)
+//            }
+//        })
 
         // 카드 클릭 리스너 추가
         dogCardAdapter.setOnItemClickListener { position ->
@@ -147,9 +147,9 @@ class DogCardMainActivity : AppCompatActivity() {
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
         
-        // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
-        window.insetsController?.let { controller ->
-            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
+//        // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
+//        window.insetsController?.let { controller ->
+//            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+//        }
     }
 } 
