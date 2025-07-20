@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:padding="12dp"
     android:layout_marginBottom="12dp"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="@color/white">
 
     <!-- ❌ 삭제 아이콘 (삭제 모드일 때만 보이게 제어됨) -->
     <ImageView
