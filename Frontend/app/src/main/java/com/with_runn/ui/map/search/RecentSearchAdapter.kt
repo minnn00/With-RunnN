@@ -26,9 +26,9 @@ class RecentSearchAdapter(
     ) {
         val item = getItem(position)
         holder.binding.apply{
-            ItemRecentSearchBinding.recentSearchText.text = item
-            ItemRecentSearchBinding.recentSearchText.setOnClickListener { onClick(item) }
-            ItemRecentSearchBinding.recentSearchDelete.setOnClickListener {
+            recentSearchText.text = item
+            recentSearchText.setOnClickListener { onClick(item) }
+            recentSearchDelete.setOnClickListener {
                 val pos = holder.bindingAdapterPosition
 
                 if(pos != RecyclerView.NO_POSITION){

@@ -30,7 +30,7 @@
         tools:layout="@layout/fragment_search"/>
     <fragment
         android:id="@+id/courseManageFragment"
-        android:name="com.with_runn.ui.course.CourseManageFragment"
+        android:name="com.with_runn.ui.map.CourseManageFragment"
         android:label="CourseManageFragment"
         tools:layout="@layout/fragment_course_manage"/>
 </navigation>
