@@ -6,11 +6,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import androidx.constraintlayout.widget.ConstraintLayout
 
 class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     
     private var chatRooms: List<ChatRoom> = listOf()
     private var onItemClickListener: ((ChatRoom) -> Unit)? = null
+    private var onDeleteClickListener: ((ChatRoom, Int) -> Unit)? = null
+    private var swipedPosition = -1
     
     fun updateChatRooms(newChatRooms: List<ChatRoom>) {
         chatRooms = newChatRooms
@@ -21,6 +24,28 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
         onItemClickListener = listener
     }
     
+    fun setOnDeleteClickListener(listener: (ChatRoom, Int) -> Unit) {
+        onDeleteClickListener = listener
+    }
+    
+    fun showDeleteButton(position: Int) {
+        val previousSwipedPosition = swipedPosition
+        swipedPosition = position
+        
+        if (previousSwipedPosition != -1 && previousSwipedPosition != position) {
+            notifyItemChanged(previousSwipedPosition)
+        }
+        notifyItemChanged(position)
+    }
+    
+    fun hideDeleteButton() {
+        if (swipedPosition != -1) {
+            val position = swipedPosition
+            swipedPosition = -1
+            notifyItemChanged(position)
+        }
+    }
+    
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_chat, parent, false)
@@ -28,7 +53,7 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     }
     
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
-        holder.bind(chatRooms[position])
+        holder.bind(chatRooms[position], position)
     }
     
     override fun getItemCount(): Int = chatRooms.size
@@ -41,8 +66,11 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
         private val lastMessage: TextView = itemView.findViewById(R.id.last_message)
         private val notificationBadge: View = itemView.findViewById(R.id.notification_badge)
         private val notificationCount: TextView = itemView.findViewById(R.id.notification_count)
+        private val deleteButton: TextView = itemView.findViewById(R.id.delete_button)
+        private val deleteBackground: View = itemView.findViewById(R.id.delete_background)
+        private val chatItemContainer: ConstraintLayout = itemView.findViewById(R.id.chat_item_container)
         
-        fun bind(chatRoom: ChatRoom) {
+        fun bind(chatRoom: ChatRoom, position: Int) {
             chatName.text = chatRoom.name
             chatTime.text = chatRoom.time
             lastMessage.text = chatRoom.lastMessage
@@ -70,10 +98,30 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
                 notificationCount.visibility = View.GONE
             }
             
+            // 스와이프 상태에 따라 삭제 버튼 표시/숨김
+            if (position == swipedPosition) {
+                deleteButton.visibility = View.VISIBLE
+                deleteBackground.visibility = View.VISIBLE
+            } else {
+                deleteButton.visibility = View.GONE
+                deleteBackground.visibility = View.GONE
+            }
+            
             // 클릭 리스너 설정
-            itemView.setOnClickListener {
+            chatItemContainer.setOnClickListener {
                 onItemClickListener?.invoke(chatRoom)
             }
+            
+            // 삭제 버튼 클릭 리스너
+            deleteButton.setOnClickListener {
+                onDeleteClickListener?.invoke(chatRoom, position)
+            }
+        }
+        
+        fun getChatRoom(): ChatRoom? {
+            return if (adapterPosition != RecyclerView.NO_POSITION) {
+                chatRooms[adapterPosition]
+            } else null
         }
     }
 } 

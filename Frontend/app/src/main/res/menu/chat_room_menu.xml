@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_add_participant"
+        android:title="대화 상대 추가" />
+    <item
+        android:id="@+id/action_set_chat_name"
+        android:title="채팅방 이름 설정" />
+</menu> 

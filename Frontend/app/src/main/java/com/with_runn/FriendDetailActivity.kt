@@ -143,13 +143,14 @@ class FriendDetailActivity : AppCompatActivity() {
         // WindowCompat를 사용한 현대적인 시스템 UI 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
         
-        // 상태바와 네비게이션바를 투명하게 설정
-        window.statusBarColor = android.graphics.Color.TRANSPARENT
-        window.navigationBarColor = android.graphics.Color.TRANSPARENT
-        
         // 시스템 UI 컨트롤러 설정
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
+        
+        // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
+        window.insetsController?.let { controller ->
+            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
     }
 } 
