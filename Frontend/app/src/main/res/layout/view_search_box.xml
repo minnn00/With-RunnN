@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_box"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/bg_search_box"
+    android:paddingVertical="11dp"
+    android:paddingHorizontal="16dp"
+    android:elevation="6dp"
+    android:gravity="center_vertical"
+    android:clickable="true"
+    android:focusable="true"
+    >
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_search"/>
+
+    <TextView
+        style="@style/Text_Pretendard_Regular_12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:textSize="15sp"
+        android:text="@string/hint_searchbox_map"
+        android:textColor="@color/gray_500"/>
+
+
+</LinearLayout>

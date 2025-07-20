@@ -1,3 +1,18 @@
 <resources>
     <string name="app_name">With_Runn</string>
+    <string name="my_page">마이페이지</string>
+    <string name="map">지도</string>
+    <string name="course">산책코스</string>
+    <string name="friend">친구</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hint_searchbox_map">장소를 입력하세요</string>
+    <string name="backButton">뒤로가기</string>
+    <string name="recent_search">최근 검색</string>
+    <string name="exclude_closed">영업종료 제외</string>
+    <string name="place_service_available">영업</string>
+    <string name="place_service_inavailable">영업 종료</string>
+    <string name="park_able">주차 가능</string>
+    <string name="park_inable">주차 불가능</string>
+    <string name="connect_pin">핀 연결</string>
 </resources>
