@@ -33,7 +33,7 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
 
         fun bind(friend: Friend) {
             nameText.text = friend.name
-            profileImage.setImageResource(friend.profileImageRes)
+            profileImage.setImageResource(friend.imageResId)
             
             checkbox.isChecked = selectedFriends.contains(friend)
             
@@ -49,7 +49,7 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
 
     private class FriendDiffCallback : DiffUtil.ItemCallback<Friend>() {
         override fun areItemsTheSame(oldItem: Friend, newItem: Friend): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.name == newItem.name
         }
 
         override fun areContentsTheSame(oldItem: Friend, newItem: Friend): Boolean {
@@ -58,9 +58,4 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
     }
 }
 
-data class Friend(
-    val id: Int,
-    val name: String,
-    val profileImageRes: Int,
-    val isSelected: Boolean = false
-) 
+ 

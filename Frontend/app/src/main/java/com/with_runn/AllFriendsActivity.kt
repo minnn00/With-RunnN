@@ -129,8 +129,8 @@ class AllFriendsActivity : AppCompatActivity() {
     private fun setupTabClickListeners() {
         // 추천 친구 탭 클릭 이벤트
         findViewById<LinearLayout>(R.id.recommended_tab).setOnClickListener {
-            // MainActivity로 이동
-            val intent = Intent(this, MainActivity::class.java)
+            // DogCardMainActivity로 이동
+            val intent = Intent(this, DogCardMainActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
@@ -161,10 +161,4 @@ class AllFriendsActivity : AppCompatActivity() {
     }
 }
 
-// 데이터 클래스
-data class Friend(
-    val name: String,
-    val personalityTag: String,
-    val personalityTags: List<String>,
-    val imageResId: Int
-) 
+ 

@@ -13,7 +13,7 @@ import com.with_runn.adapter.DogCardAdapter
 import com.with_runn.databinding.ActivityMainBinding
 import android.content.Intent
 
-class MainActivity : AppCompatActivity() {
+class DogCardMainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var dogCardAdapter: DogCardAdapter
 
@@ -152,4 +152,4 @@ class MainActivity : AppCompatActivity() {
             controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
-}
+} 

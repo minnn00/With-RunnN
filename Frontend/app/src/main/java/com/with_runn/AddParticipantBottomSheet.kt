@@ -51,12 +51,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
 
     private fun loadFriends() {
         val friends = listOf(
-            Friend(1, "마루", R.drawable.ellipse_50, true),
-            Friend(2, "조이", R.drawable.ellipse_51),
-            Friend(3, "위니", R.drawable.ellipse_52),
-            Friend(4, "구리", R.drawable.ellipse_50),
-            Friend(5, "룽지", R.drawable.ellipse_51),
-            Friend(6, "솜이", R.drawable.ellipse_52)
+            Friend("마루", imageResId = R.drawable.ellipse_50, isSelected = true),
+            Friend("조이", imageResId = R.drawable.ellipse_51),
+            Friend("위니", imageResId = R.drawable.ellipse_52),
+            Friend("구리", imageResId = R.drawable.ellipse_50),
+            Friend("룽지", imageResId = R.drawable.ellipse_51),
+            Friend("솜이", imageResId = R.drawable.ellipse_52)
         )
         friendAdapter.submitList(friends)
     }
