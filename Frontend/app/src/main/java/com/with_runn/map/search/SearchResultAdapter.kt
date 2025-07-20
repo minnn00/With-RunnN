@@ -1,11 +1,13 @@
-package com.with_runn
+package com.with_runn.map.search
 
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.with_runn.R
 import com.with_runn.databinding.ItemSearchResultBinding
+import com.with_runn.formatToHHMM
 
 data class SearchResultItem(
     val name: String,
@@ -52,13 +54,15 @@ class SearchResultAdapter(
                     placeParkState.apply{
                         text = root.context.getString(R.string.park_able)
                         setTextColor(root.context.getColor(R.color.blue_500))
-                        placeParkState.backgroundTintList = ColorStateList.valueOf(root.context.getColor(R.color.blue_050))
+                        placeParkState.backgroundTintList = ColorStateList.valueOf(root.context.getColor(
+                            R.color.blue_050))
                     }
                 }else{
                     placeParkState.apply{
                         text = root.context.getString(R.string.park_inable)
                         setTextColor(root.context.getColor(R.color.red_500))
-                        placeParkState.backgroundTintList = ColorStateList.valueOf(root.context.getColor(R.color.red_050))
+                        placeParkState.backgroundTintList = ColorStateList.valueOf(root.context.getColor(
+                            R.color.red_050))
                     }
                 }
 

@@ -1,9 +1,8 @@
-package com.with_runn
+package com.with_runn.course_edit
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter

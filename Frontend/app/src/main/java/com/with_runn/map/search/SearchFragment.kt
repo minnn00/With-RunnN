@@ -1,11 +1,11 @@
-package com.with_runn
+package com.with_runn.map.search
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentSearchBinding
@@ -15,8 +15,8 @@ class SearchFragment : Fragment() {
     private val binding get() = _binding!!;
 
     val recentSearchAdapter = RecentSearchAdapter(
-        onClick = {keyword -> onClickItem(keyword)},
-        onDelete = {pos -> onDeleteItem(pos)}
+        onClick = { keyword -> onClickItem(keyword) },
+        onDelete = { pos -> onDeleteItem(pos) }
     )
 
     val sampleData = listOf("홍대입구 산책로", "홍대 산책코스", "연남 산책코스", "연남동", "서울 산책");

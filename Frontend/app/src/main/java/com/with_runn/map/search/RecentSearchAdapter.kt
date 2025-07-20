@@ -1,7 +1,6 @@
-package com.with_runn
+package com.with_runn.map.search
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -27,9 +26,9 @@ class RecentSearchAdapter(
     ) {
         val item = getItem(position)
         holder.binding.apply{
-            recentSearchText.text = item
-            recentSearchText.setOnClickListener { onClick(item) }
-            recentSearchDelete.setOnClickListener {
+            ItemRecentSearchBinding.recentSearchText.text = item
+            ItemRecentSearchBinding.recentSearchText.setOnClickListener { onClick(item) }
+            ItemRecentSearchBinding.recentSearchDelete.setOnClickListener {
                 val pos = holder.bindingAdapterPosition
 
                 if(pos != RecyclerView.NO_POSITION){

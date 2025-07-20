@@ -1,12 +1,11 @@
-package com.with_runn
+package com.with_runn.map.search
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentSearchResultBinding
 
@@ -30,7 +29,7 @@ class SearchResultFragment : Fragment() {
     )
     private val searchResultAdapter = SearchResultAdapter(
         sampleData,
-        onItemClick = {item -> onClickItem(item)}
+        onItemClick = { item -> onClickItem(item) }
     )
 
     override fun onCreateView(

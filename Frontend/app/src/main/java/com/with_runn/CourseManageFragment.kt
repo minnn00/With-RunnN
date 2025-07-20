@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.with_runn.databinding.FragmentCourseManageBinding
+import com.with_runn.course_edit.PinItem
+import com.with_runn.course_edit.PinListAdapter
 
 class CourseManageFragment : Fragment() {
 
