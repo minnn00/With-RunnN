@@ -1,4 +1,4 @@
-package com.with_runn.adapter
+package com.with_runn.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.View

@@ -1,4 +1,4 @@
-package com.with_runn.map
+package com.with_runn.ui.map
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -15,7 +15,7 @@ import com.google.android.material.chip.Chip
 import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.naver.maps.map.NaverMap
 import com.with_runn.R
-import com.with_runn.map.search.SearchResultFragment
+import com.with_runn.ui.map.search.SearchResultFragment
 import com.with_runn.databinding.FragmentMapBinding
 import com.with_runn.populateChips
 

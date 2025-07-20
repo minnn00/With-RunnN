@@ -1,5 +1,7 @@
-package com.with_runn.chat
+package com.with_runn.ui.chat
 
+import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +13,7 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import android.view.MotionEvent
+import android.view.WindowInsetsController
 import com.with_runn.R
 
 class ChatActivity : AppCompatActivity() {
@@ -61,7 +64,7 @@ class ChatActivity : AppCompatActivity() {
         chatAdapter.setOnItemClickListener { chatRoom ->
             if (chatRoom.name == "조니") {
                 // 조니 채팅방 클릭 시 ChatRoomActivity로 이동
-                val intent = android.content.Intent(this, ChatRoomActivity::class.java)
+                val intent = Intent(this, ChatRoomActivity::class.java)
                 startActivity(intent)
             } else {
                 Toast.makeText(this, "${chatRoom.name} 채팅방을 클릭했습니다", Toast.LENGTH_SHORT).show()
@@ -98,7 +101,7 @@ class ChatActivity : AppCompatActivity() {
             }
             
             override fun onChildDraw(
-                c: android.graphics.Canvas,
+                c: Canvas,
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder,
                 dX: Float,
@@ -348,7 +351,7 @@ class ChatActivity : AppCompatActivity() {
         
         // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
         window.insetsController?.let { controller ->
-            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 } 

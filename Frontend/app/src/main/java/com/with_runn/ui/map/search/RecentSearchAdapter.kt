@@ -1,4 +1,4 @@
-package com.with_runn.map.search
+package com.with_runn.ui.map.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

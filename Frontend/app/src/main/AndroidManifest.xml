@@ -28,19 +28,19 @@
         </activity>
 
         <activity
-            android:name=".friend.FriendDetailActivity"
+            android:name=".ui.friend.FriendDetailActivity"
             android:exported="false" />
 
         <activity
-            android:name=".friend.AllFriendsActivity"
+            android:name=".ui.friend.AllFriendsActivity"
             android:exported="false" />
 
         <activity
-            android:name=".chat.ChatActivity"
+            android:name=".ui.chat.ChatActivity"
             android:exported="false" />
 
         <activity
-            android:name=".chat.ChatRoomActivity"
+            android:name=".ui.chat.ChatRoomActivity"
             android:exported="false" />
 
         <activity android:name=".ui.onboarding.OnboardingActivity" />

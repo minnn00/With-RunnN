@@ -11,11 +11,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.with_runn.PinItem
-import com.with_runn.PinListAdapter
 import com.with_runn.databinding.FragmentCourseManageBinding
-import com.with_runn.course_edit.PinItem
-import com.with_runn.course_edit.PinListAdapter
+import com.with_runn.ui.course_edit.PinItem
+import com.with_runn.ui.course_edit.PinListAdapter
 
 class CourseManageFragment : Fragment() {
 

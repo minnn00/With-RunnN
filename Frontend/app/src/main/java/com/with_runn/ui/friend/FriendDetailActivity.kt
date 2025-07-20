@@ -1,10 +1,11 @@
-package com.with_runn.friend
+package com.with_runn.ui.friend
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowInsetsController
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.PopupWindow
@@ -147,7 +148,7 @@ class FriendDetailActivity : AppCompatActivity() {
         
         // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
         window.insetsController?.let { controller ->
-            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 } 

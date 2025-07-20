@@ -1,4 +1,4 @@
-package com.with_runn.friend
+package com.with_runn.ui.friend
 
 import android.os.Bundle
 import android.view.LayoutInflater

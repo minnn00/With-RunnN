@@ -1,4 +1,4 @@
-package com.with_runn.course_edit
+package com.with_runn.ui.course_edit
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

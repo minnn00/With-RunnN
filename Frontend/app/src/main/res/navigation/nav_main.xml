@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.with_runn.map.MapFragment"
+        android:name="com.with_runn.ui.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" >
         <action
@@ -25,7 +25,7 @@
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
-        android:name="com.with_runn.map.search.SearchFragment"
+        android:name="com.with_runn.ui.map.search.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/fragment_search"/>
     <fragment

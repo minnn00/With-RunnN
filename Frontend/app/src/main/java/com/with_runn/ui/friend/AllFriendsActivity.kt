@@ -1,10 +1,11 @@
-package com.with_runn.friend
+package com.with_runn.ui.friend
 
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.WindowInsetsController
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -13,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.WindowCompat
 import com.with_runn.R
-import com.with_runn.chat.ChatActivity
+import com.with_runn.ui.chat.ChatActivity
 
 class AllFriendsActivity : AppCompatActivity() {
     
@@ -156,7 +157,7 @@ class AllFriendsActivity : AppCompatActivity() {
         
         // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
         window.insetsController?.let { controller ->
-            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
     }
 }

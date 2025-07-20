@@ -1,4 +1,4 @@
-package com.with_runn.chat
+package com.with_runn.ui.chat
 
 import android.os.Bundle
 import android.view.LayoutInflater
