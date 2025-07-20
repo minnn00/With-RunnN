@@ -1,20 +1,23 @@
-package com.with_runn
+package com.with_runn.map
 
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
-import com.with_runn.databinding.FragmentMapBinding
-import android.view.MotionEvent
+import com.leinardi.android.speeddial.SpeedDialActionItem
 import com.naver.maps.map.NaverMap
-
+import com.with_runn.R
+import com.with_runn.map.search.SearchResultFragment
+import com.with_runn.databinding.FragmentMapBinding
+import com.with_runn.populateChips
 
 class MapFragment : Fragment() {
 
@@ -51,8 +54,8 @@ class MapFragment : Fragment() {
             inflater = layoutInflater,
             keywords = keywords,
             chipLayoutRes = R.layout.view_chip
-        ){
-            chip -> onChipClick(chip)
+        ) { chip ->
+            onChipClick(chip)
         }
 
         setListeners()
@@ -211,14 +214,14 @@ class MapFragment : Fragment() {
         id: Int,
         icon: Int,
         label: String
-    ): com.leinardi.android.speeddial.SpeedDialActionItem{
-        return com.leinardi.android.speeddial.SpeedDialActionItem
+    ): SpeedDialActionItem{
+        return SpeedDialActionItem
             .Builder(id, icon)
             .setLabel(label)
-            .setFabBackgroundColor(ContextCompat.getColor(requireContext(),R.color.green_700))
-            .setLabelBackgroundColor(ContextCompat.getColor(requireContext(),R.color.gray_050))
-            .setLabelColor(ContextCompat.getColor(requireContext(),R.color.gray_950))
-            .setFabImageTintColor(ContextCompat.getColor(requireContext(),R.color.gray_050))
+            .setFabBackgroundColor(ContextCompat.getColor(requireContext(), R.color.green_700))
+            .setLabelBackgroundColor(ContextCompat.getColor(requireContext(), R.color.gray_050))
+            .setLabelColor(ContextCompat.getColor(requireContext(), R.color.gray_950))
+            .setFabImageTintColor(ContextCompat.getColor(requireContext(), R.color.gray_050))
             .create()
     }
 
