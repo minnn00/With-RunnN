@@ -28,10 +28,10 @@ class WalkCourseFragment : Fragment() {
 
         // 더보기 버튼 클릭 시 네비게이션
         binding.textLocalMore.setOnClickListener {
-            findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
+            //findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
         }
         binding.textHotMore.setOnClickListener {
-            findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
+            //findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
         }
 
         // 우리 동네 산책코스 - LocalCourseAdapter 연결
@@ -58,7 +58,7 @@ class WalkCourseFragment : Fragment() {
             val bundle = Bundle().apply {
                 putParcelable("course", walkCourse)
             }
-            findNavController().navigate(R.id.mapContainerFragment, bundle)
+            //findNavController().navigate(R.id.mapContainerFragment, bundle)
 
 
         }

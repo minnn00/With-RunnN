@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="106dp"
+    android:layout_marginEnd="8dp">
+
+    <!-- 프로필 이미지 -->
+    <ImageView
+        android:id="@+id/friend_profile_image"
+        android:layout_width="82dp"
+        android:layout_height="82dp"
+        android:src="@drawable/ellipse_50"
+        android:scaleType="centerCrop"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- 친구 이름 -->
+    <TextView
+        android:id="@+id/friend_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="마루"
+        android:textSize="13sp"
+        android:textColor="#4f4f4f"
+        android:fontFamily="@font/pretendard_medium"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/friend_profile_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp" />
+
+    <!-- 체크박스 -->
+    <CheckBox
+        android:id="@+id/friend_checkbox"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/circle_checkbox_background"
+        android:button="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout> 
