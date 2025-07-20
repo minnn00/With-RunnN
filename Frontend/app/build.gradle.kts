@@ -1,3 +1,11 @@
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(localPropertiesFile.inputStream())
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +26,8 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders["naverMapClientId"] = localProperties.getProperty("NAVER_MAP_CLIENT_ID") ?: ""
     }
 
     buildTypes {
@@ -44,23 +54,29 @@ android {
         dataBinding = true
     }
 }
-    dependencies {
-        implementation(libs.androidx.core.ktx)
-        implementation(libs.androidx.appcompat)
-        implementation(libs.material)
-        implementation(libs.androidx.activity)
-        implementation(libs.androidx.constraintlayout)
+dependencies {
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
 
-        implementation(libs.navigation.fragment.ktx)
-        implementation(libs.navigation.ui.ktx)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
 
-        implementation("androidx.recyclerview:recyclerview:1.4.0")
-        implementation("com.google.android.flexbox:flexbox:3.0.0")
-        implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
 
-        testImplementation(libs.junit)
-        androidTestImplementation(libs.androidx.junit)
-        androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.speed.dial)
+    implementation(libs.naver.maps)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
 
-    }
-
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+}

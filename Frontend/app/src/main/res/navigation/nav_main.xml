@@ -15,59 +15,22 @@
         android:id="@+id/mapFragment"
         android:name="com.with_runn.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
-
-    <!-- ✅ 추가된 Fragment -->
-    <fragment
-        android:id="@+id/mapContainerFragment"
-        android:name="com.with_runn.MapContainerFragment"
-        android:label="Map Container"
-        tools:layout="@layout/fragment_course_map" />
-
-    <fragment
-        android:id="@+id/localMoreFragment"
-        android:name="com.with_runn.LocalMoreFragment"
-        android:label="Local More"
-        tools:layout="@layout/fragment_local_more">
-
+        tools:layout="@layout/fragment_map" >
         <action
-            android:id="@+id/action_localMoreFragment_to_courseDetailFragment"
-            app:destination="@id/courseDetailFragment" />
+            android:id="@+id/action_mapFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_courseManageFragment"
+            app:destination="@id/courseManageFragment" />
     </fragment>
-
-        <action
-            android:id="@+id/action_localMoreFragment_to_courseDetailFragment"
-            app:destination="@id/courseDetailFragment" />
-    />
-
     <fragment
-        android:id="@+id/hotMoreFragment"
-        android:name="com.with_runn.HotMoreFragment"
-        android:label="Hot More"
-        tools:layout="@layout/fragment_hot_more" />
-
+        android:id="@+id/searchFragment"
+        android:name="com.with_runn.SearchFragment"
+        android:label="SearchFragment"
+        tools:layout="@layout/fragment_search"/>
     <fragment
-        android:id="@+id/walkCourseFragment"
-        android:name="com.with_runn.WalkCourseFragment"
-        android:label="Walk Course"
-        tools:layout="@layout/fragment_walk_course">
-
-        <action
-            android:id="@+id/action_walkCourseFragment_to_courseDetailFragment"
-            app:destination="@id/courseDetailFragment" />
-
-        <action
-            android:id="@+id/action_walkCourse_to_localMoreFragment"
-            app:destination="@id/localMoreFragment" />
-
-        <action
-            android:id="@+id/action_walkCourse_to_hotMoreFragment"
-            app:destination="@id/hotMoreFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/courseDetailFragment"
-        android:name="com.with_runn.CourseDetailFragment"
-        android:label="Course Detail"
-        tools:layout="@layout/fragment_course_detail" />
+        android:id="@+id/courseManageFragment"
+        android:name="com.with_runn.CourseManageFragment"
+        android:label="CourseManageFragment"
+        tools:layout="@layout/fragment_course_manage"/>
 </navigation>
