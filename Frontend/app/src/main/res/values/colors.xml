@@ -2,11 +2,38 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="gray">#FF666666</color>
-    <color name="gray_light">#FFA4A4A4</color>
-    <color name="red">#FFE53B3B</color>
-    <color name="dark_red">#FF8B0000</color>
-    <color name="green">#FF15AB6C</color>
-    <color name="light_purple">#FFF3E5F5</color>
-    <color name="notification_red">#FFFF554C</color>
+
+    <!-- ~~ Main Color ~~ -->
+    <!-- Theme Color -->
+    <color name="green_700">#15AB6C</color>     <!-- 진한 초록 -->
+    <color name="green_100">#D8EDE4</color>     <!-- 연한 초록 -->
+    <color name="green_050">#E7FBF2</color>
+
+    <!-- Accent Colors -->
+    <color name="red_500">#FF554C</color>       <!-- 빨강 -->
+    <color name="red_050">#FFE1DF</color>       <!-- 연한 빨강 -->
+    <color name="blue_500">#1E90FF</color>      <!-- 파랑 -->
+    <color name="blue_050">#DBEDFF</color>      <!-- 연한 파랑 -->
+
+    <!-- Dark Background -->
+    <color name="gray_950">#121212</color>
+    <color name="gray_900">#212124</color>
+
+    <!-- Medium Gray -->
+    <color name="gray_850">#818181</color>
+    <color name="gray_800">#2F2F2F</color>
+    <color name="gray_750">#979797</color>
+    <color name="gray_700">#4F4F4F</color>
+    <color name="gray_600">#808080</color>
+    <color name="gray_550">#5D5D5D</color>
+    <color name="gray_500">#A4A4A4</color>
+    <color name="gray_400">#CFCFCF</color>
+
+    <!-- Light Gray -->
+    <color name="gray_350">#F5F5F5</color>
+    <color name="gray_300">#F8F8F8</color>
+    <color name="gray_250">#F9F9F9</color>
+    <color name="gray_200">#F0F0F0</color>
+    <color name="gray_100">#F3F3F3</color>
+    <color name="gray_050">#FEFEFE</color>
 </resources>

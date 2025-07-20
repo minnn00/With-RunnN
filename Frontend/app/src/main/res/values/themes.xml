@@ -3,7 +3,21 @@
     <style name="Base.Theme.With_Runn" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="floatingActionButtonStyle">@style/Widget.Fab.Circle</item>
     </style>
 
     <style name="Theme.With_Runn" parent="Base.Theme.With_Runn" />
+
+    <style name="Shape_Chip">
+        <item name="cornerSize">10dp</item>
+    </style>
+
+    <style name="ShapeAppearance.Fab.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.Fab.Circle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Fab.Circle</item>
+    </style>
 </resources>

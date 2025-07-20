@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white">
+
+        <!-- 상단 타이틀 & 뒤로가기 -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="66dp"
+            android:layout_marginTop="20dp"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/left_arrow"
+                android:layout_alignParentStart="true"
+                android:contentDescription="뒤로가기" />
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="wrap_content"
+                android:layout_height="22dp"
+                android:text="떠오르는 산책 코스"
+                android:textSize="18sp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:textColor="@color/gray_950"
+                android:layout_centerInParent="true" />
+        </RelativeLayout>
+
+        <!-- 검색창 -->
+        <EditText
+            android:id="@+id/edit_search"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="산책하고 싶은 지역을 검색해보세요"
+            android:background="@drawable/search_edittext_background"
+            android:drawableStart="@drawable/search"
+            android:drawablePadding="5dp"
+            android:paddingStart="12dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:textColor="@color/gray_500"
+            android:textSize="12sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:singleLine="true"
+            android:inputType="text" />
+
+        <!-- 리스트 타이틀 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="많이 검색되는 코스"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"
+            android:textSize="12sp"
+            android:fontFamily="@font/pretendard_regular"
+            android:textColor="@color/gray_600" />
+
+        <!-- 산책코스 목록 RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_hot_more"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:overScrollMode="never" />
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+        <style name="onboarding_chip" parent="Widget.MaterialComponents.Chip.Choice">
+            <!-- 텍스트 -->
+            <item name="android:textColor">@color/text_onboarding_chip_selector</item>
+            <item name="android:textSize">14sp</item>
+            <item name="fontFamily">@font/pretendard_regular</item> <!-- 커스텀 폰트 -->
+
+            <!-- 배경색 -->
+            <item name="chipBackgroundColor">@color/bg_onboarding_chip_selector</item>
+
+            <!-- 테두리 -->
+            <item name="chipStrokeColor">@color/stroke_onboarding_chip_selector</item>
+            <item name="chipStrokeWidth">1dp</item>
+
+            <!-- 모서리 둥글기 -->
+            <item name="shapeAppearance">@style/ChipShape</item>
+
+            <!-- 패딩 (Text 기준 내부 여백) -->
+            <item name="chipStartPadding">15dp</item>
+            <item name="chipEndPadding">15dp</item>
+        </style>
+
+        <!-- 모서리 둥글기 커스터마이징 -->
+        <style name="ChipShape" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+            <item name="cornerSize">5dp</item>
+        </style>
+</resources>

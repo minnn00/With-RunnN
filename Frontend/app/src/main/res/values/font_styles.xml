@@ -52,4 +52,9 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="Text_Pretendard_Regular_16">
+        <item name="android:fontFamily">@font/pretendard_regular</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>
