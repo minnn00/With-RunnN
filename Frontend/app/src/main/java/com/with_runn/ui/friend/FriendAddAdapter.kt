@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.friend
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.with_runn.R
 
 class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(FriendDiffCallback()) {
 

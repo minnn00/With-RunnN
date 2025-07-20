@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.chat
 
 data class ChatRoom(
     val name: String,

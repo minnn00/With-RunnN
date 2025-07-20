@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.chat
 
 import android.os.Bundle
 import android.widget.ImageView
@@ -7,14 +7,11 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import android.view.MotionEvent
-import android.view.ViewGroup
-import android.widget.FrameLayout
+import com.with_runn.R
 
 class ChatActivity : AppCompatActivity() {
     

@@ -1,17 +1,16 @@
-package com.with_runn
+package com.with_runn.ui.friend
 
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.viewpager2.widget.ViewPager2
 import com.with_runn.adapter.DogCard
 import com.with_runn.adapter.DogCardAdapter
 import com.with_runn.databinding.ActivityMainBinding
 import android.content.Intent
+import com.with_runn.R
+import com.with_runn.ui.chat.ChatActivity
 
 class DogCardMainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding

@@ -1,4 +1,4 @@
-package com.with_runn
+package com.with_runn.ui.friend
 
 data class Friend(
     val name: String,
