@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
+
     implementation(libs.speed.dial)
     implementation(libs.naver.maps)
     implementation(libs.retrofit)
