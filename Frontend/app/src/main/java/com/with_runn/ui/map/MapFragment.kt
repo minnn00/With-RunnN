@@ -44,7 +44,9 @@ class MapFragment : Fragment() {
         binding.mapView.getMapAsync {
             googleMap = it
             googleMap.uiSettings.apply {
-
+                isCompassEnabled = false
+                isMyLocationButtonEnabled = false
+                isMapToolbarEnabled = false
             }
 
         }
