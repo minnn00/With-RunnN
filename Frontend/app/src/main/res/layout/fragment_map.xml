@@ -55,7 +55,7 @@
             android:id="@+id/speedDial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+            app:layout_constraintBottom_toTopOf="@+id/fab_toggle_mylocation"
             app:layout_constraintEnd_toEndOf="parent"
             app:sdMainFabAnimationRotateAngle="45"
             app:sdMainFabClosedBackgroundColor="@color/gray_050"
@@ -66,7 +66,7 @@
             app:sdMainFabOpenedSrc="@drawable/ic_cross" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
+            android:id="@+id/fab_toggle_mylocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="120dp"

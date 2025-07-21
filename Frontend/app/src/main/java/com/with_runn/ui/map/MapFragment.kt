@@ -1,12 +1,18 @@
 package com.with_runn.ui.map
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -43,12 +49,32 @@ class MapFragment : Fragment() {
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync {
             googleMap = it
-            googleMap.uiSettings.apply {
-                isCompassEnabled = false
-                isMyLocationButtonEnabled = false
-                isMapToolbarEnabled = false
-            }
 
+            val isGranted = (
+                    ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED &&
+                            ContextCompat.checkSelfPermission(
+                                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+                            ) == PackageManager.PERMISSION_GRANTED
+                    )
+
+            if(isGranted){
+                moveToMyLocation()
+            }else{
+                Log.e("PERMISSION ERROR", "LACK PERMISSION")
+            }
+            //TODO: CHECK PERMISSION AT START AND UPDATE VIEWMODEL
+
+            googleMap.apply {
+                isMyLocationEnabled = true
+
+                uiSettings.apply {
+                    isCompassEnabled = false
+                    isMyLocationButtonEnabled = false
+                    isMapToolbarEnabled = false
+                }
+            }
         }
 
         populateChips(
@@ -107,10 +133,40 @@ class MapFragment : Fragment() {
         // TODO: Google API에 키워드로 검색 요청해서 결과 표시하기
     }
 
+    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+    private fun moveToMyLocation(){
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            location?.let{
+                val latLng = LatLng(it.latitude, it.longitude)
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            }
+        }
+    }
+
     private fun setListeners(){
         binding.apply{
             viewSearchBox.searchBox.setOnClickListener{
                 findNavController().navigate(R.id.action_mapFragment_to_searchFragment)
+            }
+
+            fabToggleMylocation.setOnClickListener {
+                val isGranted = (
+                    ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED &&
+                    ContextCompat.checkSelfPermission(
+                        requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED
+                )
+
+                if(isGranted){
+                    moveToMyLocation()
+                }else{
+                    Log.e("PERMISSION ERROR", "LACK PERMISSION")
+                }
+                //TODO: CHECK PERMISSION AT START AND UPDATE VIEWMODEL
             }
         }
     }
