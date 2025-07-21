@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.leinardi.android.speeddial.SpeedDialActionItem
@@ -23,7 +24,7 @@ class MapFragment : Fragment() {
 
     private var _binding : FragmentMapBinding? = null
     private val binding get() = _binding!!
-    private lateinit var naverMap: NaverMap
+    private lateinit var googleMap: GoogleMap
 
     private val keywords = listOf("병원", "약국", "반려동물용품", "미용", "식당", "당식", "용미", "품용물동려반", "국약", "원병")
 
@@ -41,10 +42,9 @@ class MapFragment : Fragment() {
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync {
-            naverMap = it
-            naverMap.uiSettings.apply {
-                isZoomControlEnabled = false
-                isCompassEnabled = false
+            googleMap = it
+            googleMap.uiSettings.apply {
+
             }
 
         }
@@ -65,16 +65,24 @@ class MapFragment : Fragment() {
         setupBottomSheet()
     }
 
+    override fun onStart() {
+        binding.mapView.onStart()
+        super.onStart()
+    }
     override fun onResume() {
-        super.onResume()
         binding.mapView.onResume()
+        super.onResume()
     }
 
     override fun onPause() {
-        super.onPause()
         binding.mapView.onPause()
+        super.onPause()
     }
 
+    override fun onStop() {
+        binding.mapView.onStop()
+        super.onStop()
+    }
 
     override fun onDestroyView() {
         binding.mapView.onDestroy()
@@ -82,19 +90,19 @@ class MapFragment : Fragment() {
         super.onDestroyView()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        binding.mapView.onSaveInstanceState(outState)
+    override fun onLowMemory() {
+        binding.mapView.onLowMemory()
+        super.onLowMemory()
     }
 
-    override fun onLowMemory() {
-        super.onLowMemory()
-        binding.mapView.onLowMemory()
+    override fun onSaveInstanceState(outState: Bundle) {
+        binding.mapView.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     private fun onChipClick(chip: Chip){
         Log.d("ChipClick", "${chip.text} Clicked")
-        // TODO: Naver API에 키워드로 검색 요청해서 결과 표시하기
+        // TODO: Google API에 키워드로 검색 요청해서 결과 표시하기
     }
 
     private fun setListeners(){
