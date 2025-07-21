@@ -28,6 +28,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         manifestPlaceholders["naverMapClientId"] = localProperties.getProperty("NAVER_MAP_CLIENT_ID") ?: ""
+        manifestPlaceholders["googleMapApiKey"] = localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""
     }
 
     buildTypes {
