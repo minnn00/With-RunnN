@@ -67,7 +67,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation(libs.androidx.viewpager2)
     implementation(libs.speed.dial)
     implementation(libs.naver.maps)
     implementation(libs.retrofit)
@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+    implementation(libs.google.maps)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
