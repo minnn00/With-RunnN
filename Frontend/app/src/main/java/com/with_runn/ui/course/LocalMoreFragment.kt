@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.with_runn.R
 import com.with_runn.databinding.FragmentLocalMoreBinding
+import com.with_runn.WalkCourseAdapter
+import com.with_runn.WalkCourse
+import androidx.navigation.fragment.findNavController
+
 
 class LocalMoreFragment : Fragment() {
 
@@ -56,9 +59,13 @@ class LocalMoreFragment : Fragment() {
 
         adapter = WalkCourseAdapter(localList,
             onItemClick = { item ->
-                // 상세페이지 이동 등 클릭 이벤트 처리 구현 가능
+                val bundle = Bundle().apply {
+                    putParcelable("course", item)
+                }
+                findNavController().navigate(R.id.mapContainerFragment, bundle)
             }
         )
+
         binding.recyclerLocalMore.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerLocalMore.adapter = adapter
 

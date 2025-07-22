@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentWalkCourseBinding
 import androidx.navigation.fragment.findNavController
-import com.with_runn.R
 
 class WalkCourseFragment : Fragment() {
 
@@ -29,16 +28,29 @@ class WalkCourseFragment : Fragment() {
 
         // 더보기 버튼 클릭 시 네비게이션
         binding.textLocalMore.setOnClickListener {
-            //findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
+            findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
         }
         binding.textHotMore.setOnClickListener {
-            //findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
+            findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
         }
 
         // 우리 동네 산책코스 - LocalCourseAdapter 연결
         val localAdapter = LocalCourseAdapter(getDummyLocalCourses()) { course ->
-            Log.d("LocalCourse", "Clicked: ${course.title}")
+            val walkCourse = WalkCourse(
+                title = course.title,
+                tags = listOf(course.tag),
+                imageResId = course.imageRes,
+                distance = "2.0km",  // 임시값
+                time = "30분"        // 임시값
+            )
+
+            val bundle = Bundle().apply {
+                putParcelable("course", walkCourse)
+            }
+
+            findNavController().navigate(R.id.mapContainerFragment, bundle)
         }
+
         binding.recyclerLocalCourse.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = localAdapter
@@ -59,7 +71,7 @@ class WalkCourseFragment : Fragment() {
             val bundle = Bundle().apply {
                 putParcelable("course", walkCourse)
             }
-            //findNavController().navigate(R.id.mapContainerFragment, bundle)
+            findNavController().navigate(R.id.mapContainerFragment, bundle)
 
 
         }

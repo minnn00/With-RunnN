@@ -5,32 +5,77 @@
     android:id="@+id/nav_main"
     app:startDestination="@id/mapFragment">
 
+    <!-- MyPage -->
     <fragment
         android:id="@+id/myPageFragment"
         android:name="com.with_runn.MyPageFragment"
         android:label="My Page"
         tools:layout="@layout/fragment_mypage" />
 
+    <!-- 지도 -->
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.with_runn.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" >
+
         <action
             android:id="@+id/action_mapFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+
         <action
             android:id="@+id/action_mapFragment_to_courseManageFragment"
             app:destination="@id/courseManageFragment" />
     </fragment>
+
+    <!-- 검색 -->
     <fragment
         android:id="@+id/searchFragment"
         android:name="com.with_runn.map.search.SearchFragment"
         android:label="SearchFragment"
         tools:layout="@layout/fragment_search"/>
+    <!-- 코스 관리 -->
     <fragment
         android:id="@+id/courseManageFragment"
         android:name="com.with_runn.ui.course.CourseManageFragment"
         android:label="CourseManageFragment"
-        tools:layout="@layout/fragment_course_manage"/>
+        tools:layout="@layout/fragment_course_manage" />
+
+    <!-- 산책코스 메인 -->
+    <fragment
+        android:id="@+id/walkCourseFragment"
+        android:name="com.with_runn.ui.course.WalkCourseFragment"
+        android:label="WalkCourseFragment"
+        tools:layout="@layout/fragment_walk_course">
+
+        <action
+            android:id="@+id/action_walkCourse_to_localMoreFragment"
+            app:destination="@id/localMoreFragment" />
+
+        <action
+            android:id="@+id/action_walkCourse_to_hotMoreFragment"
+            app:destination="@id/hotMoreFragment" />
+    </fragment>
+
+    <!-- 우리 동네 산책코스 더보기 -->
+    <fragment
+        android:id="@+id/localMoreFragment"
+        android:name="com.with_runn.ui.course.LocalMoreFragment"
+        android:label="LocalMoreFragment"
+        tools:layout="@layout/fragment_local_more" />
+
+    <!-- 떠오르는 산책코스 더보기 -->
+    <fragment
+        android:id="@+id/hotMoreFragment"
+        android:name="com.with_runn.ui.course.HotMoreFragment"
+        android:label="HotMoreFragment"
+        tools:layout="@layout/fragment_hot_more" />
+
+    <fragment
+        android:id="@+id/mapContainerFragment"
+        android:name="com.with_runn.ui.course.MapContainerFragment"
+        android:label="MapContainerFragment"
+        tools:layout="@layout/fragment_course_map" />
+
+
 </navigation>
