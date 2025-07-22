@@ -47,6 +47,20 @@ class CourseDetailFragment : Fragment() {
             tagContainer.addView(tagView)
         }
 
+        val btnShare = view.findViewById<View>(R.id.btnShare)
+        Log.d("TEST", "btnShare isClickable = ${btnShare.isClickable}, isEnabled = ${btnShare.isEnabled}")
+
+        btnShare.setOnClickListener {
+            Log.d("CourseDetail", "공유 버튼 클릭됨")
+            val bottomSheet = CourseShareBottomSheetFragment()
+            bottomSheet.show(parentFragmentManager, "CourseShareBottomSheet")
+        }
+
+
+
+
+
+
         // ✅ 🔥 ViewBinding 대신 findViewById로 버튼 연결
         val scrapButton = view.findViewById<View>(R.id.btnScrap)
         val likeButton = view.findViewById<View>(R.id.btnLike)

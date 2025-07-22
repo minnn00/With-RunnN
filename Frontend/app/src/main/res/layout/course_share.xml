@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/course_share"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- 탭 -->
+    <LinearLayout
+        android:id="@+id/layout_tabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- 채팅방 탭 -->
+        <LinearLayout
+            android:id="@+id/tab_chat"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/text_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="채팅방"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/indicator_chat"
+                android:layout_width="162dp"
+                android:layout_height="2dp"
+                android:background="@color/green_700"
+                android:visibility="visible" /> <!-- 선택 상태면 visible -->
+        </LinearLayout>
+
+        <!-- 친구 탭 -->
+        <LinearLayout
+            android:id="@+id/tab_friend"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/text_friend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="친구"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:id="@+id/indicator_friend"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/green_700"
+                android:visibility="gone" /> <!-- 비선택 상태면 gone -->
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!-- 검색창 -->
+    <EditText
+        android:id="@+id/edit_search"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:hint="대화할 친구의 이름을 검색하세요"
+        android:background="@drawable/search_edittext_background"
+        android:drawableStart="@drawable/search"
+        android:drawablePadding="5dp"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:textColor="@color/gray_500"
+        android:textSize="12sp"
+        android:fontFamily="@font/pretendard_regular"
+        android:singleLine="true"
+        android:inputType="text"/>
+
+    <!-- 사용자 리스트 (채팅방 or 친구) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_targets"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_marginTop="16dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:orientation="horizontal" />
+
+    <!-- 보내기 버튼 -->
+    <Button
+        android:id="@+id/btn_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="보내기"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/green_700"
+        android:textColor="@android:color/white"
+        android:enabled="false" />
+</LinearLayout>
