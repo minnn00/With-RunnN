@@ -58,8 +58,13 @@ class HotMoreFragment : Fragment() {
         // 어댑터에 클릭 콜백 전달
         adapter = WalkCourseAdapter(hotList,
             onItemClick = { item ->
+                val bundle = Bundle().apply {
+                    putParcelable("course", item)
+                }
+                findNavController().navigate(R.id.mapContainerFragment, bundle)
             }
         )
+
 
         binding.recyclerHotMore.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerHotMore.adapter = adapter

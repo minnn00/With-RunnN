@@ -36,8 +36,21 @@ class WalkCourseFragment : Fragment() {
 
         // 우리 동네 산책코스 - LocalCourseAdapter 연결
         val localAdapter = LocalCourseAdapter(getDummyLocalCourses()) { course ->
-            Log.d("LocalCourse", "Clicked: ${course.title}")
+            val walkCourse = WalkCourse(
+                title = course.title,
+                tags = listOf(course.tag),
+                imageResId = course.imageRes,
+                distance = "2.0km",  // 임시값
+                time = "30분"        // 임시값
+            )
+
+            val bundle = Bundle().apply {
+                putParcelable("course", walkCourse)
+            }
+
+            findNavController().navigate(R.id.mapContainerFragment, bundle)
         }
+
         binding.recyclerLocalCourse.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = localAdapter
