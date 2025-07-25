@@ -44,11 +44,6 @@
             android:exported="false" />
 
         <activity android:name=".ui.onboarding.OnboardingActivity" />
-        <activity android:name=".ui.onboarding.OnboardingLoginActivity" />
-        <activity android:name=".ui.onboarding.OnboardingProfileActivity" />
-        <activity android:name=".ui.onboarding.OnboardingProfileDefultActivity" />
-        <activity android:name=".ui.onboarding.OnboardingProfilePersonalityActivity" />
-        <activity android:name=".ui.onboarding.OnboardingProfileWalkingStyleActivity" />
         <activity android:name=".ui.mypage.MypageFollowersActivity" />
     </application>
 
