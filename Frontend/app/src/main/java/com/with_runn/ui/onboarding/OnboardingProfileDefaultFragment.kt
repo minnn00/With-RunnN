@@ -11,11 +11,11 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.with_runn.R
-import com.with_runn.databinding.FragmentOnboardingProfileDefultBinding
+import com.with_runn.databinding.FragmentOnboardingProfileDefaultBinding
 
 class OnboardingProfileDefaultFragment : Fragment() {
 
-    private var _binding: FragmentOnboardingProfileDefultBinding? = null
+    private var _binding: FragmentOnboardingProfileDefaultBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var preferences: SharedPreferences
@@ -34,7 +34,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentOnboardingProfileDefultBinding.inflate(inflater, container, false)
+        _binding = FragmentOnboardingProfileDefaultBinding.inflate(inflater, container, false)
         return binding.root
     }
 
