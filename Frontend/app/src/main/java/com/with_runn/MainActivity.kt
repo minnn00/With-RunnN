@@ -11,6 +11,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.with_runn.databinding.ActivityMainBinding
 import android.Manifest
 import android.util.Log
+import com.google.android.libraries.places.api.Places
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
@@ -39,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigationView.setupWithNavController(navController)
 
         checkAndRequestLocationPermission()
+        Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
     }
 
     private fun checkAndRequestLocationPermission() {

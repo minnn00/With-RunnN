@@ -24,12 +24,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <include
+            <!--
+                <include
                 android:id="@+id/view_search_box"
                 layout="@layout/view_search_box"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="18dp" />
+            -->
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -69,7 +71,7 @@
             android:id="@+id/fab_toggle_mylocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="120dp"
+            android:layout_marginBottom="160dp"
             android:layout_marginEnd="17dp"
             android:src="@drawable/ic_gps"
             app:backgroundTint="@color/gray_050"
@@ -77,6 +79,28 @@
             app:layout_constraintEnd_toEndOf="@+id/speedDial"
 
             app:tint="@color/gray_600" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_toggle_mylocation_expanded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginEnd="17dp"
+            android:src="@drawable/ic_gps"
+            android:visibility="gone"
+            app:backgroundTint="@color/gray_050"
+            app:layout_constraintBottom_toTopOf="@id/guideline_half"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:tint="@color/gray_600" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_half"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.55"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
     <include
         android:id="@+id/view_home_indicator"
