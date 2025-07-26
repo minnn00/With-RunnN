@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.with_runn.R
+import com.with_runn.data.WalkCourse
 import com.with_runn.databinding.FragmentCourseMapBinding
 
 class MapContainerFragment : Fragment() {

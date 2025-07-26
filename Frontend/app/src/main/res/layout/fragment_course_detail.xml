@@ -137,6 +137,7 @@
             </LinearLayout>
 
             <!-- 버튼 2: 좋아요 -->
+            <!-- 버튼 2: 좋아요 -->
             <LinearLayout
                 android:id="@+id/btnLike"
                 android:layout_width="0dp"
@@ -144,7 +145,9 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:clickable="true"
-                android:focusable="true">
+                android:focusable="true"
+                android:background="?android:selectableItemBackground"
+                android:descendantFocusability="blocksDescendants">
 
                 <LinearLayout
                     android:layout_width="70dp"
@@ -152,8 +155,8 @@
                     android:orientation="vertical"
                     android:background="@drawable/bg_action_box"
                     android:gravity="center"
-                    android:clickable="true"
-                    android:focusable="true">>
+                    android:clickable="false"
+                    android:focusable="false">
 
                     <ImageView
                         android:layout_width="26dp"
@@ -171,6 +174,7 @@
                 </LinearLayout>
             </LinearLayout>
 
+
             <!-- 버튼 3: 공유하기 -->
             <LinearLayout
                 android:id="@+id/btnShare"
@@ -180,7 +184,9 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:descendantFocusability="blocksDescendants">
+                android:descendantFocusability="blocksDescendants"
+                android:focusableInTouchMode="true"
+                android:background="?android:selectableItemBackground">
 
                 <!-- 안쪽 아이콘 박스 -->
                 <LinearLayout

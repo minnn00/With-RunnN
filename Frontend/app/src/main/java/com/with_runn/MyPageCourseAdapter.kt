@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.databinding.ItemWalkCourseMoreBinding
 import com.with_runn.ui.course.TabType
-import com.with_runn.ui.course.WalkCourse
+import com.with_runn.data.WalkCourse
 
 class MyPageCourseAdapter(
     private var tabType: TabType,

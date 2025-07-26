@@ -1,19 +1,28 @@
 package com.with_runn.ui.course
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.with_runn.databinding.FragmentWalkCourseBinding
 import androidx.navigation.fragment.findNavController
+import com.with_runn.data.WalkCourse
+import com.with_runn.databinding.FragmentWalkCourseBinding
+import com.with_runn.data.viewmodel.WalkCourseViewModel
+import com.with_runn.R
+import com.with_runn.data.LocalCourse
+import com.with_runn.data.HotCourse
 
 class WalkCourseFragment : Fragment() {
 
     private var _binding: FragmentWalkCourseBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var viewModel: WalkCourseViewModel
+    private lateinit var localAdapter: LocalCourseAdapter
+    private lateinit var hotAdapter: HotCourseAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,16 +35,10 @@ class WalkCourseFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 더보기 버튼 클릭 시 네비게이션
-        binding.textLocalMore.setOnClickListener {
-            findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
-        }
-        binding.textHotMore.setOnClickListener {
-            findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
-        }
+        viewModel = ViewModelProvider(this)[WalkCourseViewModel::class.java]
 
-        // 우리 동네 산책코스 - LocalCourseAdapter 연결
-        val localAdapter = LocalCourseAdapter(getDummyLocalCourses()) { course ->
+        // Local Course Adapter 초기화
+        val localAdapter = LocalCourseAdapter(emptyList<LocalCourse>().toMutableList()) { course ->
             val walkCourse = WalkCourse(
                 title = course.title,
                 tags = listOf(course.tag),
@@ -43,11 +46,9 @@ class WalkCourseFragment : Fragment() {
                 distance = "2.0km",  // 임시값
                 time = "30분"        // 임시값
             )
-
             val bundle = Bundle().apply {
                 putParcelable("course", walkCourse)
             }
-
             findNavController().navigate(R.id.mapContainerFragment, bundle)
         }
 
@@ -56,9 +57,8 @@ class WalkCourseFragment : Fragment() {
             adapter = localAdapter
         }
 
-        // 떠오르는 산책코스 - HotCourseAdapter 연결
-        val hotAdapter = HotCourseAdapter(getDummyHotCourses()) { course ->
-            // 1. HotCourse -> WalkCourse로 변환
+        // Hot Course Adapter 초기화
+        hotAdapter = HotCourseAdapter(emptyList()) { course ->
             val walkCourse = WalkCourse(
                 title = course.title,
                 tags = course.tags,
@@ -66,42 +66,56 @@ class WalkCourseFragment : Fragment() {
                 distance = course.distance,
                 time = course.time
             )
-
-            // 2. Bundle에 담아서 전달
             val bundle = Bundle().apply {
                 putParcelable("course", walkCourse)
             }
             findNavController().navigate(R.id.mapContainerFragment, bundle)
-
-
         }
 
         binding.recyclerHotCourse.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             adapter = hotAdapter
         }
+
+        // 더보기 버튼 클릭 시 이동
+        binding.textLocalMore.setOnClickListener {
+            findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
+        }
+        binding.textHotMore.setOnClickListener {
+            findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
+        }
+
+        // LiveData 관찰
+        viewModel.neighborhoodCourses.observe(viewLifecycleOwner) { courses ->
+            localAdapter.updateData(courses.map {
+                LocalCourse(
+                    imageRes = R.drawable.image,
+                    tag = it.tags.firstOrNull() ?: "#산책",
+                    title = it.title
+                )
+            })
+        }
+
+        viewModel.risingCourses.observe(viewLifecycleOwner) { courses ->
+            hotAdapter.updateData(courses.map {
+                HotCourse(
+                    imageRes = R.drawable.image,
+                    title = it.title,
+                    tags = it.tags,
+                    distance = it.distance,
+                    time = it.time
+                )
+            })
+
+        }
+
+        // 실제 데이터 요청
+        viewModel.fetchNeighborhoodCourses()
+        viewModel.fetchRisingCourses()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    // 우리 동네 산책코스 더미 데이터 (LocalCourse 타입)
-    private fun getDummyLocalCourses(): List<LocalCourse> {
-        return listOf(
-            LocalCourse(R.drawable.image, "#초보자추천", "망원한강공원"),
-            LocalCourse(R.drawable.image, "#풍경좋음", "연남동 코스"),
-            LocalCourse(R.drawable.image, "#도심속자연", "홍제천 산책길")
-        )
-    }
-
-    // 떠오르는 산책코스 더미 데이터 (HotCourse 타입)
-    private fun getDummyHotCourses(): List<HotCourse> {
-        return listOf(
-            HotCourse(R.drawable.image, "반려견과 한강 산책", listOf("#자연친화", "#탐색활동"), "2.0km", "35분"),
-            HotCourse(R.drawable.image, "연트럴파크 데이트길", listOf("#후각자극", "#도심산책"), "1.5km", "20분"),
-            HotCourse(R.drawable.image, "서울숲 동물친화코스", listOf("#풍경좋음", "#초보자추천"), "3.4km", "45분")
-        )
     }
 }

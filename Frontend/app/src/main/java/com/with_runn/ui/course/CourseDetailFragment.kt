@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.with_runn.databinding.FragmentCourseDetailBinding
 import android.widget.TextView
 import android.util.Log
+import com.with_runn.data.WalkCourse
 import com.with_runn.R
 
 
@@ -47,18 +48,14 @@ class CourseDetailFragment : Fragment() {
             tagContainer.addView(tagView)
         }
 
-        val btnShare = view.findViewById<View>(R.id.btnShare)
-        Log.d("TEST", "btnShare isClickable = ${btnShare.isClickable}, isEnabled = ${btnShare.isEnabled}")
 
-        btnShare.setOnClickListener {
+        Log.d("DEBUG", "btnShare clickable=${binding.btnShare.isClickable}, enabled=${binding.btnShare.isEnabled}")
+        binding.btnShare.setOnClickListener {
             Log.d("CourseDetail", "공유 버튼 클릭됨")
-            val bottomSheet = CourseShareBottomSheetFragment()
-            bottomSheet.show(parentFragmentManager, "CourseShareBottomSheet")
+            val bottomSheet = CourseDetailBottomSheet.newInstance(course)
+            bottomSheet.show(parentFragmentManager, "CourseDetail")
+
         }
-
-
-
-
 
 
         // ✅ 🔥 ViewBinding 대신 findViewById로 버튼 연결
