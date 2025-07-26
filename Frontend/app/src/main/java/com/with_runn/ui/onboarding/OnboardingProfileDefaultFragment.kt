@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfileDefaultBinding
@@ -19,7 +20,8 @@ class OnboardingProfileDefaultFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var preferences: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
+    //private lateinit var editor: SharedPreferences.Editor //sharedPreference
+    val viewModel: OnboardingViewmodel by activityViewModels()
 
     private lateinit var name: String
     private var sex: String = "남"
@@ -40,10 +42,10 @@ class OnboardingProfileDefaultFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         preferences = requireContext().getSharedPreferences("user_info", Context.MODE_PRIVATE)
-        editor = preferences.edit()
+        //editor = preferences.edit() //sharedPreference
 
-        binding.nameEditText.setText(preferences.getString("name", "none"))
-        binding.birthdayEditText.setText(preferences.getString("birthday", "YYYY/MM/DD"))
+        binding.nameEditText.setText(viewModel.name.value)
+        binding.birthdayEditText.setText(viewModel.birth.value)
         binding.breedEditText.setText(preferences.getString("breed", "15자 이내로 입력해주세요"))
         if (preferences.contains("breed")) breed_savable = true
 
@@ -60,13 +62,15 @@ class OnboardingProfileDefaultFragment : Fragment() {
             if (name_saveable == 0) {
                 showNameError("중복 확인을 해주세요")
             } else if (name_saveable == 2 && breed_savable) {
-                editor.putString("name", name)
-                editor.putString("sex", sex)
-                editor.putString("birthday", birthday)
-                editor.putString("breed", breed)
-                editor.putString("size", size)
-                editor.apply()
+//                editor.putString("name", name)
+//                editor.putString("sex", sex)
+//                editor.putString("birthday", birthday)
+//                editor.putString("breed", breed)
+//                editor.putString("size", size)
+//                editor.apply()
+                viewModel.setDefaultValues(name, sex, birthday, breed, size)
 
+                findNavController().popBackStack() // 프로필 프래그먼트로 복귀
                 findNavController().popBackStack() // 프로필 프래그먼트로 복귀
             }
         }

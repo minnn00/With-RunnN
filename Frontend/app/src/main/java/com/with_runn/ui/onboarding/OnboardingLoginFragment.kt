@@ -30,7 +30,7 @@ class OnboardingLoginFragment : Fragment() {
         }
 
         binding.loginButton.setOnClickListener {
-            findNavController().navigate(R.id.action_onboardingLoginFragment_to_onboardingProfileFragment)
+            findNavController().navigate(R.id.action_onboardingLoginFragment_to_mypageOptionFragment) //todo: test코드: 나중에 삭제
         }
     }
 

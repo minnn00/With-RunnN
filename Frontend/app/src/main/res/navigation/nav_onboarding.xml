@@ -23,6 +23,9 @@
             android:id="@+id/action_onboardingLoginFragment_to_onboardingProfileFragment"
             app:destination="@id/onboardingProfileFragment"
             app:enterAnim="@anim/slide_in_right" />
+        <action
+            android:id="@+id/action_onboardingLoginFragment_to_mypageOptionFragment"
+            app:destination="@id/mypageOptionFragment" />
     </fragment>
     <fragment
         android:id="@+id/onboardingProfileFragment"
@@ -57,4 +60,9 @@
         android:name="com.with_runn.ui.onboarding.OnboardingProfileWalkingStyleFragment"
         android:label="OnboardingProfileWalkingStyleFragment"
         tools:layout="@layout/fragment_onboarding_profile_walkingstyle"/>
+    <fragment
+        android:id="@+id/mypageOptionFragment"
+        android:name="com.with_runn.ui.mypage.MypageOptionFragment"
+        android:label="MypageOptionFragment"
+        tools:layout="@layout/fragment_mypage_option"/>
 </navigation>
