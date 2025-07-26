@@ -16,6 +16,8 @@ class WalkCourseAdapter(
         notifyDataSetChanged()
     }
 
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WalkCourseViewHolder {
         val binding = ItemWalkCourseMoreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return WalkCourseViewHolder(binding)

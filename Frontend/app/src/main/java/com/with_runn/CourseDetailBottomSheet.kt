@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.with_runn.databinding.FragmentCourseDetailBinding
+import android.util.Log
+import android.widget.TextView
 
 class CourseDetailBottomSheet : BottomSheetDialogFragment() {
 
@@ -26,17 +28,42 @@ class CourseDetailBottomSheet : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 전달받은 데이터 꺼내기
         course = arguments?.getParcelable("course") ?: return
 
-        // 더미 바인딩 예시 (내일 레이아웃 오면 수정)
+        // 기본 바인딩
+        binding.imageCourse.setImageResource(course.imageResId)
         binding.textTitle.text = course.title
-        binding.textDescription.text =
-            "이 코스는 ${course.distance}, ${course.time} 정도 소요돼요."
-
-        // 예시용: 시간 텍스트만 미리 바인딩
+        binding.textDescription.text = "우리 동네 코스 소개\n${course.distance}, ${course.time} 소요됩니다."
         binding.textTimeValue.text = course.time.replace("분", "M")
+
+        // 태그 동적 추가
+        val tagContainer = binding.layoutTags
+        tagContainer.removeAllViews()
+        val inflater = LayoutInflater.from(requireContext())
+        course.tags.take(2).forEach { tag ->
+            val tagView = inflater.inflate(R.layout.item_tag, tagContainer, false) as TextView
+            tagView.text = tag
+            tagContainer.addView(tagView)
+        }
+
+        // 버튼 클릭 리스너
+        binding.btnScrap.setOnClickListener {
+            Log.d("CourseDetail", "스크랩 클릭됨: ${course.title}")
+            CourseStorage.addScrap(course)
+        }
+
+        binding.btnLike.setOnClickListener {
+            Log.d("CourseDetail", "좋아요 클릭됨: ${course.title}")
+            CourseStorage.addLike(course)
+        }
+
+        binding.btnShare.setOnClickListener {
+            Log.d("CourseDetail", "공유 버튼 클릭됨")
+            val bottomSheet = CourseShareBottomSheetFragment()
+            bottomSheet.show(parentFragmentManager, "CourseShareBottomSheet")
+        }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

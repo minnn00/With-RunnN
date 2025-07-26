@@ -7,15 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-data class LocalCourse(
-    val imageRes: Int,
-    val tag: String,
-    val title: String
-)
-
 class LocalCourseAdapter(
-    private val courseList: List<LocalCourse>,
-    private val onItemClick: (LocalCourse) -> Unit  // 클릭 콜백 추가
+    private val courseList: MutableList<LocalCourse>,
+    private val onItemClick: (LocalCourse) -> Unit
 ) : RecyclerView.Adapter<LocalCourseAdapter.LocalCourseViewHolder>() {
 
     inner class LocalCourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,4 +36,11 @@ class LocalCourseAdapter(
     }
 
     override fun getItemCount(): Int = courseList.size
+
+    // 🔁 데이터 갱신 함수 추가
+    fun updateData(newList: List<LocalCourse>) {
+        courseList.clear()
+        courseList.addAll(newList)
+        notifyDataSetChanged()
+    }
 }
