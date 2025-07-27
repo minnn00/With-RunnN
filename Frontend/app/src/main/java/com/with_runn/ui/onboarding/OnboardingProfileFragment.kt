@@ -47,6 +47,25 @@ class OnboardingProfileFragment : Fragment() {
             binding.defaultText.text = "입력"
         }
 
+        if (viewModel.hasCharactersBeenSet()){
+            binding.entryPersonality.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_active)
+            binding.textPersonality.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            val characterTitle = viewModel.characters.value!!
+            if (characterTitle.size > 3) binding.textPersonality.text = characterTitle[0] +" "+ characterTitle[1] +" "+ characterTitle[2] + "..."
+            else{
+                var temp = ""
+                for (i in 0 until characterTitle.size) {
+                    temp += characterTitle[i] + " "
+                }
+                binding.textPersonality.text = temp
+            }
+        } else {
+            binding.entryDefault.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
+            binding.defaultText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
+            binding.defaultText.text = "선택"
+
+        }
+
         binding.entryDefault.setOnClickListener {
             findNavController().navigate(R.id.action_onboardingProfileFragment_to_onboardingProfileDefaultFragment)
         }

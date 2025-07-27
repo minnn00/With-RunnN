@@ -19,8 +19,6 @@ class OnboardingProfileDefaultFragment : Fragment() {
     private var _binding: FragmentOnboardingProfileDefaultBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var preferences: SharedPreferences
-    //private lateinit var editor: SharedPreferences.Editor //sharedPreference
     val viewModel: OnboardingViewmodel by activityViewModels()
 
     private lateinit var name: String
@@ -41,17 +39,23 @@ class OnboardingProfileDefaultFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        preferences = requireContext().getSharedPreferences("user_info", Context.MODE_PRIVATE)
-        //editor = preferences.edit() //sharedPreference
 
         binding.nameEditText.setText(viewModel.name.value)
         binding.birthdayEditText.setText(viewModel.birth.value)
-        binding.breedEditText.setText(preferences.getString("breed", "15자 이내로 입력해주세요"))
-        if (preferences.contains("breed")) breed_savable = true
+        if (!viewModel.hasDefaultBeenSet()){
+            binding.breedEditText.setText("15자 이내로 입력해주세요")
+            binding.breedEditText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_500))
+            setInitialSex("남")
+            setInitialSize("소형견")
+        }
+        else{
+            binding.breedEditText.setText(viewModel.breed.value)
+            binding.breedEditText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_700))
+            breed_savable = true
+            setInitialSex(viewModel.gender.value!!)
+            setInitialSize(viewModel.size.value!!)
+        }
 
-        // 초기 UI 설정
-        setInitialSex(preferences.getString("sex", "남")!!)
-        setInitialSize(preferences.getString("size", "소형견")!!)
 
         // 저장 버튼 클릭
         binding.saveButton.setOnClickListener {
@@ -62,15 +66,9 @@ class OnboardingProfileDefaultFragment : Fragment() {
             if (name_saveable == 0) {
                 showNameError("중복 확인을 해주세요")
             } else if (name_saveable == 2 && breed_savable) {
-//                editor.putString("name", name)
-//                editor.putString("sex", sex)
-//                editor.putString("birthday", birthday)
-//                editor.putString("breed", breed)
-//                editor.putString("size", size)
-//                editor.apply()
+
                 viewModel.setDefaultValues(name, sex, birthday, breed, size)
 
-                findNavController().popBackStack() // 프로필 프래그먼트로 복귀
                 findNavController().popBackStack() // 프로필 프래그먼트로 복귀
             }
         }
@@ -87,7 +85,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
         // 이름 중복 확인
         binding.nameCheckButton.setOnClickListener {
             val currentName = binding.nameEditText.text.toString()
-            val savedName = preferences.getString("name", "none")
+            val savedName = viewModel.name.value
 
             if (currentName == savedName) {
                 showNameError("중복된 이름입니다")

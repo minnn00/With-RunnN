@@ -11,15 +11,19 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfilePersonalityBinding
+import kotlin.getValue
 
 class OnboardingProfilePersonalityFragment : Fragment() {
 
     private var _binding: FragmentOnboardingProfilePersonalityBinding? = null
     private val binding get() = _binding!!
+
+    val viewModel : OnboardingViewmodel by activityViewModels()
 
     private val items = listOf(
         "활발함", "차분함", "에너지 폭발", "느긋함", "사교적", "낯가림",
@@ -89,6 +93,18 @@ class OnboardingProfilePersonalityFragment : Fragment() {
         // 저장 버튼
         binding.saveButton.setOnClickListener {
             // TODO: 선택된 칩 저장 로직 구현
+            val selectedItems = mutableListOf<String>()
+
+            // chipgroup 내부의 자식들을 순회하면서 Chip만 필터링
+            for (i in 0 until binding.chipgroup.childCount) {
+                val view = binding.chipgroup.getChildAt(i)
+                if (view is Chip && view.isChecked) {
+                    selectedItems.add(view.text.toString())
+                }
+            }
+
+            viewModel.setCharacters(selectedItems)
+
             Toast.makeText(requireContext(), "저장 완료!", Toast.LENGTH_SHORT).show()
             findNavController().popBackStack()
         }
