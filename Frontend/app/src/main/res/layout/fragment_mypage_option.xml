@@ -65,6 +65,8 @@
                 android:layout_weight="1"
                 android:thumb="@drawable/bg_switch_thumb"
                 app:track="@drawable/bg_switch_selector"
+                app:thumbTint="@color/white"
+                app:trackTint="@color/bg_switch_track"
                 app:switchMinWidth="44dp"
                 android:text="알림"
                 android:fontFamily="@font/pretendard_regular"
