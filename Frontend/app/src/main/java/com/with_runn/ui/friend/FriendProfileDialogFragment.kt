@@ -1,15 +1,18 @@
 package com.with_runn.ui.friend
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.with_runn.R
 
 class FriendProfileDialogFragment : DialogFragment() {
+    private var friendName: String = ""
 
     companion object {
         private const val ARG_FRIEND_NAME = "friend_name"
@@ -55,7 +58,7 @@ class FriendProfileDialogFragment : DialogFragment() {
         }
 
         // 데이터 가져오기
-        val friendName = arguments?.getString(ARG_FRIEND_NAME) ?: ""
+        friendName = arguments?.getString(ARG_FRIEND_NAME) ?: ""
         val personalityTag = arguments?.getString(ARG_PERSONALITY_TAG) ?: ""
         val personalityTags = arguments?.getStringArrayList(ARG_PERSONALITY_TAGS) ?: arrayListOf()
         val imageResId = arguments?.getInt(ARG_IMAGE_RES_ID, R.drawable.maru) ?: R.drawable.maru
@@ -90,7 +93,7 @@ class FriendProfileDialogFragment : DialogFragment() {
         // 메뉴 버튼 설정
         val menuButton = view?.findViewById<ImageView>(R.id.menu_button)
         menuButton?.setOnClickListener {
-            // 메뉴 기능 구현
+            showMenuPopup(it)
         }
 
         // 팔로우 버튼 설정
@@ -104,7 +107,45 @@ class FriendProfileDialogFragment : DialogFragment() {
         messageButton?.setOnClickListener {
             // 메시지 기능 구현
         }
-
-
+    }
+    
+    private fun showMenuPopup(anchorView: View) {
+        val inflater = LayoutInflater.from(requireContext())
+        val popupView = inflater.inflate(R.layout.popup_menu, null)
+        
+        // 팝업 뷰의 크기를 측정
+        popupView.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        
+        val popupWindow = PopupWindow(
+            popupView,
+            popupView.measuredWidth,
+            popupView.measuredHeight
+        )
+        
+        // 팝업 윈도우 설정
+        popupWindow.isOutsideTouchable = true
+        popupWindow.isFocusable = true
+        popupWindow.elevation = 10f
+        
+        // 팝업 표시 (메뉴 버튼 아래, 더 오른쪽으로)
+        popupWindow.showAsDropDown(anchorView, -popupWindow.width + anchorView.width + 80, 0)
+        
+                       // 팝업 메뉴 아이템 클릭 리스너
+               popupView.findViewById<View>(R.id.block_button)?.setOnClickListener {
+                   // 차단하기 다이얼로그 표시
+                   popupWindow.dismiss()
+                   val blockDialog = BlockUserDialogFragment.newInstance(friendName)
+                   blockDialog.show(childFragmentManager, "BlockUserDialog")
+               }
+        
+        popupView.findViewById<View>(R.id.report_button)?.setOnClickListener {
+            // 신고하기 Activity 실행
+            popupWindow.dismiss()
+            val intent = Intent(requireContext(), ReportActivity::class.java)
+            startActivity(intent)
+        }
     }
 } 

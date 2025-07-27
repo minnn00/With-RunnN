@@ -1,8 +1,9 @@
-package com.with_runn.ui.chat
+package com.with_runn.ui.chat.activity
 
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,13 +15,21 @@ import android.widget.TextView
 import android.widget.Toast
 import android.view.MotionEvent
 import android.view.WindowInsetsController
+import android.widget.FrameLayout
 import com.with_runn.R
+import com.with_runn.ui.chat.model.ChatRoom
+import com.with_runn.ui.chat.model.dto.ChatRoomDto
+import com.with_runn.ui.chat.model.mapper.ChatRoomMapper.toChatRoom
+import com.with_runn.ui.chat.adapter.ChatAdapter
+import com.with_runn.ui.chat.repository.ChatRepository
+import com.with_runn.ui.chat.network.RetrofitClient
 
 class ChatActivity : AppCompatActivity() {
     
     private lateinit var chatAdapter: ChatAdapter
     private var chatRooms: List<ChatRoom> = listOf()
     private var currentSwipedPosition = -1
+    private val chatRepository = ChatRepository()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +45,8 @@ class ChatActivity : AppCompatActivity() {
         // RecyclerView 설정
         setupRecyclerView()
         
-        // 샘플 데이터 로드
-        loadSampleData()
+        // API로 채팅방 목록 로드
+        loadChatRoomsFromApi()
         
         // 스와이프 삭제 기능 설정
         setupSwipeToDelete()
@@ -94,7 +103,26 @@ class ChatActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
                 if (direction == ItemTouchHelper.LEFT) {
+                    // 왼쪽 스와이프 시 삭제 버튼 표시하고 위치 고정
                     showDeleteButton(position)
+                    
+                    // 아이템을 삭제 버튼 크기만큼 이동된 상태로 고정
+                    val deleteButtonWidth = 80f * resources.displayMetrics.density
+                    val itemView = viewHolder.itemView
+                    val chatItemContainer = itemView.findViewById<View>(R.id.chat_item_container)
+                    val deleteContainer = itemView.findViewById<FrameLayout>(R.id.delete_container)
+                    
+                    // 삭제 컨테이너를 완전히 표시
+                    deleteContainer?.let { container ->
+                        container.visibility = View.VISIBLE
+                        val layoutParams = container.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                        layoutParams.width = deleteButtonWidth.toInt()
+                        container.layoutParams = layoutParams
+                        container.translationX = 0f
+                    }
+                    
+                    chatItemContainer?.translationX = -deleteButtonWidth
+                    
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     hideDeleteButton()
                 }
@@ -111,6 +139,7 @@ class ChatActivity : AppCompatActivity() {
             ) {
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
                     val itemView = viewHolder.itemView
+                    val deleteContainer = itemView.findViewById<FrameLayout>(R.id.delete_container)
                     val deleteButton = itemView.findViewById<TextView>(R.id.delete_button)
                     val deleteBackground = itemView.findViewById<View>(R.id.delete_background)
                     val chatItemContainer = itemView.findViewById<View>(R.id.chat_item_container)
@@ -120,28 +149,18 @@ class ChatActivity : AppCompatActivity() {
                     
                     // 왼쪽 스와이프 (삭제 버튼 표시)
                     if (dX < 0) {
-                        // 스와이프 거리를 삭제 버튼 크기로 제한
-                        val limitedDX = dX.coerceAtMost(-deleteButtonWidth)
+                        // 스와이프 거리를 삭제 버튼 크기로 제한 (최대 -deleteButtonWidth까지만)
+                        val limitedDX = dX.coerceAtLeast(-deleteButtonWidth)
                         
                         // 스와이프 진행도 계산
                         val progress = -limitedDX / deleteButtonWidth
                         
-                        if (progress > 0) {
-                            // 삭제 버튼 표시
-                            deleteBackground.visibility = View.VISIBLE
-                            deleteButton.visibility = View.VISIBLE
-                            
-                            // 카카오톡처럼 자연스러운 투명도 변화
-                            deleteBackground.alpha = progress.coerceIn(0f, 1f)
-                            deleteButton.alpha = progress.coerceIn(0f, 1f)
-                            
-                            // 채팅 아이템을 왼쪽으로 밀어냄 (카카오톡과 동일)
-                            chatItemContainer.translationX = limitedDX
-                            
-                            // 스와이프 완료 시 상태 업데이트
-                            if (progress >= 1f) {
-                                currentSwipedPosition = viewHolder.adapterPosition
-                            }
+                        // 채팅 아이템을 왼쪽으로 밀어냄
+                        chatItemContainer.translationX = limitedDX
+                        
+                        // 스와이프 완료 시 상태 업데이트
+                        if (progress >= 1f) {
+                            currentSwipedPosition = viewHolder.adapterPosition
                         }
                     } else if (dX > 0) {
                         // 오른쪽 스와이프 (삭제 버튼 숨기기) - 삭제 버튼이 표시되어 있을 때만
@@ -149,27 +168,24 @@ class ChatActivity : AppCompatActivity() {
                             val limitedDX = dX.coerceAtMost(deleteButtonWidth)
                             val progress = limitedDX / deleteButtonWidth
                             
-                            if (progress > 0) {
-                                // 카카오톡처럼 자연스러운 투명도 감소
-                                deleteBackground.alpha = (1f - progress).coerceIn(0f, 1f)
-                                deleteButton.alpha = (1f - progress).coerceIn(0f, 1f)
-                                
-                                // 채팅 아이템을 원래 위치로 복원
-                                chatItemContainer.translationX = limitedDX
-                                
-                                // 완전히 숨겨지면 상태 리셋
-                                if (progress >= 1f) {
-                                    deleteBackground.visibility = View.GONE
-                                    deleteButton.visibility = View.GONE
-                                    currentSwipedPosition = -1
-                                }
+                            // 삭제 컨테이너를 오른쪽으로 이동시켜서 사라지게 함
+                            deleteContainer?.translationX = limitedDX
+                            
+                            // 채팅 아이템을 원래 위치로 복원
+                            chatItemContainer.translationX = -deleteButtonWidth + limitedDX
+                            
+                            // 완전히 복원되면 상태 리셋
+                            if (progress >= 1f) {
+                                deleteContainer?.visibility = View.GONE
+                                deleteContainer?.translationX = 0f
+                                chatItemContainer.translationX = 0f
+                                currentSwipedPosition = -1
                             }
                         }
                     } else {
                         // 스와이프가 없을 때
                         if (currentSwipedPosition != viewHolder.adapterPosition) {
-                            deleteBackground.visibility = View.GONE
-                            deleteButton.visibility = View.GONE
+                            deleteContainer?.visibility = View.GONE
                             chatItemContainer.translationX = 0f
                         }
                     }
@@ -214,25 +230,45 @@ class ChatActivity : AppCompatActivity() {
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
             ) {
-                // 스와이프가 끝났을 때 모든 요소의 translationX를 0으로 리셋
+                val position = viewHolder.adapterPosition
                 val itemView = viewHolder.itemView
                 val chatItemContainer = itemView.findViewById<View>(R.id.chat_item_container)
-                val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
-                val profileImage2 = itemView.findViewById<ImageView>(R.id.profile_image_2)
-                val chatName = itemView.findViewById<TextView>(R.id.chat_name)
-                val chatTime = itemView.findViewById<TextView>(R.id.chat_time)
-                val lastMessage = itemView.findViewById<TextView>(R.id.last_message)
-                val notificationBadge = itemView.findViewById<View>(R.id.notification_badge)
-                val notificationCount = itemView.findViewById<TextView>(R.id.notification_count)
+                val deleteContainer = itemView.findViewById<FrameLayout>(R.id.delete_container)
                 
-                chatItemContainer?.translationX = 0f
-                profileImage?.translationX = 0f
-                profileImage2?.translationX = 0f
-                chatName?.translationX = 0f
-                chatTime?.translationX = 0f
-                lastMessage?.translationX = 0f
-                notificationBadge?.translationX = 0f
-                notificationCount?.translationX = 0f
+                // 삭제 버튼이 표시된 아이템은 위치를 유지, 그렇지 않으면 리셋
+                if (currentSwipedPosition == position) {
+                    // 삭제 버튼이 표시된 상태이므로 위치 유지
+                    val deleteButtonWidth = 80f * resources.displayMetrics.density
+                    chatItemContainer?.translationX = -deleteButtonWidth
+                    deleteContainer?.let { container ->
+                        container.visibility = View.VISIBLE
+                        // 완전히 드러난 상태로 설정
+                        val layoutParams = container.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
+                        layoutParams.width = deleteButtonWidth.toInt()
+                        container.layoutParams = layoutParams
+                        container.translationX = 0f
+                    }
+                } else {
+                    // 일반 상태로 리셋
+                    val profileImage = itemView.findViewById<ImageView>(R.id.profile_image)
+                    val profileImage2 = itemView.findViewById<ImageView>(R.id.profile_image_2)
+                    val chatName = itemView.findViewById<TextView>(R.id.chat_name)
+                    val chatTime = itemView.findViewById<TextView>(R.id.chat_time)
+                    val lastMessage = itemView.findViewById<TextView>(R.id.last_message)
+                    val notificationBadge = itemView.findViewById<View>(R.id.notification_badge)
+                    val notificationCount = itemView.findViewById<TextView>(R.id.notification_count)
+                    
+                    chatItemContainer?.translationX = 0f
+                    deleteContainer?.visibility = View.GONE
+                    deleteContainer?.translationX = 0f
+                    profileImage?.translationX = 0f
+                    profileImage2?.translationX = 0f
+                    chatName?.translationX = 0f
+                    chatTime?.translationX = 0f
+                    lastMessage?.translationX = 0f
+                    notificationBadge?.translationX = 0f
+                    notificationCount?.translationX = 0f
+                }
                 
                 super.clearView(recyclerView, viewHolder)
             }
@@ -299,6 +335,54 @@ class ChatActivity : AppCompatActivity() {
         }
     }
     
+    /**
+     * API를 통해 채팅방 목록을 로드
+     */
+    private fun loadChatRoomsFromApi() {
+        Log.d("ChatActivity", "API 호출 시작")
+        
+        // Retrofit의 enqueue() 메서드 사용
+        RetrofitClient.chatApiService.getChatList().enqueue(object : retrofit2.Callback<List<ChatRoomDto>> {
+            override fun onResponse(
+                call: retrofit2.Call<List<ChatRoomDto>>,
+                response: retrofit2.Response<List<ChatRoomDto>>
+            ) {
+                Log.d("ChatActivity", "API 응답 성공: ${response.code()}")
+                
+                if (response.isSuccessful) {
+                    val chatRoomDtos = response.body()
+                    Log.d("ChatActivity", "받은 데이터: $chatRoomDtos")
+                    
+                    if (chatRoomDtos != null) {
+                        // DTO를 UI 모델로 변환
+                        val chatRooms = chatRoomDtos.map { it.toChatRoom() }
+                        Log.d("ChatActivity", "변환된 채팅방: $chatRooms")
+                        
+                        // UI 업데이트
+                        runOnUiThread {
+                            this@ChatActivity.chatRooms = chatRooms
+                            chatAdapter.updateChatRooms(chatRooms)
+                        }
+                    } else {
+                        Log.e("ChatActivity", "응답 본문이 null")
+                        loadSampleData() // API 실패 시 샘플 데이터 로드
+                    }
+                } else {
+                    Log.e("ChatActivity", "API 호출 실패: ${response.code()} - ${response.message()}")
+                    loadSampleData() // API 실패 시 샘플 데이터 로드
+                }
+            }
+            
+            override fun onFailure(call: retrofit2.Call<List<ChatRoomDto>>, t: Throwable) {
+                Log.e("ChatActivity", "API 호출 실패", t)
+                loadSampleData() // 네트워크 오류 시 샘플 데이터 로드
+            }
+        })
+    }
+    
+    /**
+     * 샘플 데이터 로드 (API 실패 시 사용)
+     */
     private fun loadSampleData() {
         chatRooms = listOf(
             ChatRoom(
@@ -341,17 +425,9 @@ class ChatActivity : AppCompatActivity() {
     }
     
     private fun setupSystemUI() {
-        // WindowCompat를 사용한 현대적인 시스템 UI 설정
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-        
         // 시스템 UI 컨트롤러 설정
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
-        
-        // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
-        window.insetsController?.let { controller ->
-            controller.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        }
     }
 } 
