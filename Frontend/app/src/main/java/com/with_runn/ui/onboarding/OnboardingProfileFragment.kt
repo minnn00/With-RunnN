@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -36,15 +37,16 @@ class OnboardingProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         if (viewModel.hasDefaultBeenSet()) {
             binding.entryDefault.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_active)
             binding.defaultText.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             binding.defaultText.text = viewModel.name.value
+            Toast.makeText(requireContext(), "1, ${viewModel.hasDefaultBeenSet()}", Toast.LENGTH_SHORT).show()
         } else {
             binding.entryDefault.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
             binding.defaultText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
             binding.defaultText.text = "입력"
+            Toast.makeText(requireContext(), "2, ${viewModel.hasDefaultBeenSet()}", Toast.LENGTH_SHORT).show()
         }
 
         if (viewModel.hasCharactersBeenSet()){
@@ -60,9 +62,9 @@ class OnboardingProfileFragment : Fragment() {
                 binding.textPersonality.text = temp
             }
         } else {
-            binding.entryDefault.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
-            binding.defaultText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
-            binding.defaultText.text = "선택"
+            binding.entryPersonality.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
+            binding.textPersonality.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
+            binding.textPersonality.text = "선택"
 
         }
 

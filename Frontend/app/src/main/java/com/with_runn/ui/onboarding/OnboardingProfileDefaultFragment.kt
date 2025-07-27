@@ -1,7 +1,5 @@
 package com.with_runn.ui.onboarding
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,7 +20,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
     val viewModel: OnboardingViewmodel by activityViewModels()
 
     private lateinit var name: String
-    private var sex: String = "남"
+    private var gender: String = "남"
     private lateinit var birthday: String
     private lateinit var breed: String
     private var size: String = "소형견"
@@ -67,15 +65,15 @@ class OnboardingProfileDefaultFragment : Fragment() {
                 showNameError("중복 확인을 해주세요")
             } else if (name_saveable == 2 && breed_savable) {
 
-                viewModel.setDefaultValues(name, sex, birthday, breed, size)
+                viewModel.setDefaultValues(name, gender, birthday, breed, size)
 
                 findNavController().popBackStack() // 프로필 프래그먼트로 복귀
             }
         }
 
         // 성별 버튼 처리
-        binding.buttonMale.setOnClickListener { setSex("남") }
-        binding.buttonFemale.setOnClickListener { setSex("여") }
+        binding.buttonMale.setOnClickListener { setGender("남") }
+        binding.buttonFemale.setOnClickListener { setGender("여") }
 
         // 크기 버튼 처리
         binding.buttonSmall.setOnClickListener { setSize("소형견") }
@@ -150,8 +148,8 @@ class OnboardingProfileDefaultFragment : Fragment() {
         binding.nameLog.visibility = View.VISIBLE
     }
 
-    private fun setSex(selected: String) {
-        sex = selected
+    private fun setGender(selected: String) {
+        gender = selected
         val isMale = selected == "남"
         binding.buttonMale.apply {
             background = ContextCompat.getDrawable(requireContext(),
@@ -187,7 +185,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
     }
 
     private fun setInitialSex(sexValue: String) {
-        setSex(sexValue)
+        setGender(sexValue)
     }
 
     private fun setInitialSize(sizeValue: String) {
