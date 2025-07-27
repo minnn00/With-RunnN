@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -37,18 +38,14 @@ class OnboardingProfileDefaultFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        binding.nameEditText.setText(viewModel.name.value)
-        binding.birthdayEditText.setText(viewModel.birth.value)
         if (!viewModel.hasDefaultBeenSet()){
-            binding.breedEditText.setText("15자 이내로 입력해주세요")
-            binding.breedEditText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_500))
             setInitialSex("남")
             setInitialSize("소형견")
         }
         else{
+            binding.nameEditText.setText(viewModel.name.value)
             binding.breedEditText.setText(viewModel.breed.value)
-            binding.breedEditText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_700))
+            binding.birthdayEditText.setText(viewModel.birth.value)
             breed_savable = true
             setInitialSex(viewModel.gender.value!!)
             setInitialSize(viewModel.size.value!!)
@@ -63,7 +60,12 @@ class OnboardingProfileDefaultFragment : Fragment() {
 
             if (name_saveable == 0) {
                 showNameError("중복 확인을 해주세요")
-            } else if (name_saveable == 2 && breed_savable) {
+                Toast.makeText(requireContext(), "이름 중복 확인을 해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else if (!breed_savable){
+                Toast.makeText(requireContext(), "견종은 15자 이내로 입력해주세요", Toast.LENGTH_SHORT).show()
+            }
+            else if (name_saveable == 2) {
 
                 viewModel.setDefaultValues(name, gender, birthday, breed, size)
 

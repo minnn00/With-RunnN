@@ -53,11 +53,12 @@ class OnboardingProfileFragment : Fragment() {
             binding.entryPersonality.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_active)
             binding.textPersonality.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
             val characterTitle = viewModel.characters.value!!
-            if (characterTitle.size > 3) binding.textPersonality.text = characterTitle[0] +" "+ characterTitle[1] +" "+ characterTitle[2] + "..."
+            if (characterTitle.size > 3) binding.textPersonality.text = characterTitle[0] +", "+ characterTitle[1] +", "+ characterTitle[2] + " 외 ${characterTitle.size.toInt()-3}개"
             else{
                 var temp = ""
                 for (i in 0 until characterTitle.size) {
-                    temp += characterTitle[i] + " "
+                    temp += characterTitle[i]
+                    if (i<characterTitle.size-1) temp += ", "
                 }
                 binding.textPersonality.text = temp
             }
@@ -65,6 +66,26 @@ class OnboardingProfileFragment : Fragment() {
             binding.entryPersonality.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
             binding.textPersonality.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
             binding.textPersonality.text = "선택"
+
+        }
+
+        if (viewModel.hasStyleBeenSet()){
+            binding.entryStyle.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_active)
+            binding.textStyle.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+            val styleTitle = viewModel.style.value!!
+            if (styleTitle.size > 3) binding.textStyle.text = styleTitle[0] +", "+ styleTitle[1] +", "+ styleTitle[2] + " 외 ${styleTitle.size-3}개"
+            else{
+                var temp = ""
+                for (i in 0 until styleTitle.size) {
+                    temp += styleTitle[i]
+                    if (i<styleTitle.size-1) temp += ", "
+                }
+                binding.textStyle.text = temp
+            }
+        } else {
+            binding.entryStyle.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
+            binding.textStyle.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
+            binding.textStyle.text = "선택"
 
         }
 
@@ -76,7 +97,7 @@ class OnboardingProfileFragment : Fragment() {
             findNavController().navigate(R.id.action_onboardingProfileFragment_to_onboardingProfilePersonalityFragment)
         }
 
-        binding.entryWalkingStyle.setOnClickListener {
+        binding.entryStyle.setOnClickListener {
             findNavController().navigate(R.id.action_onboardingProfileFragment_to_onboardingProfileWalkingStyleFragment)
         }
 

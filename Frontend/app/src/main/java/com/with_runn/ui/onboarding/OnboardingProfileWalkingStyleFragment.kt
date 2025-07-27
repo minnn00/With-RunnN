@@ -12,16 +12,20 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfilePersonalityBinding
 import com.with_runn.databinding.FragmentOnboardingProfileWalkingstyleBinding
+import kotlin.getValue
 
 class OnboardingProfileWalkingStyleFragment : Fragment() {
     private var _binding: FragmentOnboardingProfileWalkingstyleBinding? = null
     private val binding get() = _binding!!
+
+    val viewModel : OnboardingViewmodel by activityViewModels()
 
     val items = listOf("빠른 산책","느긋한 산책","속도균형",
         "냄새 탐험","앞서 걷는 타입",
@@ -91,7 +95,15 @@ class OnboardingProfileWalkingStyleFragment : Fragment() {
         // 저장 버튼
         binding.saveButton.setOnClickListener {
             // TODO: 선택된 칩 저장 로직 구현
-            Toast.makeText(requireContext(), "저장 완료!", Toast.LENGTH_SHORT).show()
+            // chipgroup 내부의 자식들을 순회하면서 Chip만 필터링
+            val selectedItems = mutableListOf<String>()
+            for (i in 0 until binding.chipgroup.childCount) {
+                val view = binding.chipgroup.getChildAt(i)
+                if (view is Chip && view.isChecked) {
+                    selectedItems.add(view.text.toString())
+                }
+            }
+            viewModel.setStyle(selectedItems)
             findNavController().popBackStack()
         }
 
