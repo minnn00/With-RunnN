@@ -27,7 +27,7 @@ class OnboardingProfilePersonalityFragment : Fragment() {
 
     private val items = listOf(
         "활발함", "차분함", "에너지 폭발", "느긋함", "사교적", "낯가림",
-        "의존적", "겁쟁이", "낯가림", "고집 셈", "보호자 중심", "호기심 왕성",
+        "의존적", "겁쟁이", "똑똑함", "고집 셈", "보호자 중심", "호기심 왕성",
         "독립적", "조용함", "장난꾸러기", "방어적", "스킨십 좋아함",
         "스킨십 싫어함", "직접 입력"
     )
@@ -51,41 +51,20 @@ class OnboardingProfilePersonalityFragment : Fragment() {
         binding.noticeText.text = builder
 
         // Chip 추가
-        val chipInflater = LayoutInflater.from(ContextThemeWrapper(requireContext(), R.style.onboarding_chip))
         items.forEachIndexed { index, item ->
-            val chip = chipInflater.inflate(R.layout.view_onboarding_chip, binding.chipgroup, false) as Chip
-            val id = View.generateViewId()
-            chip.id = id
-            chip.text = item
-            chip.isCheckable = true
-            chip.isClickable = true
-
-            chip.setOnClickListener {
-                Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
-                if (index == 18) { // "직접 입력" 칩
-                    binding.customLayout.visibility = if (chip.isChecked) View.VISIBLE else View.INVISIBLE
-                }
+            makeChip(item, index==18)
+        }
+        if (viewModel.hasCharactersBeenSet()) {
+            for (i in 0 until viewModel.characters.value!!.size) {
+                if (viewModel.characters.value!![i] !in items) makeChip(viewModel.characters.value!![i],false)
             }
-
-            idOfChips.add(id)
-            binding.chipgroup.addView(chip)
         }
 
         // 직접 입력 칩 생성
         binding.generateButton.setOnClickListener {
             val inputText = binding.inputEditText.text.toString()
             if (inputText.isNotBlank()) {
-                val chip = chipInflater.inflate(R.layout.view_onboarding_chip, binding.chipgroup, false) as Chip
-                val id = View.generateViewId()
-                chip.id = id
-                chip.text = inputText
-                chip.isCheckable = true
-                chip.isClickable = true
-                chip.setOnClickListener {
-                    Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
-                }
-                idOfChips.add(id)
-                binding.chipgroup.addView(chip)
+                makeChip(inputText,false)
                 binding.inputEditText.text.clear()
             }
         }
@@ -98,7 +77,7 @@ class OnboardingProfilePersonalityFragment : Fragment() {
             // chipgroup 내부의 자식들을 순회하면서 Chip만 필터링
             for (i in 0 until binding.chipgroup.childCount) {
                 val view = binding.chipgroup.getChildAt(i)
-                if (view is Chip && view.isChecked) {
+                if (view is Chip && view.isChecked && i!=18) {
                     selectedItems.add(view.text.toString())
                 }
             }
@@ -118,5 +97,27 @@ class OnboardingProfilePersonalityFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun makeChip(text: String, makeBtn: Boolean){
+        val chipInflater = LayoutInflater.from(ContextThemeWrapper(requireContext(), R.style.onboarding_chip))
+
+        val chip = chipInflater.inflate(R.layout.view_onboarding_chip, binding.chipgroup, false) as Chip
+        val id = View.generateViewId()
+        chip.id = id
+        chip.text = text
+        if (viewModel.hasCharactersBeenSet() && text in viewModel.characters.value!!) chip.isChecked = true
+        chip.isCheckable = true
+        chip.isClickable = true
+
+        chip.setOnClickListener {
+            Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
+            if (makeBtn) { // "직접 입력" 칩
+                binding.customLayout.visibility = if (chip.isChecked) View.VISIBLE else View.INVISIBLE
+            }
+        }
+
+        idOfChips.add(id)
+        binding.chipgroup.addView(chip)
     }
 }

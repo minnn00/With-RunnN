@@ -88,7 +88,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:background="@drawable/bg_entry_inactive"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="14dp">
 
                     <EditText
                         android:id="@+id/nameEditText"
@@ -99,21 +100,21 @@
                         android:textSize="14dp"
                         android:fontFamily="@font/pretendard_regular"
                         android:textColor="@color/gray_700"
-                        android:hint="이름을 입력해주세요"
-                        android:layout_marginLeft="14dp"/>
+                        android:hint="이름을 입력해주세요"/>
 
                     <Button
                         android:id="@+id/name_check_button"
-                        android:layout_width="69dp"
-                        android:layout_height="30dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:backgroundTint="@color/gray_100"
                         android:fontFamily="@font/pretendard_medium"
-                        android:padding="5dp"
+                        android:padding="3dp"
                         android:text="중복 확인"
                         android:textColor="@color/gray_800"
                         android:textSize="10sp"
-                        app:cornerRadius="20dp" />
+                        android:minWidth="0dp"
+                        android:minHeight="0dp" />
 
                 </LinearLayout>
 
@@ -420,7 +421,7 @@
         android:layout_marginBottom="16dp"
         android:text="저장하기"
         android:shadowColor="@null"
-        android:fontFamily="@font/pretendard_semibold"
+        android:fontFamily="@font/pretendard_medium"
         android:textSize="14sp"
         android:textColor="@color/gray_050"
         android:background="@drawable/bg_button_main"

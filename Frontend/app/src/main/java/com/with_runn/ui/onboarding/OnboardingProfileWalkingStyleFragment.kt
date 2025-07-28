@@ -53,42 +53,20 @@ class OnboardingProfileWalkingStyleFragment : Fragment() {
         binding.noticeText.text = builder
 
         // Chip 추가
-        val chipInflater = LayoutInflater.from(ContextThemeWrapper(requireContext(), R.style.onboarding_chip))
         items.forEachIndexed { index, item ->
-            val chip = chipInflater.inflate(R.layout.view_onboarding_chip, binding.chipgroup, false) as Chip
-            val id = View.generateViewId()
-            chip.id = id
-            chip.text = item
-            chip.isCheckable = true
-            chip.isClickable = true
-
-            chip.setOnClickListener {
-                Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
-                if (index == 18) { // "직접 입력" 칩
-                    binding.customLayout.visibility = if (chip.isChecked) View.VISIBLE else View.INVISIBLE
-                }
+            makeChip(item, index==11)
+        }
+        if (viewModel.hasStyleBeenSet()) {
+            for (i in 0 until viewModel.style.value!!.size) {
+                if (viewModel.style.value!![i] !in items) makeChip(viewModel.style.value!![i],false)
             }
-
-            idOfChips.add(id)
-            binding.chipgroup.addView(chip)
         }
 
         // 직접 입력 칩 생성
         binding.generateButton.setOnClickListener {
             val inputText = binding.inputEditText.text.toString()
             if (inputText.isNotBlank()) {
-                val chip = chipInflater.inflate(R.layout.view_onboarding_chip, binding.chipgroup, false) as Chip
-                val id = View.generateViewId()
-                chip.id = id
-                chip.text = inputText
-                chip.isCheckable = true
-                chip.isClickable = true
-                chip.setOnClickListener {
-                    Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
-                }
-                idOfChips.add(id)
-                binding.chipgroup.addView(chip)
-                binding.inputEditText.text.clear()
+                makeChip(inputText,false)
             }
         }
 
@@ -99,7 +77,7 @@ class OnboardingProfileWalkingStyleFragment : Fragment() {
             val selectedItems = mutableListOf<String>()
             for (i in 0 until binding.chipgroup.childCount) {
                 val view = binding.chipgroup.getChildAt(i)
-                if (view is Chip && view.isChecked) {
+                if (view is Chip && view.isChecked && i!=11) {
                     selectedItems.add(view.text.toString())
                 }
             }
@@ -115,5 +93,28 @@ class OnboardingProfileWalkingStyleFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun makeChip(text: String, makeBtn: Boolean){
+
+        val chipInflater = LayoutInflater.from(ContextThemeWrapper(requireContext(), R.style.onboarding_chip))
+
+        val chip = chipInflater.inflate(R.layout.view_onboarding_chip, binding.chipgroup, false) as Chip
+        val id = View.generateViewId()
+        chip.id = id
+        chip.text = text
+        if (viewModel.hasStyleBeenSet() && text in viewModel.style.value!!) chip.isChecked = true
+        chip.isCheckable = true
+        chip.isClickable = true
+
+        chip.setOnClickListener {
+            Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
+            if (makeBtn) { // "직접 입력" 칩
+                binding.customLayout.visibility = if (chip.isChecked) View.VISIBLE else View.INVISIBLE
+            }
+        }
+
+        idOfChips.add(id)
+        binding.chipgroup.addView(chip)
     }
 }
