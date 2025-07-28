@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +15,14 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.with_runn.MainActivity
 import com.with_runn.R
+import com.with_runn.data.model.setProfileResponse
+import com.with_runn.data.model.setProfileRequest
+import com.with_runn.data.network.ApiClient
 import com.with_runn.databinding.FragmentOnboardingProfileBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import kotlin.Int
 
 class OnboardingProfileFragment : Fragment() {
 
@@ -24,6 +32,7 @@ class OnboardingProfileFragment : Fragment() {
     private lateinit var preferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var name: String
+    private var saveable = false
 
     val viewModel : OnboardingViewmodel by activityViewModels()
 
@@ -88,6 +97,13 @@ class OnboardingProfileFragment : Fragment() {
             binding.textStyle.text = "선택"
 
         }
+        if (viewModel.hasDefaultBeenSet() && viewModel.hasCharactersBeenSet() && viewModel.hasStyleBeenSet()){
+            saveable = true
+            binding.saveButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_button_main)
+        } else {
+            saveable = false
+            binding.saveButton.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
+        }
 
         binding.entryDefault.setOnClickListener {
             findNavController().navigate(R.id.action_onboardingProfileFragment_to_onboardingProfileDefaultFragment)
@@ -103,13 +119,40 @@ class OnboardingProfileFragment : Fragment() {
 
         binding.saveButton.setOnClickListener {
             // TODO: 유저 정보 저장 로직 추가
-            // 예시: editor.putString("name", name).apply()
-            // MainActivity로 이동
-            val intent = Intent(requireContext(), MainActivity::class.java)
-            startActivity(intent)
+            if (saveable) {
+                val request = setProfileRequest(
+                    name = viewModel.name.value!!,
+                    gender = viewModel.gender.value!!,
+                    birth = viewModel.birth.value!!,
+                    breed = viewModel.breed.value!!,
+                    size = viewModel.size.value!!,
+                    characters = "",
+                    style = "", //todo : test
+                )
+                ApiClient.instance.setProfile(request).enqueue(object : Callback<setProfileResponse> {
+                    override fun onResponse(
+                        call: Call<setProfileResponse>,
+                        response: Response<setProfileResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val spResponse = response.body()
+                            Log.d("success", "성공")
+                        } else {
+                            Log.e("fail", "실패")
+                        }
+                    }
 
-            // 온보딩 액티비티 종료
-            requireActivity().finish()
+                    override fun onFailure(call: Call<setProfileResponse>, t: Throwable) {
+                        Log.e("Login", "오류 발생: ${t.message}")
+                    }
+                })
+                // MainActivity로 이동
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
+
+                // 온보딩 액티비티 종료
+                requireActivity().finish()
+            }
         }
 
         binding.backButton.setOnClickListener {
