@@ -24,6 +24,7 @@ import com.with_runn.ui.chat.adapter.ChatAdapter
 import com.with_runn.ui.chat.repository.ChatRepository
 import com.with_runn.ui.chat.network.RetrofitClient
 
+
 class ChatActivity : AppCompatActivity() {
     
     private lateinit var chatAdapter: ChatAdapter
@@ -325,13 +326,33 @@ class ChatActivity : AppCompatActivity() {
     private fun deleteChatRoom(position: Int) {
         if (position in chatRooms.indices) {
             val deletedChatRoom = chatRooms[position]
-            val newChatRooms = chatRooms.toMutableList()
-            newChatRooms.removeAt(position)
-            chatRooms = newChatRooms
-            chatAdapter.updateChatRooms(chatRooms)
-            hideDeleteButton()
             
-            Toast.makeText(this, "${deletedChatRoom.name} 채팅방이 삭제되었습니다", Toast.LENGTH_SHORT).show()
+            Log.d("ChatActivity", "=== 실제 채팅방 삭제 시작 ===")
+            Log.d("ChatActivity", "삭제할 채팅방: ${deletedChatRoom.name}, 위치: $position")
+            
+            // 실제 API 호출로 채팅방 삭제
+            chatRepository.deleteChatRoom(1) { result -> // 임시로 chatId=1 사용
+                runOnUiThread {
+                    result.fold(
+                        onSuccess = {
+                            Log.d("ChatActivity", "✅ 실제 채팅방 삭제 성공!")
+                            
+                            // UI에서 제거
+                            val newChatRooms = chatRooms.toMutableList()
+                            newChatRooms.removeAt(position)
+                            chatRooms = newChatRooms
+                            chatAdapter.updateChatRooms(chatRooms)
+                            hideDeleteButton()
+                            
+                            Toast.makeText(this@ChatActivity, "${deletedChatRoom.name} 채팅방이 삭제되었습니다", Toast.LENGTH_SHORT).show()
+                        },
+                        onFailure = { exception ->
+                            Log.e("ChatActivity", "❌ 실제 채팅방 삭제 실패", exception)
+                            Toast.makeText(this@ChatActivity, "채팅방 삭제에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
+                        }
+                    )
+                }
+            }
         }
     }
     
@@ -429,5 +450,57 @@ class ChatActivity : AppCompatActivity() {
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
+    }
+    
+    /**
+     * 채팅방 삭제 기능 테스트
+     */
+    private fun testDeleteChatRoomFeature() {
+        Log.d("ChatActivity", "=== 채팅방 삭제 기능 테스트 시작 ===")
+        
+        val chatId = 1
+        chatRepository.deleteChatRoom(chatId) { result ->
+            result.fold(
+                onSuccess = {
+                    Log.d("ChatActivity", "✅ 채팅방 삭제 성공!")
+                },
+                onFailure = { exception ->
+                    Log.e("ChatActivity", "❌ 채팅방 삭제 실패", exception)
+                }
+            )
+        }
+    }
+    
+
+    
+    /**
+     * 채팅방 생성 기능 테스트
+     */
+    private fun testCreateChatRoomFeature() {
+        Log.d("ChatActivity", "=== 채팅방 생성 기능 테스트 시작 ===")
+        Log.d("ChatActivity", "채팅방 생성 테스트 함수가 호출되었습니다!")
+        
+        // 테스트용 사용자 ID (실제로는 로그인한 사용자 ID를 사용)
+        val currentUserId = 1
+        val targetUserId = 2
+        
+        Log.d("ChatActivity", "테스트 파라미터: currentUserId=$currentUserId, targetUserId=$targetUserId")
+        
+        chatRepository.createChatRoom(currentUserId, targetUserId) { result ->
+            runOnUiThread {
+                result.fold(
+                    onSuccess = {
+                        Log.d("ChatActivity", "✅ 채팅방 생성 성공!")
+                        Toast.makeText(this@ChatActivity, "채팅방이 성공적으로 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                    },
+                    onFailure = { exception ->
+                        Log.e("ChatActivity", "❌ 채팅방 생성 실패", exception)
+                        Toast.makeText(this@ChatActivity, "채팅방 생성에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
+        }
+        
+        Log.d("ChatActivity", "채팅방 생성 기능 테스트 호출 완료")
     }
 } 

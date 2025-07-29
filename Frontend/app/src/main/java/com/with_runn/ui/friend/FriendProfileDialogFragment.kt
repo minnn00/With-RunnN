@@ -13,6 +13,7 @@ import com.with_runn.R
 
 class FriendProfileDialogFragment : DialogFragment() {
     private var friendName: String = ""
+    private var onMessageButtonClickListener: (() -> Unit)? = null
 
     companion object {
         private const val ARG_FRIEND_NAME = "friend_name"
@@ -105,7 +106,9 @@ class FriendProfileDialogFragment : DialogFragment() {
         // 메시지 버튼 설정
         val messageButton = view?.findViewById<TextView>(R.id.message_button)
         messageButton?.setOnClickListener {
-            // 메시지 기능 구현
+            // 메시지 버튼 클릭 리스너 호출
+            onMessageButtonClickListener?.invoke()
+            dismiss() // 다이얼로그 닫기
         }
     }
     
@@ -147,5 +150,12 @@ class FriendProfileDialogFragment : DialogFragment() {
             val intent = Intent(requireContext(), ReportActivity::class.java)
             startActivity(intent)
         }
+    }
+    
+    /**
+     * 메시지 버튼 클릭 리스너 설정
+     */
+    fun setOnMessageButtonClickListener(listener: () -> Unit) {
+        onMessageButtonClickListener = listener
     }
 } 

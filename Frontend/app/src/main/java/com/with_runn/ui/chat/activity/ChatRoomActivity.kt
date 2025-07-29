@@ -44,7 +44,15 @@ class ChatRoomActivity : AppCompatActivity() {
         
         setupViews()
         setupClickListeners()
-        loadChatMessagesFromApi()
+        
+        // 새로 생성된 채팅방인지 확인
+        val isNewChat = intent.getBooleanExtra("is_new_chat", false)
+        if (isNewChat) {
+            Log.d("ChatRoomActivity", "새로 생성된 채팅방이므로 메시지를 로드하지 않습니다")
+        } else {
+            // 기존 채팅방인 경우에만 메시지 로드
+            loadChatMessagesFromApi()
+        }
         Log.d("ChatRoomActivity", "onCreate 완료")
     }
     
@@ -69,6 +77,14 @@ class ChatRoomActivity : AppCompatActivity() {
             showFriendProfileDialog(sender)
         }
         messageRecyclerView.adapter = messageAdapter
+        
+        // 새로 생성된 채팅방인지 확인 (messageAdapter 초기화 후)
+        val isNewChat = intent.getBooleanExtra("is_new_chat", false)
+        if (isNewChat) {
+            Log.d("ChatRoomActivity", "새로 생성된 채팅방입니다")
+            // 새 채팅방 생성 메시지 표시
+            showNewChatMessage(originalFriendName)
+        }
         Log.d("ChatRoomActivity", "setupViews 완료")
     }
     
@@ -104,6 +120,8 @@ class ChatRoomActivity : AppCompatActivity() {
             showChatRoomNameSettingDialog()
             popupWindow.dismiss()
         }
+        
+
     }
 
     private fun showAddParticipantBottomSheet() {
@@ -261,6 +279,24 @@ class ChatRoomActivity : AppCompatActivity() {
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
             View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         )
+    }
+    
+    /**
+     * 새 채팅방 생성 메시지 표시
+     */
+    private fun showNewChatMessage(friendName: String) {
+        val welcomeMessage = Message(
+            messageId = System.currentTimeMillis().toInt(),
+            sender = "시스템",
+            content = "${friendName}님과의 채팅방이 생성되었습니다!",
+            timestamp = "방금 전",
+            isSystemMessage = true
+        )
+        
+        val currentMessages = messageAdapter.currentList.toMutableList()
+        currentMessages.add(welcomeMessage)
+        messageAdapter.submitList(currentMessages)
+        messageRecyclerView.post { messageRecyclerView.smoothScrollToPosition(currentMessages.size - 1) }
     }
 }
 

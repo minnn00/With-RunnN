@@ -5,6 +5,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import android.util.Log
 
 /**
  * Retrofit 클라이언트 싱글톤 객체
@@ -23,6 +24,11 @@ object RetrofitClient {
         .readTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .build()
+    
+    init {
+        Log.d("RetrofitClient", "RetrofitClient 초기화 완료")
+        Log.d("RetrofitClient", "BASE_URL: $BASE_URL")
+    }
     
     // Retrofit 인스턴스
     private val retrofit = Retrofit.Builder()

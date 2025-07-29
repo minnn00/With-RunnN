@@ -12,6 +12,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.with_runn.R
+import com.with_runn.ui.chat.repository.ChatRepository
+import android.util.Log
 
 class ChatRoomNameSettingDialogFragment : DialogFragment() {
 
@@ -20,6 +22,7 @@ class ChatRoomNameSettingDialogFragment : DialogFragment() {
     private lateinit var setButton: TextView
     
     private var onNameSetListener: ((String) -> Unit)? = null
+    private val chatRepository = ChatRepository()
     
     fun setOnNameSetListener(listener: (String) -> Unit) {
         onNameSetListener = listener
@@ -66,8 +69,8 @@ class ChatRoomNameSettingDialogFragment : DialogFragment() {
         setButton.setOnClickListener {
             val roomName = chatRoomNameInput.text.toString().trim()
             if (roomName.isNotEmpty()) {
-                onNameSetListener?.invoke(roomName)
-                dismiss()
+                // 실제 API 호출로 채팅방 이름 설정
+                updateChatRoomName(roomName)
             } else {
                 Toast.makeText(context, "채팅방 이름을 입력해주세요", Toast.LENGTH_SHORT).show()
             }
@@ -100,5 +103,47 @@ class ChatRoomNameSettingDialogFragment : DialogFragment() {
                 }
             }
         })
+    }
+    
+    /**
+     * 실제 API를 호출하여 채팅방 이름 설정
+     */
+    private fun updateChatRoomName(newName: String) {
+        Log.d("ChatRoomNameSettingDialog", "=== 실제 채팅방 이름 설정 시작 ===")
+        Log.d("ChatRoomNameSettingDialog", "설정할 이름: $newName")
+        
+        // 로딩 표시 (버튼 비활성화)
+        setButton.isEnabled = false
+        setButton.text = "설정 중..."
+        
+        chatRepository.updateChatName(1, newName) { result -> // 임시로 chatId=1 사용
+            activity?.runOnUiThread {
+                result.fold(
+                    onSuccess = { response ->
+                        Log.d("ChatRoomNameSettingDialog", "✅ 채팅방 이름 설정 성공!")
+                        Log.d("ChatRoomNameSettingDialog", "응답: chatId=${response.chatId}, name=${response.name}")
+                        
+                        // 성공 처리
+                        Toast.makeText(context, "채팅방 이름이 '${response.name}'으로 변경되었습니다", Toast.LENGTH_SHORT).show()
+                        
+                        // 콜백 호출
+                        onNameSetListener?.invoke(response.name)
+                        
+                        // 다이얼로그 닫기
+                        dismiss()
+                    },
+                    onFailure = { exception ->
+                        Log.e("ChatRoomNameSettingDialog", "❌ 채팅방 이름 설정 실패", exception)
+                        
+                        // 실패 처리
+                        Toast.makeText(context, "채팅방 이름 설정에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
+                        
+                        // 버튼 상태 복원
+                        setButton.isEnabled = true
+                        setButton.text = "설정"
+                    }
+                )
+            }
+        }
     }
 } 

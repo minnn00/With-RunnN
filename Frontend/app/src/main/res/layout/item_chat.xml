@@ -23,16 +23,16 @@
             android:layout_gravity="end"
             android:background="#ff554c" />
 
-        <!-- 삭제 버튼 텍스트 -->
-        <TextView
-            android:id="@+id/delete_button"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
+    <!-- 삭제 버튼 텍스트 -->
+    <TextView
+        android:id="@+id/delete_button"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:text="삭제"
-            android:textColor="@android:color/white"
-            android:textSize="14sp"
-            android:gravity="center"
+        android:text="삭제"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:gravity="center"
             android:background="@android:color/transparent"
             android:fontFamily="@font/pretendard_medium" />
 
