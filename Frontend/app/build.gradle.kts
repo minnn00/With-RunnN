@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.google.maps)
     implementation(libs.google.places)
     implementation(libs.play.services.location)
+    implementation(libs.maps.utils)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

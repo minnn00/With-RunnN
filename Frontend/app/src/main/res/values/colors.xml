@@ -34,6 +34,16 @@
     <color name="gray_300">#F8F8F8</color>
     <color name="gray_250">#F9F9F9</color>
     <color name="gray_200">#F0F0F0</color>
+    <color name="gray_150">#ECECEC</color>
     <color name="gray_100">#F3F3F3</color>
     <color name="gray_050">#FEFEFE</color>
+
+    <color name="pin_red">#FF7D76</color>
+    <color name="pin_orange">#FFD876</color>
+    <color name="pin_yellow">#FFF676</color>
+    <color name="pin_green">#9FFF76</color>
+    <color name="pin_cyan">#98F4F6</color>
+    <color name="pin_blue">#769AFF</color>
+    <color name="pin_purple">#BA76FF</color>
+    <color name="pin_pink">#FF76E1</color>
 </resources>

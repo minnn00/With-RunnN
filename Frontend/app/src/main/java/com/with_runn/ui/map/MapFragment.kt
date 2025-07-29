@@ -20,6 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -34,6 +35,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
 import com.leinardi.android.speeddial.SpeedDialActionItem
+import com.with_runn.ActivityViewModel
 import com.with_runn.R
 import com.with_runn.databinding.FragmentMapBinding
 import com.with_runn.dp
@@ -51,9 +53,9 @@ class MapFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val mapViewModel : MapViewModel by viewModels()
+    private val activtyVM : ActivityViewModel by activityViewModels()
 
     private lateinit var googleMap: GoogleMap
-    private lateinit var placesClient: PlacesClient
 
     private lateinit var behavior : BottomSheetBehavior<View>
 
@@ -90,7 +92,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        placesClient = Places.createClient(requireContext())
+        activtyVM.setBottomNavVisibility(true)
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync {
@@ -102,6 +104,7 @@ class MapFragment : Fragment() {
                 googleMap.isMyLocationEnabled = true
             }else{
                 Log.e("PERMISSION ERROR", "LACK PERMISSION")
+                // TODO: 권한 재요청 후 승인 시 moveToMyLocation 수행
             }
 
             googleMap.apply {
@@ -437,7 +440,7 @@ class MapFragment : Fragment() {
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             location?.let{
                 val latLng = LatLng(it.latitude, it.longitude)
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }
         }
     }
@@ -507,7 +510,6 @@ class MapFragment : Fragment() {
         behavior.isFitToContents = false
         behavior.halfExpandedRatio = 0.45f
         behavior.isHideable = true
-        behavior.isDraggable = true
         behavior.peekHeight = 150.dp
 
 //        var initY = 0f
@@ -654,15 +656,15 @@ class MapFragment : Fragment() {
         // 서브 메뉴 클릭 시 로그 송출
         speedDialView.setOnActionSelectedListener { actionItem ->
             when (actionItem.id) {
-                //TODO: 화면 연결
                 R.id.create_course -> {
+                    findNavController().navigate(R.id.action_mapFragment_to_courseManageFragment)
                     Log.d("FAB", "테스트 1 클릭됨")
                     speedDialView.close()
                     return@setOnActionSelectedListener true
                 }
                 R.id.load_course -> {
                     Log.d("FAB", "테스트 2 클릭됨")
-                    findNavController().navigate(R.id.action_mapFragment_to_courseManageFragment)
+                    // TODO: MYPAGE 연결
                     speedDialView.close()
                     return@setOnActionSelectedListener true
                 }

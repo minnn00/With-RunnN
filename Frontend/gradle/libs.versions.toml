@@ -20,6 +20,7 @@ viewpager2 = "1.1.0"
 googlemap = "19.2.0"
 googleplaces = "4.4.1"
 play_services_location = "21.3.0"
+maps_util = "2.2.5"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 google-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "googlemap" }
 play_services_location = { module = "com.google.android.gms:play-services-location", version.ref = "play_services_location" }
 google-places = { module = "com.google.android.libraries.places:places", version.ref = "googleplaces" }
+maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "maps_util" }
 
 
 [plugins]
