@@ -7,24 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentMypageBinding
-import com.with_runn.ui.course.CourseStorage
 import com.with_runn.ui.course.TabType
 import com.with_runn.data.WalkCourse
+import com.with_runn.data.remote.RetrofitInstance
+import com.with_runn.data.repository.MyPageRepository
+import com.with_runn.data.viewmodel.MyPageViewModel
+import com.with_runn.data.viewmodel.MyPageViewModelFactory
 
 class MyPageFragment : Fragment() {
 
     private lateinit var binding: FragmentMypageBinding
     private lateinit var adapter: MyPageCourseAdapter
+    private lateinit var viewModel: MyPageViewModel
 
     private var currentTab = TabType.SCRAP
     private var isDeleteMode = false
     private var isDeleteButtonVisible = false
 
-    // ✅ 항상 최신 데이터를 반영하도록 getter로 처리
-    private val scrapList get() = CourseStorage.scrapList
-    private val likeList get() = CourseStorage.likeList
     private var myCourseList = listOf<WalkCourse>()
 
     override fun onCreateView(
@@ -34,26 +36,23 @@ class MyPageFragment : Fragment() {
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        when (currentTab) {
-            TabType.SCRAP -> {
-                Log.d("MyPageFragment", "갱신: scrap=${scrapList.size}")
-                adapter.setTabType(TabType.SCRAP, isDeleteMode)
-                adapter.submitList(scrapList.toList())
-            }
-            TabType.LIKE -> {
-                Log.d("MyPageFragment", "갱신: like=${likeList.size}")
-                adapter.setTabType(TabType.LIKE, isDeleteMode)
-                adapter.submitList(likeList.toList())
-            }
-            else -> {}
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        Log.d("MyPageFragment", "onViewCreated 진입")
+
+        // ViewModel 연결
+        val repository = MyPageRepository(RetrofitInstance.myPageApi)
+        val factory = MyPageViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[MyPageViewModel::class.java]
+
+
+        Log.d("MyPageFragment", "ViewModel 생성됨")
+
+        viewModel.loadScrapCourses()
+        viewModel.loadLikedCourses()
+        Log.d("MyPageFragment", "viewModel.loadScrapCourses() 호출됨")
+        // Adapter 설정
         adapter = MyPageCourseAdapter(
             currentTab,
             isDeleteMode,
@@ -75,18 +74,29 @@ class MyPageFragment : Fragment() {
                 }
             },
             onScrapClick = { item ->
-                CourseStorage.removeScrap(item)
-                adapter.submitList(scrapList.toList())
+                // 서버 기반이면 여기도 추후 삭제 API 연결 필요
             },
             onLikeClick = { item ->
-                CourseStorage.removeLike(item)
-                adapter.submitList(likeList.toList())
+                // 서버 기반이면 여기도 추후 삭제 API 연결 필요
             }
         )
 
         binding.recyclerMypage.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerMypage.adapter = adapter
-        adapter.submitList(scrapList)
+
+        // LiveData observe
+        viewModel.scrapList.observe(viewLifecycleOwner) { list ->
+            if (currentTab == TabType.SCRAP) {
+                //adapter.submitList(list.map { it.toWalkCourse() }) //TODO 오류처리
+            }
+        }
+
+        viewModel.likeList.observe(viewLifecycleOwner) { list ->
+            if (currentTab == TabType.LIKE) {
+                //adapter.submitList(list.map { it.toWalkCourse() })//TODO 오류처리
+            }
+        }
+
 
         setupTabs()
         setupDeleteButtons()
@@ -98,7 +108,7 @@ class MyPageFragment : Fragment() {
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(scrapList.toList())
+            viewModel.loadScrapCourses()
             updateTabUI()
             hideDeleteButtons()
         }
@@ -108,7 +118,7 @@ class MyPageFragment : Fragment() {
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(likeList.toList())
+            viewModel.loadLikedCourses()
             updateTabUI()
             hideDeleteButtons()
         }

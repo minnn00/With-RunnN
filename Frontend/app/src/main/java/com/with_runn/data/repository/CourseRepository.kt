@@ -1,7 +1,7 @@
 package com.with_runn.data.repository
 
-import com.with_runn.data.LikeRequest
 import com.with_runn.data.remote.RetrofitInstance
+import com.with_runn.data.LikeRequest
 import com.with_runn.data.ScrapRequest
 import com.with_runn.data.ShareRequest
 
@@ -9,29 +9,29 @@ import com.with_runn.data.ShareRequest
 class CourseRepository {
 
     suspend fun getNeighborhoodPreview() =
-        RetrofitInstance.api.getNeighborhoodPreview()
+        RetrofitInstance.courseApi.getNeighborhoodPreview()
 
     suspend fun getRisingPreview() =
-        RetrofitInstance.api.getRisingPreview()
+        RetrofitInstance.courseApi.getRisingPreview()
 
     suspend fun getNeighborhoodCourses() =
-        RetrofitInstance.api.getNeighborhoodCourses()
+        RetrofitInstance.courseApi.getNeighborhoodCourses()
 
     suspend fun getRisingCourses() =
-        RetrofitInstance.api.getRisingCourses()
+        RetrofitInstance.courseApi.getRisingCourses()
 
     suspend fun getCourseDetail(courseId: Int) =
-        RetrofitInstance.api.getCourseDetail(courseId)
+        RetrofitInstance.courseApi.getCourseDetail(courseId)
 
     suspend fun postLike(body: LikeRequest) =
-        RetrofitInstance.api.postLike(body)
+        RetrofitInstance.courseApi.postLike(body)
 
     suspend fun postScrap(body: ScrapRequest) =
-        RetrofitInstance.api.postScrap(body)
+        RetrofitInstance.courseApi.postScrap(body)
 
     suspend fun getFriendList() =
-        RetrofitInstance.api.getFriendList()
+        RetrofitInstance.courseApi.getFriendList()
 
     suspend fun postShareCourse(body: ShareRequest) =
-        RetrofitInstance.api.postShareCourse(body)
+        RetrofitInstance.courseApi.postShareCourse(body)
 }

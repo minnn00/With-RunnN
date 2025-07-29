@@ -1,17 +1,17 @@
 package com.with_runn.data.api
 
-import com.with_runn.data.Friend
-import com.with_runn.data.LikeRequest
-import com.with_runn.data.ScrapRequest
-import com.with_runn.data.ShareRequest
-import com.with_runn.data.WalkCourse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import com.with_runn.data.LikeRequest
+import com.with_runn.data.ScrapRequest
+import com.with_runn.data.ShareRequest
+import com.with_runn.data.WalkCourse
 import com.with_runn.ui.course.CourseDetailFragment
 import com.with_runn.ui.course.LocalMoreFragment
+import com.with_runn.data.Friend
 
 interface CourseApi {
     @GET("api/courses/neighborhood/preview")

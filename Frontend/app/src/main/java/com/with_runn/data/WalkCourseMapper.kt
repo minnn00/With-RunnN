@@ -1,7 +1,4 @@
-package com.with_runn.ui.course
-
-import com.with_runn.data.WalkCourse
-import com.with_runn.data.WalkCourseResponse
+package com.with_runn.data
 
 fun WalkCourseResponse.toWalkCourse(): WalkCourse {
     return WalkCourse(
