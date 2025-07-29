@@ -118,7 +118,8 @@ class OnboardingProfileFragment : Fragment() {
         }
 
         binding.saveButton.setOnClickListener {
-            // TODO: 유저 정보 저장 로직 추가
+            //반려견 프로필 설정 api 연결 완료
+            //todo:  dto 관련 문의 답장 오는대로 수정
             if (saveable) {
                 val request = setProfileRequest(
                     name = viewModel.name.value!!,
