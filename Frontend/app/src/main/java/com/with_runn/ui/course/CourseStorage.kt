@@ -1,5 +1,7 @@
 package com.with_runn.ui.course
 
+import com.with_runn.data.WalkCourse
+
 object CourseStorage {
     val scrapList = mutableListOf<WalkCourse>()  // 스크랩한 코스 목록
     val likeList = mutableListOf<WalkCourse>()   // 좋아요한 코스 목록

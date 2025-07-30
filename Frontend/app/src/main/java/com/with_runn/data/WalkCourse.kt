@@ -1,4 +1,4 @@
-package com.with_runn.ui.course
+package com.with_runn.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

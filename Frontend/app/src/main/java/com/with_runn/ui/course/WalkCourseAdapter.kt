@@ -3,6 +3,7 @@ package com.with_runn.ui.course
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.with_runn.data.WalkCourse
 import com.with_runn.databinding.ItemWalkCourseMoreBinding
 
 class WalkCourseAdapter(
@@ -14,6 +15,8 @@ class WalkCourseAdapter(
         items = newItems
         notifyDataSetChanged()
     }
+
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WalkCourseViewHolder {
         val binding = ItemWalkCourseMoreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
