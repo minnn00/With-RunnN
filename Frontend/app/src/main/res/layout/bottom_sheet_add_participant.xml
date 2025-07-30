@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#fefefe">
+    android:background="@drawable/bottom_sheet_background">
 
     <!-- 상단 핸들 -->
     <View
@@ -72,27 +72,23 @@
         android:layout_marginEnd="18dp"
         android:layout_marginBottom="16dp" />
 
-    <!-- 하단 그라데이션 영역 -->
-    <LinearLayout
+    <!-- 초대하기 버튼 -->
+    <TextView
+        android:id="@+id/invite_button"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/bottom_gradient_background">
-
-        <!-- 초대하기 버튼 -->
-        <Button
-            android:id="@+id/invite_button"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginStart="18dp"
-            android:layout_marginEnd="18dp"
-            android:layout_marginBottom="16dp"
-            android:text="초대하기"
-            android:textSize="14sp"
-            android:textColor="#ffffff"
-            android:fontFamily="@font/pretendard_medium"
-            android:background="@drawable/rounded_button_green" />
-
-    </LinearLayout>
+        android:layout_height="48dp"
+        android:layout_marginStart="18dp"
+        android:layout_marginEnd="18dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/rounded_button_green"
+        android:text="초대하기"
+        android:textColor="#FEFEFE"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/pretendard_medium"
+        android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground" />
 
 </LinearLayout> 
