@@ -8,12 +8,28 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <FrameLayout
-            android:id="@+id/map_container"
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/img_sample_map"
-            /><!--Todo: Embed Naver Dynamic Map Here-->
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/pin_adding_alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="5dp"
+            android:layout_marginTop="40dp"
+
+            style="@style/Text_Pretendard_Medium_14"
+            android:text="@string/hint_add_pin"
+
+            android:background="@drawable/bg_onscreen_alert"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -25,26 +41,26 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/to_my_location_fab"
+                android:id="@+id/create_pin_fab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="18dp"
                 android:layout_marginBottom="12dp"
-                android:src="@drawable/ic_gps"
-                app:backgroundTint="@color/gray_050"
-
-                app:tint="@color/gray_600" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/create_pin_fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="18dp"
-                android:layout_marginBottom="18dp"
                 android:src="@drawable/ic_add_pin"
                 app:backgroundTint="@color/gray_050"
 
                 app:tint="@color/green_700" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/to_my_location_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="18dp"
+                android:layout_marginBottom="18dp"
+                android:src="@drawable/ic_gps"
+                app:backgroundTint="@color/gray_050"
+
+                app:tint="@color/gray_600" />
         </LinearLayout>
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_40"
@@ -56,12 +72,11 @@
     <LinearLayout
         android:id="@+id/bottom_sheet_behaviour"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/bg_home_indicator"
         android:orientation="vertical"
         android:elevation="8dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-        app:behavior_peekHeight="150dp">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
         <LinearLayout
             android:id="@+id/bottom_sheet_handle"
             android:layout_width="match_parent"
