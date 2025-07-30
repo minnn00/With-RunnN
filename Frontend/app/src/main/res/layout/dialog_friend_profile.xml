@@ -31,6 +31,7 @@
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="18dp"
                 android:src="@drawable/ic_menu"
+                android:rotation="90"
                 android:contentDescription="메뉴"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
@@ -54,7 +55,8 @@
                 android:layout_height="100dp"
                 android:layout_marginTop="50dp"
                 android:scaleType="centerCrop"
-                android:background="@drawable/circle_background_white"
+                android:background="@drawable/rounded_image_background"
+                android:clipToOutline="true"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />

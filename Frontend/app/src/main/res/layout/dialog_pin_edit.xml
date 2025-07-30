@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_dialog"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="18dp"
+        android:padding="32dp">
+
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:layout_marginBottom="24dp"
+
+            style="@style/Text_Pretendard_Medium_16"
+            android:text="핀 생성"
+            android:textSize="18sp"
+            android:textColor="@color/gray_950"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+
+                style="@style/Text_Pretendard_Medium_16"
+                android:text="@string/pin_name"
+                android:textSize="15sp"
+                android:textColor="@color/gray_950"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:layout_marginStart="8dp"
+
+                style="@style/Text_Pretendard_Medium_16"
+                android:text="*"
+                android:textSize="15sp"
+                android:textColor="@color/red_500"/>
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/pin_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="13dp"
+
+            android:layout_marginBottom="25dp"
+
+            android:background="@drawable/bg_pin_edit_text"
+
+            style="@style/Text_Pretendard_Regular_12"
+            android:textSize="13sp"
+            android:hint="@string/hint_pin_name"
+            android:textColorHint="@color/gray_400"
+            android:textColor="@color/gray_950"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+
+                style="@style/Text_Pretendard_Medium_16"
+                android:text="@string/pin_info"
+                android:textSize="15sp"
+                android:textColor="@color/gray_950"/>
+<!--            <TextView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:gravity="center_vertical"-->
+<!--                android:layout_marginStart="8dp"-->
+
+<!--                style="@style/Text_Pretendard_Medium_16"-->
+<!--                android:text="선택사항"-->
+<!--                android:textSize="12sp"-->
+<!--                android:textColor="@color/gray_500"/>-->
+        </LinearLayout>
+
+
+        <EditText
+            android:id="@+id/pin_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:minHeight="120dp"
+
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="13dp"
+
+            android:layout_marginBottom="25dp"
+
+            android:background="@drawable/bg_pin_edit_text"
+
+            style="@style/Text_Pretendard_Regular_12"
+            android:textSize="13sp"
+            android:hint="@string/hint_pin_info"
+            android:textColorHint="@color/gray_400"
+            android:textColor="@color/gray_950"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="14dp"
+            android:background="@color/gray_150"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="14dp"
+
+            style="@style/Text_Pretendard_Medium_16"
+            android:text="@string/choose_color"
+            android:textSize="15sp"
+            android:textColor="@color/gray_950"/>
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="36dp"
+            app:chipSpacingHorizontal="4dp"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:chipSpacingVertical="0dp"
+            app:singleSelection="true" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <LinearLayout
+                android:id="@+id/btn_cancel"
+                android:layout_width="0dp"
+                android:layout_height="47dp"
+                android:layout_weight="1"
+                android:gravity="center"
+
+                android:clickable="true"
+                android:focusable="true"
+
+                android:paddingVertical="15dp"
+
+                android:background="@drawable/bg_outlined_btn">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    style="@style/Text_Pretendard_Medium_14"
+                    android:text="@string/cancel"
+                    android:textColor="@color/green_700"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/btn_confirm"
+                android:layout_width="0dp"
+                android:layout_height="47dp"
+                android:layout_weight="1"
+                android:gravity="center"
+
+
+                android:clickable="true"
+                android:focusable="true"
+
+                android:paddingVertical="15dp"
+
+                android:background="@drawable/bg_btn_filled_inactive">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    style="@style/Text_Pretendard_Medium_14"
+                    android:text="완료"
+                    android:textColor="@color/green_050"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

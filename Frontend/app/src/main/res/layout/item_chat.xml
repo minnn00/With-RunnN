@@ -4,32 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="82dp">
 
-    <!-- 삭제 버튼 배경 (스와이프 시 보임) -->
-    <View
-        android:id="@+id/delete_background"
-        android:layout_width="80dp"
+    <!-- 삭제 버튼 컨테이너 (왼쪽부터 서서히 드러나는 효과를 위해) -->
+    <FrameLayout
+        android:id="@+id/delete_container"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="#ff554c"
+        android:clipChildren="true"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- 삭제 버튼 배경 -->
+        <View
+            android:id="@+id/delete_background"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:background="#ff554c" />
 
     <!-- 삭제 버튼 텍스트 -->
     <TextView
         android:id="@+id/delete_button"
         android:layout_width="80dp"
         android:layout_height="match_parent"
+            android:layout_gravity="end"
         android:text="삭제"
         android:textColor="@android:color/white"
         android:textSize="14sp"
         android:gravity="center"
-        android:background="#ff554c"
-        android:visibility="gone"
-        android:fontFamily="@font/pretendard_medium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+            android:background="@android:color/transparent"
+            android:fontFamily="@font/pretendard_medium" />
+
+    </FrameLayout>
 
     <!-- 메인 채팅 아이템 컨테이너 -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,23 +57,11 @@
             android:layout_height="56dp"
             android:src="@drawable/jonny"
             android:scaleType="centerCrop"
+            android:background="@drawable/circle_profile_background"
+            android:clipToOutline="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent" />
-
-        <!-- 두 번째 프로필 이미지 (겹친 이미지용) -->
-        <ImageView
-            android:id="@+id/profile_image_2"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:src="@drawable/jonny"
-            android:scaleType="centerCrop"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@id/profile_image"
-            app:layout_constraintTop_toTopOf="@id/profile_image"
-            app:layout_constraintBottom_toBottomOf="@id/profile_image"
-            android:layout_marginStart="19dp"
-            android:layout_marginTop="21dp" />
 
         <!-- 이름 -->
         <TextView
@@ -131,8 +126,10 @@
             android:text="1"
             android:textColor="@android:color/white"
             android:textSize="12sp"
+            android:gravity="center"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/notification_badge"
+            app:layout_constraintStart_toStartOf="@id/notification_badge"
             app:layout_constraintTop_toTopOf="@id/notification_badge"
             app:layout_constraintBottom_toBottomOf="@id/notification_badge" />
 

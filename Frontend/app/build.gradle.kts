@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin") version "2.7.7"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
 }
 
 android {
@@ -27,7 +28,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        manifestPlaceholders["naverMapClientId"] = localProperties.getProperty("NAVER_MAP_CLIENT_ID") ?: ""
+        buildConfigField("String", "GOOGLE_MAP_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""}\"")
+        manifestPlaceholders["googleMapApiKey"] = localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""
+
+        buildConfigField("String", "PET_API_KEY", "\"${localProperties.getProperty("PET_API_KEY") ?: ""}\"")
+        manifestPlaceholders["petApiKey"] = localProperties.getProperty("PET_API_KEY") ?: ""
     }
 
     buildTypes {
@@ -52,6 +57,12 @@ android {
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
+    }
+
+    secrets {
+        propertiesFileName = "secrets.properties"
+        defaultPropertiesFileName = "local.defaults.properties"
     }
 }
 dependencies {
@@ -67,7 +78,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
-    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation(libs.androidx.viewpager2)
     implementation(libs.speed.dial)
     implementation(libs.naver.maps)
     implementation(libs.retrofit)
@@ -76,6 +87,10 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
     implementation(libs.androidx.fragment.ktx)
+    implementation(libs.google.maps)
+    implementation(libs.google.places)
+    implementation(libs.play.services.location)
+    implementation(libs.maps.utils)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
