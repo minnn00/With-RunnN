@@ -7,14 +7,23 @@
     android:background="@color/white">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/logo"
         android:layout_width="125dp"
         android:layout_height="125dp"
-        android:layout_marginTop="190dp"
+        android:layout_marginTop="256dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_app_logo" />
+        app:srcCompat="@drawable/ic_onboarding_applogo" />
+    <ImageView
+        android:id="@+id/logotxt"
+        android:layout_width="125dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:srcCompat="@drawable/ic_onboarding_logotxt" />
 
     <LinearLayout
         android:id="@+id/naverLoginButton"
@@ -37,19 +46,18 @@
             android:layout_height="24dp"
             android:layout_marginEnd="8dp"
             android:contentDescription="start with naver"
-            android:src="@drawable/ic_naver" />
+            android:src="@drawable/ic_google_logo" />
 
         <TextView
             android:id="@+id/naverText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="65dp"
-            android:fontFamily="@font/pretendard_regular"
-            android:text="네이버로 시작하기"
+            android:layout_marginLeft="46dp"
+            android:fontFamily="@font/pretendard_medium"
+            android:text="Google 계정으로 시작하기"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textColor="@color/gray_700"
+            android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout

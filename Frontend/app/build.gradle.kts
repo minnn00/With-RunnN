@@ -86,6 +86,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.google.maps)
     implementation(libs.google.places)
     implementation(libs.play.services.location)

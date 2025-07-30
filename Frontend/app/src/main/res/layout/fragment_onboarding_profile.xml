@@ -35,7 +35,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            style="@style/Text_Pretendard_Medium_16" />
+            style="@style/Text_Pretendard_Medium_16"
+            android:textColor="@color/gray_950"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -56,7 +57,8 @@
             android:layout_marginTop="24dp"
             android:layout_marginRight="18dp"
             android:layout_marginBottom="8dp"
-            android:text="기본 정보" />
+            android:text="기본 정보"
+            android:textColor="@color/gray_700"/>
 
         <LinearLayout
             android:id="@+id/entry_default"
@@ -69,13 +71,12 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp"
-            android:paddingHorizontal="16dp">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/default_text"
                 style="@style/Text_Pretendard_Medium_14"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="입력"
@@ -83,9 +84,8 @@
 
             <ImageView
                 android:id="@+id/entry_icon1"
-                android:layout_width="wrap_content"
+                android:layout_width="20dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="239dp"
                 android:layout_weight="1"
                 android:rotation="180"
                 app:srcCompat="@drawable/ic_arrow_back" />
@@ -102,7 +102,8 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/pretendard_medium"
             android:text="성격"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@color/gray_700"/>
 
         <LinearLayout
             android:id="@+id/entry_personality"
@@ -118,9 +119,9 @@
             android:paddingHorizontal="16dp">
 
             <TextView
-                android:id="@+id/entry_text2"
+                android:id="@+id/text_personality"
                 style="@style/Text_Pretendard_Medium_14"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="선택"
@@ -128,9 +129,8 @@
 
             <ImageView
                 android:id="@+id/entry_icon2"
-                android:layout_width="3dp"
+                android:layout_width="20dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="239dp"
                 android:layout_weight="1"
                 android:rotation="180"
                 app:srcCompat="@drawable/ic_arrow_back" />
@@ -146,10 +146,11 @@
             android:layout_marginBottom="8dp"
             android:fontFamily="@font/pretendard_medium"
             android:text="산책 스타일"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textColor="@color/gray_700"/>
 
         <LinearLayout
-            android:id="@+id/entry_walkingStyle"
+            android:id="@+id/entry_style"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginStart="18dp"
@@ -162,9 +163,9 @@
             android:paddingHorizontal="16dp">
 
             <TextView
-                android:id="@+id/entry_text3"
+                android:id="@+id/text_style"
                 style="@style/Text_Pretendard_Medium_14"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="선택"
@@ -172,9 +173,8 @@
 
             <ImageView
                 android:id="@+id/entry_icon3"
-                android:layout_width="3dp"
+                android:layout_width="20dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="239dp"
                 android:layout_weight="1"
                 android:rotation="180"
                 app:srcCompat="@drawable/ic_arrow_back" />
