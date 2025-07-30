@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="80dp"
-    android:layout_height="106dp"
-    android:layout_marginEnd="8dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp">
 
     <!-- 프로필 이미지 -->
     <ImageView
@@ -12,6 +12,8 @@
         android:layout_height="82dp"
         android:src="@drawable/ellipse_50"
         android:scaleType="centerCrop"
+        android:background="@drawable/circular_image_background"
+        android:clipToOutline="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -38,9 +40,9 @@
         android:layout_height="25dp"
         android:background="@drawable/circle_checkbox_background"
         android:button="@null"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintBottom_toBottomOf="@id/friend_profile_image"
+        app:layout_constraintEnd_toEndOf="@id/friend_profile_image"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="4dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout> 

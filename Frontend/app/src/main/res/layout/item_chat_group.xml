@@ -23,16 +23,16 @@
             android:layout_gravity="end"
             android:background="#ff554c" />
 
-    <!-- 삭제 버튼 텍스트 -->
-    <TextView
-        android:id="@+id/delete_button"
-        android:layout_width="80dp"
-        android:layout_height="match_parent"
+        <!-- 삭제 버튼 텍스트 -->
+        <TextView
+            android:id="@+id/delete_button"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
             android:layout_gravity="end"
-        android:text="삭제"
-        android:textColor="@android:color/white"
-        android:textSize="14sp"
-        android:gravity="center"
+            android:text="삭제"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:gravity="center"
             android:background="@android:color/transparent"
             android:fontFamily="@font/pretendard_medium" />
 
@@ -50,40 +50,73 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <!-- 프로필 이미지 -->
+        <!-- 첫 번째 프로필 이미지 -->
         <ImageView
             android:id="@+id/profile_image"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:src="@drawable/jonny"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ellipse_52"
             android:scaleType="centerCrop"
             android:background="@drawable/circle_profile_background"
             android:clipToOutline="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 이름 -->
-        <TextView
-            android:id="@+id/chat_name"
+        <!-- 두 번째 프로필 이미지 (겹친 이미지) -->
+        <ImageView
+            android:id="@+id/profile_image_2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ellipse_50"
+            android:scaleType="centerCrop"
+            android:background="@drawable/circle_profile_background"
+            android:clipToOutline="true"
+            app:layout_constraintStart_toStartOf="@id/profile_image"
+            app:layout_constraintTop_toTopOf="@id/profile_image"
+            app:layout_constraintBottom_toBottomOf="@id/profile_image"
+            android:layout_marginStart="19dp"
+            android:layout_marginTop="21dp" />
+
+        <!-- 채팅방 이름과 참여자 수 -->
+        <LinearLayout
+            android:id="@+id/name_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="조니"
-            android:textColor="#212124"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:fontFamily="@font/pretendard_medium"
-            android:layout_marginStart="16dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="32dp"
             app:layout_constraintStart_toEndOf="@id/profile_image"
             app:layout_constraintEnd_toStartOf="@id/chat_time"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/chat_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="초코, 모찌"
+                android:textColor="#212124"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/pretendard_medium" />
+
+            <TextView
+                android:id="@+id/participant_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:textColor="#808080"
+                android:textSize="12sp"
+                android:fontFamily="@font/pretendard_regular"
+                android:layout_marginStart="4dp" />
+
+        </LinearLayout>
 
         <!-- 시간 -->
         <TextView
             android:id="@+id/chat_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="14:20"
+            android:text="25.05.12"
             android:textColor="#808080"
             android:textSize="12sp"
             android:fontFamily="@font/pretendard_regular"
@@ -95,17 +128,17 @@
             android:id="@+id/last_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="좋아요! 그럼 6시에 연남에서 보는 거 어떠세요?"
+            android:text="네 좋아요~^^"
             android:textColor="#808080"
             android:textSize="12sp"
             android:maxLines="1"
             android:ellipsize="end"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="4dp"
             android:fontFamily="@font/pretendard_regular"
             app:layout_constraintStart_toEndOf="@id/profile_image"
             app:layout_constraintEnd_toStartOf="@id/notification_badge"
-            app:layout_constraintTop_toBottomOf="@id/chat_name" />
+            app:layout_constraintTop_toBottomOf="@id/name_container" />
 
         <!-- 알림 배지 (마지막 메시지 바로 오른쪽) -->
         <View

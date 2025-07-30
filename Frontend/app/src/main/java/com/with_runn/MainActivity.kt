@@ -9,6 +9,10 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.with_runn.databinding.ActivityMainBinding
+import com.with_runn.ui.friend.DogCardMainActivity
+import com.with_runn.ui.mypage.MypageFollowersActivity
+import com.with_runn.ui.onboarding.OnboardingActivity
+import kotlin.jvm.java
 import android.Manifest
 import android.util.Log
 import android.view.View
@@ -67,6 +71,11 @@ class MainActivity : AppCompatActivity() {
 
         checkAndRequestLocationPermission()
         Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
+    }
+    
+    binding.startDogCardMainActivityButton.setOnClickListener {
+            val intent = Intent(this, DogCardMainActivity::class.java)
+            startActivity(intent)
     }
 
     private fun checkAndRequestLocationPermission() {

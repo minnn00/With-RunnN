@@ -32,20 +32,16 @@
             </intent-filter>
         </activity>
 
+
+
+
+
         <activity
-            android:name=".ui.friend.FriendDetailActivity"
+            android:name=".ui.chat.activity.ChatActivity"
             android:exported="false" />
 
         <activity
-            android:name=".ui.friend.AllFriendsActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.chat.ChatActivity"
-            android:exported="false" />
-
-        <activity
-            android:name=".ui.chat.ChatRoomActivity"
+            android:name=".ui.chat.activity.ChatRoomActivity"
             android:exported="false" />
 
         <activity android:name=".ui.onboarding.OnboardingActivity" />
@@ -55,6 +51,8 @@
         <activity android:name=".ui.onboarding.OnboardingProfilePersonalityActivity" />
         <activity android:name=".ui.onboarding.OnboardingProfileWalkingStyleActivity" />
         <activity android:name=".ui.mypage.MypageFollowersActivity" />
-    </application>
+                    <activity android:name=".ui.friend.DogCardMainActivity" />
+            <activity android:name=".ui.friend.ReportActivity" />
+        </application>
 
 </manifest>
