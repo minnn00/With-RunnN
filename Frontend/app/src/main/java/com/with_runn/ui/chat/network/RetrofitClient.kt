@@ -12,13 +12,11 @@ import android.util.Log
  * API 서비스 인스턴스를 생성하고 관리
  */
 object RetrofitClient {
-    
-    // 임시 베이스 URL (실제 서버 URL로 변경 필요)
-    private const val BASE_URL = "https://api.withrunn.com/"
+    private const val BASE_URL = "http://13.209.75.209:8080/"
     
     // OkHttpClient 설정
     private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(MockInterceptor()) // Mock 데이터 사용
+        //.addInterceptor(MockInterceptor()) // Mock 데이터 사용
         .addInterceptor(createLoggingInterceptor())
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)

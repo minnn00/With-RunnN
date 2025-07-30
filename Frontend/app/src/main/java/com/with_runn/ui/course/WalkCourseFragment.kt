@@ -49,7 +49,8 @@ class WalkCourseFragment : Fragment() {
             val bundle = Bundle().apply {
                 putParcelable("course", walkCourse)
             }
-            findNavController().navigate(R.id.mapContainerFragment, bundle)
+            //findNavController().navigate(R.id.courseManageFragment, bundle)
+            findNavController().navigate(R.id.courseDetailFragment)
         }
 
         binding.recyclerLocalCourse.apply {
@@ -69,7 +70,8 @@ class WalkCourseFragment : Fragment() {
             val bundle = Bundle().apply {
                 putParcelable("course", walkCourse)
             }
-            findNavController().navigate(R.id.mapContainerFragment, bundle)
+            //findNavController().navigate(R.id.courseManageFragment, bundle)
+            findNavController().navigate(R.id.courseDetailFragment)
         }
 
         binding.recyclerHotCourse.apply {

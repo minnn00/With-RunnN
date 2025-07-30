@@ -1,5 +1,6 @@
 package com.with_runn.ui.friend
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.with_runn.R
 import com.with_runn.ui.adapter.DogCard
 import com.with_runn.ui.adapter.DogCardAdapter
+import com.with_runn.ui.chat.activity.ChatRoomActivity
 
 class RecommendedFriendsFragment : Fragment() {
     private lateinit var dogCardAdapter: DogCardAdapter
@@ -81,46 +83,36 @@ class RecommendedFriendsFragment : Fragment() {
         // 카드 클릭 리스너 추가
         dogCardAdapter.setOnItemClickListener { position: Int ->
             val dogCard = dogCards[position]
-            val fragment = FriendDetailFragment.newInstance(
-                dogName = dogCard.name,
-                dogAge = when(position) {
-                    0 -> "3년 6개월"
-                    1 -> "2년 3개월"
-                    2 -> "4년 1개월"
-                    3 -> "1년 8개월"
-                    else -> "3년 6개월"
-                },
-                dogBreed = when(position) {
-                    0 -> "래브라도 리트리버"
-                    1 -> "골든 리트리버"
-                    2 -> "허스키"
-                    3 -> "보더 콜리"
-                    else -> "래브라도 리트리버"
-                },
-                dogCategory = when(position) {
-                    0 -> "대형견"
-                    1 -> "대형견"
-                    2 -> "중형견"
-                    3 -> "중형견"
-                    else -> "대형견"
-                },
-                dogIntro = when(position) {
-                    0 -> "안녕하세요! 달리기 좋아하는 3살 조니예요 :)"
-                    1 -> "호기심 많은 밀리입니다! 새로운 친구 만나고 싶어요~"
-                    2 -> "조용한 호두입니다. 천천히 친해져요 :)"
-                    3 -> "활발한 루시예요! 함께 놀아요!"
-                    else -> "안녕하세요! 달리기 좋아하는 3살 조니예요 :)"
-                }
-            )
-            
-            // Fragment 교체
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit()
-        }
-    }
 
+            val name = dogCard.name
+            val tag = dogCard.tag
+            val tags = ArrayList(dogCard.tags)
+            val imageResId = dogCard.imageResId
+
+            val dialogFragment = FriendProfileDialogFragment.newInstance(
+                friendName = name,
+                personalityTag = tag,
+                personalityTags = tags,
+                imageResId = imageResId
+            )
+
+            dialogFragment.setOnMessageButtonClickListener {
+                //navigateToChatRoom(dogCard)
+            }
+
+            dialogFragment.show(childFragmentManager, "FriendProfileDialog")
+        }
+
+    }
+    private fun navigateToChatRoom(friend: Friend) {
+        val intent = Intent(requireContext(), ChatRoomActivity::class.java).apply {
+            // 친구 정보를 전달
+            putExtra("friend_name", friend.name)
+            putExtra("friend_image", friend.imageResId)
+            putExtra("is_new_chat", true) // 새 채팅방 플래그
+        }
+        startActivity(intent)
+    }
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putInt("current_page", currentPage)

@@ -36,7 +36,7 @@ class LocalMoreFragment : Fragment() {
                 val bundle = Bundle().apply {
                     putParcelable("course", item)
                 }
-                findNavController().navigate(R.id.mapContainerFragment, bundle)
+                findNavController().navigate(R.id.courseManageFragment, bundle)
             }
         )
 

@@ -10,25 +10,20 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.with_runn.databinding.ActivityMainBinding
 import com.with_runn.ui.friend.DogCardMainActivity
-import com.with_runn.ui.mypage.MypageFollowersActivity
-import com.with_runn.ui.onboarding.OnboardingActivity
 import kotlin.jvm.java
 import android.Manifest
+import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.material.snackbar.Snackbar
+import com.with_runn.ui.onboarding.OnboardingActivity
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
@@ -61,9 +56,11 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             activityVM.isBottomNavVisible.collect { isBottomNavVisible ->
                 if(isBottomNavVisible){
-                    binding.bottomNavigationView.visibility = View.VISIBLE
+                    //binding.bottomNavigationView.visibility = View.VISIBLE
+                    binding.bottomNavigationView.slideUp()
                 }else{
-                    binding.bottomNavigationView.visibility = View.GONE
+                    //binding.bottomNavigationView.visibility = View.GONE
+                    binding.bottomNavigationView.slideDown()
                 }
 
             }
@@ -71,11 +68,9 @@ class MainActivity : AppCompatActivity() {
 
         checkAndRequestLocationPermission()
         Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
-    }
-    
-    binding.startDogCardMainActivityButton.setOnClickListener {
-            val intent = Intent(this, DogCardMainActivity::class.java)
-            startActivity(intent)
+
+//        val intent = Intent(this, OnboardingActivity::class.java)
+//        startActivity(intent)
     }
 
     private fun checkAndRequestLocationPermission() {

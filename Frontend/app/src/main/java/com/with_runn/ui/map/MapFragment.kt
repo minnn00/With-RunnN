@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.google.android.material.snackbar.Snackbar
@@ -235,11 +236,11 @@ class MapFragment : Fragment() {
         super.onDestroyView()
     }
     override fun onLowMemory() {
-        binding.mapView.onLowMemory()
+        _binding?.mapView?.onLowMemory()
         super.onLowMemory()
     }
     override fun onSaveInstanceState(outState: Bundle) {
-        binding.mapView.onSaveInstanceState(outState)
+        _binding?.mapView?.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
 
@@ -517,7 +518,7 @@ class MapFragment : Fragment() {
 
         behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
-
+                val binding = this@MapFragment.binding ?: return
                 when (newState) {
                     BottomSheetBehavior.STATE_HIDDEN -> {
                         googleMap.clear()
@@ -664,7 +665,8 @@ class MapFragment : Fragment() {
                 }
                 R.id.load_course -> {
                     Log.d("FAB", "테스트 2 클릭됨")
-                    // TODO: MYPAGE 연결
+                    val bottomNav = requireActivity().findViewById<BottomNavigationView>(R.id.bottomNavigationView)
+                    bottomNav.selectedItemId = R.id.mypage_graph
                     speedDialView.close()
                     return@setOnActionSelectedListener true
                 }
