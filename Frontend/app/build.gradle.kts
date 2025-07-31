@@ -9,6 +9,8 @@ if (localPropertiesFile.exists()) {
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    id("org.jetbrains.kotlin.kapt")
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin") version "2.7.7"
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
@@ -60,10 +62,6 @@ android {
         buildConfig = true
     }
 
-    secrets {
-        propertiesFileName = "secrets.properties"
-        defaultPropertiesFileName = "local.defaults.properties"
-    }
 }
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -91,6 +89,8 @@ dependencies {
     implementation(libs.google.places)
     implementation(libs.play.services.location)
     implementation(libs.maps.utils)
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

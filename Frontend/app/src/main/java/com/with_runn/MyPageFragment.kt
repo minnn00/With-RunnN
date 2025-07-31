@@ -16,6 +16,8 @@ import com.with_runn.data.remote.RetrofitInstance
 import com.with_runn.data.repository.MyPageRepository
 import com.with_runn.data.viewmodel.MyPageViewModel
 import com.with_runn.data.viewmodel.MyPageViewModelFactory
+import com.with_runn.data.toWalkCourse
+
 
 class MyPageFragment : Fragment() {
 
@@ -87,13 +89,13 @@ class MyPageFragment : Fragment() {
         // LiveData observe
         viewModel.scrapList.observe(viewLifecycleOwner) { list ->
             if (currentTab == TabType.SCRAP) {
-                //adapter.submitList(list.map { it.toWalkCourse() }) //TODO 오류처리
+                adapter.submitList(list.map { it.toWalkCourse() }) //TODO 오류처리
             }
         }
 
         viewModel.likeList.observe(viewLifecycleOwner) { list ->
             if (currentTab == TabType.LIKE) {
-                //adapter.submitList(list.map { it.toWalkCourse() })//TODO 오류처리
+                adapter.submitList(list.map { it.toWalkCourse() })//TODO 오류처리
             }
         }
 
