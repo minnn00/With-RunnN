@@ -1,5 +1,8 @@
 package com.with_runn.data
 
+import com.with_runn.data.toWalkCourse
+
+
 fun WalkCourseResponse.toWalkCourse(): WalkCourse {
     return WalkCourse(
         title = this.title,
