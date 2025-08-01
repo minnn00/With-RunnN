@@ -14,7 +14,7 @@ class HotCourseAdapter(
     private val onItemClick: (HotCourse) -> Unit
 ) : RecyclerView.Adapter<HotCourseAdapter.HotCourseViewHolder>() {
 
-    // 🔥 실제 어댑터에서 사용하는 리스트
+    // 실제 어댑터에서 사용하는 리스트
     private val courseList = hotCourses.toMutableList()
 
     fun updateData(newList: List<HotCourse>) {
@@ -39,7 +39,7 @@ class HotCourseAdapter(
     }
 
     override fun onBindViewHolder(holder: HotCourseViewHolder, position: Int) {
-        val course = courseList[position]  // ✅ 고침
+        val course = courseList[position]  // 고침
         holder.imageCourse.setImageResource(course.imageRes)
         holder.titleText.text = course.title
         holder.tag1.text = course.tags.getOrNull(0) ?: ""

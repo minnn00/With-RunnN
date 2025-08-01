@@ -60,18 +60,10 @@ class WalkCourseFragment : Fragment() {
 
         // Hot Course Adapter 초기화
         hotAdapter = HotCourseAdapter(emptyList()) { course ->
-            val walkCourse = WalkCourse(
-                title = course.title,
-                tags = course.tags,
-                imageResId = course.imageRes,
-                distance = course.distance,
-                time = course.time
-            )
             val bundle = Bundle().apply {
-                putParcelable("course", walkCourse)
+                putInt("courseId", course.id)
             }
-            //findNavController().navigate(R.id.courseManageFragment, bundle)
-            findNavController().navigate(R.id.courseDetailFragment)
+            findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
 
         binding.recyclerHotCourse.apply {
@@ -101,14 +93,14 @@ class WalkCourseFragment : Fragment() {
         viewModel.risingCourses.observe(viewLifecycleOwner) { courses ->
             hotAdapter.updateData(courses.map {
                 HotCourse(
+                    id = it.id,
                     imageRes = R.drawable.image,
                     title = it.title,
                     tags = it.tags,
-                    distance = it.distance,
-                    time = it.time
+                    distance = "${it.distanceMeters}m",
+                    time = "${it.durationMinutes}분"
                 )
             })
-
         }
 
         // 실제 데이터 요청
