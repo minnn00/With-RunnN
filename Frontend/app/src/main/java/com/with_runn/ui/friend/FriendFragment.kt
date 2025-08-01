@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.tabs.TabLayoutMediator
+import com.with_runn.ActivityViewModel
 import com.with_runn.R
 import com.with_runn.databinding.FragmentFriendBinding
 import com.with_runn.ui.chat.activity.ChatActivity
@@ -15,12 +17,16 @@ class FriendFragment : Fragment() {
     private var _binding: FragmentFriendBinding? = null
     private val binding get() = _binding!!
 
+    private val activityVM : ActivityViewModel by activityViewModels()
+
     private val tabTitles = listOf("추천 친구", "모두 보기")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activityVM.setBottomNavVisibility(true)
+
         super.onCreateView(inflater, container, savedInstanceState)
         _binding = FragmentFriendBinding.inflate(inflater, container, false)
         return binding.root

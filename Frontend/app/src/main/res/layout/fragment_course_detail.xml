@@ -1,258 +1,285 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:background="@color/gray_050"
+        android:layout_gravity="top">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/gray_050"
+            android:layout_gravity="top"/>
 
-        <!-- 코스 정보 (이미지 + 텍스트 + 해시태그) -->
         <LinearLayout
-            android:layout_width="232dp"
-            android:layout_height="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp">
-
+            android:paddingHorizontal="18dp"
+            android:paddingVertical="12dp"
+            android:gravity="center_vertical">
+            <ImageButton
+                android:id="@+id/back_btn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_back_32"
+                app:tint="@color/gray_700"/>
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/bottom_sheet_behaviour"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_home_indicator"
+        android:orientation="vertical"
+        android:elevation="8dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        <LinearLayout
+            android:id="@+id/bottom_sheet_handle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="21dp">
             <ImageView
-                android:id="@+id/image_course"
-                android:layout_width="64.5dp"
-                android:layout_height="64dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/dog"
-                android:layout_marginEnd="12dp" />
-
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home_indicator"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
             <LinearLayout
-                android:layout_width="150dp"
-                android:layout_height="47dp"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:layout_marginTop="10dp"
-                android:gravity="center_vertical">
+                android:id="@+id/course_simple_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
 
-                <TextView
-                    android:id="@+id/text_title"
-                    android:layout_width="150dp"
-                    android:layout_height="wrap_content"
-                    android:text="우리 동네 강아지 모임"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/pretendard_semibold"
-                    android:textColor="@color/gray_950"
-                    android:layout_marginBottom="4dp" />
-
+                <ImageView
+                    android:id="@+id/course_image"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:background="@drawable/bg_place_image"
+                    android:src="@drawable/img_sample_place"
+                    android:clipToOutline="true"
+                    android:scaleType="centerCrop"
+                    android:layout_marginEnd="12dp"/>
                 <LinearLayout
-                    android:id="@+id/layout_tags"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="2dp">
-
+                    android:layout_marginVertical="8dp"
+                    android:orientation="vertical"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical">
                     <TextView
-                        android:layout_width="62dp"
-                        android:layout_height="20dp"
-                        android:background="@drawable/bg_tag"
-                        android:text="#이웃사촌"
-                        android:paddingStart="6dp"
-                        android:layout_marginEnd="10dp"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:textColor="@color/gray_600" />
-
-                    <TextView
+                        android:id="@+id/course_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_tag"
-                        android:text="#같이산책해요"
-                        android:paddingStart="6dp"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:textColor="@color/gray_600" />
+                        android:gravity="center_vertical"
+
+                        style="@style/Text_Pretendard_Medium_16"
+                        android:text="코스 이름입니다"
+                        android:textColor="@color/gray_950"/>
+
+                    <LinearLayout
+                        android:id="@+id/tag_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                    </LinearLayout>
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+
+                    style="@style/Text_Pretendard_Medium_14"
+                    android:text="@string/course_info"
+                    android:textColor="@color/gray_500"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/course_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    style="@style/Text_Pretendard_Medium_14"
+                    android:text="산책 코스 정보입니다!"
+                    android:textColor="@color/gray_950"/>
 
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- 산책코스 소개 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="산책코스 소개"
-            android:textSize="12sp"
-            android:fontFamily="@font/pretendard_medium"
-            android:textColor="@color/gray_500"
-            android:layout_marginBottom="4dp" />
-
-        <TextView
-            android:id="@+id/text_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="금요일에 시간 어때요 ~ 🎵\n우리 동네에 사는 댕댕이들 모두 경의선숲길에서 헤쳐모여!"
-            android:textSize="14sp"
-            android:fontFamily="@font/pretendard_regular"
-            android:textColor="@color/gray_950"
-            android:layout_marginBottom="20dp" />
-
-        <!-- 아이콘 버튼 4개 -->
-        <LinearLayout
-            android:id="@+id/btnScrap"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:weightSum="4"
-            android:layout_marginTop="1dp">
-
-            <!-- 버튼 1: 스크랩 -->
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:layout_marginBottom="50dp"
                 android:gravity="center">
-
                 <LinearLayout
+                    android:id="@+id/btn_scrap"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:orientation="vertical"
-                    android:background="@drawable/bg_action_box"
-                    android:gravity="center">
-
-                    <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:src="@drawable/bookmark" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="스크랩"
-                        android:textColor="@color/gray_800"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:layout_marginTop="6dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- 버튼 2: 좋아요 -->
-            <!-- 버튼 2: 좋아요 -->
-            <LinearLayout
-                android:id="@+id/btnLike"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?android:selectableItemBackground"
-                android:descendantFocusability="blocksDescendants">
-
-                <LinearLayout
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_action_box"
+                    android:background="@drawable/bg_place_image"
+                    android:backgroundTint="@color/gray_300"
+                    android:padding="8dp"
                     android:gravity="center"
-                    android:clickable="false"
-                    android:focusable="false">
-
+                    android:clickable="true"
+                    android:focusable="true">
                     <ImageView
+                        android:id="@+id/bookmark_ic"
                         android:layout_width="26dp"
                         android:layout_height="26dp"
-                        android:src="@drawable/like" />
-
+                        android:src="@drawable/ic_bookmark_outlined"
+                        app:tint="@color/green_700"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="좋아요"
-                        android:textColor="@color/gray_800"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:layout_marginTop="6dp" />
-                </LinearLayout>
-            </LinearLayout>
-
-
-            <!-- 버튼 3: 공유하기 -->
-            <LinearLayout
-                android:id="@+id/btnShare"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:descendantFocusability="blocksDescendants"
-                android:focusableInTouchMode="true"
-                android:background="?android:selectableItemBackground">
-
-                <!-- 안쪽 아이콘 박스 -->
-                <LinearLayout
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_action_box"
-                    android:gravity="center"
-                    android:clickable="false"
-                    android:focusable="false">
-
-                    <ImageView
-                        android:layout_width="26dp"
-                        android:layout_height="26dp"
-                        android:src="@drawable/share"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="공유하기"
-                        android:textColor="@color/gray_800"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:layout_marginTop="6dp" />
-                </LinearLayout>
-
-            </LinearLayout> <!-- ✅ 여기까지가 btnShare의 닫는 태그 -->
-
-
-
-            <!-- 버튼 4: 소요 시간 -->
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center">
-
-                <LinearLayout
-                    android:layout_width="70dp"
-                    android:layout_height="70dp"
-                    android:orientation="vertical"
-                    android:background="@drawable/bg_action_box"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/text_time_value"
-                        android:layout_width="39.75dp"
-                        android:layout_height="wrap_content"
-                        android:text="40M"
-                        android:textColor="@color/blue_500"
-                        android:fontFamily="@font/pretendard_medium"
-                        android:textSize="16sp"
                         android:gravity="center"
-                        android:translationY="4dp"/>
 
+                        style="@style/Text_Pretendard_Regular_12"
+                        android:text="@string/scrap"
+                        android:textColor="@color/gray_950"/>
+                </LinearLayout>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <LinearLayout
+                    android:id="@+id/btn_like"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_place_image"
+                    android:backgroundTint="@color/gray_300"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:id="@+id/like_ic"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_heart_outlined"
+                        app:tint="@color/red_500"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="소요 시간"
-                        android:textColor="@color/gray_800"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/pretendard_regular"
-                        android:layout_marginTop="11dp" />
+                        android:gravity="center"
+
+                        style="@style/Text_Pretendard_Regular_12"
+                        android:text="@string/like"
+                        android:textColor="@color/gray_950"/>
+                </LinearLayout>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+                <LinearLayout
+                    android:id="@+id/btn_share"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_place_image"
+                    android:backgroundTint="@color/gray_300"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:id="@+id/share_ic"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_share"
+                        app:tint="@color/gray_800"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+
+                        style="@style/Text_Pretendard_Regular_12"
+                        android:text="@string/share"
+                        android:textColor="@color/gray_950"/>
+                </LinearLayout>
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"/>
+
+                <LinearLayout
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_place_image"
+                    android:backgroundTint="@color/gray_300"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <TextView
+                        android:id="@+id/estimated_time"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+
+                        style="@style/Text_Pretendard_Medium_16"
+                        android:text="40M"
+                        android:textSize="20sp"
+                        android:textColor="@color/blue_500"
+                        android:textStyle="bold"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+
+                        style="@style/Text_Pretendard_Regular_12"
+                        android:text="@string/estimated_time"
+                        android:textColor="@color/gray_950"/>
                 </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
+        </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

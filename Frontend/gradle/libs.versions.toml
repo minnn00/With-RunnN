@@ -22,6 +22,7 @@ googlemap = "19.2.0"
 googleplaces = "4.4.1"
 play_services_location = "21.3.0"
 maps_util = "2.2.5"
+security-crypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +49,7 @@ google-maps = { module = "com.google.android.gms:play-services-maps", version.re
 play_services_location = { module = "com.google.android.gms:play-services-location", version.ref = "play_services_location" }
 google-places = { module = "com.google.android.libraries.places:places", version.ref = "googleplaces" }
 maps-utils = { module = "com.google.maps.android:android-maps-utils", version.ref = "maps_util" }
+security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.navigation.fragment.findNavController
+import com.with_runn.ActivityViewModel
 import com.with_runn.data.WalkCourse
 import com.with_runn.databinding.FragmentWalkCourseBinding
 import com.with_runn.data.viewmodel.WalkCourseViewModel
@@ -21,6 +23,8 @@ class WalkCourseFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: WalkCourseViewModel
+    private val activityVM : ActivityViewModel by activityViewModels()
+
     private lateinit var localAdapter: LocalCourseAdapter
     private lateinit var hotAdapter: HotCourseAdapter
 
@@ -28,6 +32,8 @@ class WalkCourseFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activityVM.setBottomNavVisibility(true)
+
         _binding = FragmentWalkCourseBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -46,11 +52,14 @@ class WalkCourseFragment : Fragment() {
                 distance = "2.0km",  // 임시값
                 time = "30분"        // 임시값
             )
+//            val bundle = Bundle().apply {
+//                putParcelable("course", walkCourse)
+//            }
+//            findNavController().navigate(R.id.courseManageFragment, bundle)
             val bundle = Bundle().apply {
-                putParcelable("course", walkCourse)
+                putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
             }
-            //findNavController().navigate(R.id.courseManageFragment, bundle)
-            findNavController().navigate(R.id.courseDetailFragment)
+            findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
 
         binding.recyclerLocalCourse.apply {
@@ -67,11 +76,14 @@ class WalkCourseFragment : Fragment() {
                 distance = course.distance,
                 time = course.time
             )
+//            val bundle = Bundle().apply {
+//                putParcelable("course", walkCourse)
+//            }
+//            findNavController().navigate(R.id.courseManageFragment, bundle)
             val bundle = Bundle().apply {
-                putParcelable("course", walkCourse)
+                putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
             }
-            //findNavController().navigate(R.id.courseManageFragment, bundle)
-            findNavController().navigate(R.id.courseDetailFragment)
+            findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
 
         binding.recyclerHotCourse.apply {
