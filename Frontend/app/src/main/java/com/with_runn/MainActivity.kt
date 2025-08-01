@@ -76,8 +76,8 @@ class MainActivity : AppCompatActivity() {
         checkAndRequestLocationPermission()
         Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
 
-//        val intent = Intent(this, OnboardingActivity::class.java)
-//        startActivity(intent)
+        val intent = Intent(this, OnboardingActivity::class.java)
+        startActivity(intent)
     }
 
     private fun checkAndRequestLocationPermission() {

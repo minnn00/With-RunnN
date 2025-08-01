@@ -7,10 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -20,34 +18,16 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.with_runn.ActivityViewModel
-import com.with_runn.data.WalkCourse
 import com.with_runn.R
 import com.with_runn.data.course.CourseFetchRepository
 import com.with_runn.data.course.CourseService
 import com.with_runn.data.viewmodel.CourseDetailsVMFactory
 import com.with_runn.data.viewmodel.CourseDetailsViewModel
 import com.with_runn.dp
-import com.with_runn.ui.course_edit.PinEditDialogFragment
-import com.with_runn.ui.course_edit.PinEditDialogFragment.Companion.Mode
-import com.with_runn.ui.course_edit.PinItem
 import kotlinx.coroutines.launch
 import kotlin.getValue
-/*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import com.bumptech.glide.Glide
-import com.with_runn.R
-import com.with_runn.data.ScrapRequest
-import com.with_runn.data.repository.CourseRepository
-import com.with_runn.data.viewmodel.CourseDetailViewModel
-import com.with_runn.data.viewmodel.CourseDetailViewModelFactory
-import com.with_runn.data.viewmodel.WalkCourseViewModel
 import com.with_runn.databinding.FragmentCourseDetailBinding
-import kotlinx.coroutines.launch
-import androidx.navigation.fragment.findNavController
-*/
-
 
 class CourseDetailFragment : Fragment() {
 
@@ -291,3 +271,4 @@ class CourseDetailFragment : Fragment() {
         binding.mapView.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
+}

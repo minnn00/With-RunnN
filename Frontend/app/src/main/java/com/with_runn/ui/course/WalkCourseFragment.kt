@@ -82,6 +82,7 @@ class WalkCourseFragment : Fragment() {
 //            findNavController().navigate(R.id.courseManageFragment, bundle)
             val bundle = Bundle().apply {
                 putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
+            }
             //val bundle = Bundle().apply {
             //    putInt("courseId", course.id)
             //}
