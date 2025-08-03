@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 1회만 실행: 마스터 토큰 설정
-        TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyMUBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4NTEzODl9.MnvlFcRaQYOUCIIqF1TuYnrcrovMS5nmk2LpRZMaa20")
+        TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
 
         // ViewModel에 로드
         activityVM.loadToken()
@@ -76,8 +76,8 @@ class MainActivity : AppCompatActivity() {
         checkAndRequestLocationPermission()
         Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
 
-        val intent = Intent(this, OnboardingActivity::class.java)
-        startActivity(intent)
+//        val intent = Intent(this, OnboardingActivity::class.java)
+//        startActivity(intent)
     }
 
     private fun checkAndRequestLocationPermission() {
