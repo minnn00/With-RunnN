@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentMypageBinding
 import com.with_runn.ui.course.TabType
@@ -107,6 +108,19 @@ class MyPageFragment : Fragment() {
 
         setupTabs()
         setupDeleteButtons()
+
+        binding.layoutFollower.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("initialTab", 0) // 0: 팔로워, 1: 팔로우
+            }
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageFollowerFollowFragment, bundle)
+        }
+        binding.layoutFollowing.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("initialTab", 1) // 0: 팔로워, 1: 팔로우
+            }
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageFollowerFollowFragment, bundle)
+        }
     }
 
     private fun setupTabs() {
