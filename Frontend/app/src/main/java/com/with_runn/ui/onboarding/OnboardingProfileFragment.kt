@@ -119,16 +119,20 @@ class OnboardingProfileFragment : Fragment() {
 
         binding.saveButton.setOnClickListener {
             //반려견 프로필 설정 api 연결 완료
-            //todo:  dto 관련 문의 답장 오는대로 수정
             if (saveable) {
+                val characters = viewModel.characters.value!!
+                val styles = viewModel.style.value!!
                 val request = setProfileRequest(
+                    provinceId = 0,
+                    cityId = 0,
                     name = viewModel.name.value!!,
                     gender = viewModel.gender.value!!,
                     birth = viewModel.birth.value!!,
                     breed = viewModel.breed.value!!,
                     size = viewModel.size.value!!,
-                    characters = "",
-                    style = "", //todo : test
+                    characters = characters,
+                    style = styles,
+                    introduction = viewModel.introduction.value!!
                 )
                 ApiClient.instance.setProfile(request).enqueue(object : Callback<setProfileResponse> {
                     override fun onResponse(

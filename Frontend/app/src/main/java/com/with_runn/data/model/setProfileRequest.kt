@@ -1,11 +1,14 @@
 package com.with_runn.data.model
 
 data class setProfileRequest(
+    val provinceId: Int,
+    val cityId: Int,
     val name: String,
     val gender: String,
     val birth: String,
     val breed: String,
     val size: String,
-    val characters: String,
-    val style: String
+    val characters: List<String>,
+    val style: List<String>,
+    val introduction: String
 )

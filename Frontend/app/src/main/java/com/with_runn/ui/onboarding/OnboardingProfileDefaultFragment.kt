@@ -25,6 +25,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
     private lateinit var birthday: String
     private lateinit var breed: String
     private var size: String = "소형견"
+    private var introduction: String = ""
 
     private var name_saveable: Int = 0
     private var breed_savable: Boolean = false
@@ -57,6 +58,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
             name = binding.nameEditText.text.toString()
             birthday = binding.birthdayEditText.text.toString()
             breed = binding.breedEditText.text.toString()
+            introduction = binding.discriptionEditText.text.toString()
 
             if (name_saveable == 0) {
                 showNameError("중복 확인을 해주세요")
@@ -67,7 +69,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
             }
             else if (name_saveable == 2) {
 
-                viewModel.setDefaultValues(name, gender, birthday, breed, size)
+                viewModel.setDefaultValues(name, gender, birthday, breed, size, introduction)
 
                 findNavController().popBackStack() // 프로필 프래그먼트로 복귀
             }
