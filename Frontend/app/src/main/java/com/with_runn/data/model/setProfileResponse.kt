@@ -10,6 +10,7 @@ data class setProfileResponse(
 data class Result(
     val provinceId: Int,
     val cityId: Int,
+    val townId: Int,
     val name: String,
     val gender: String,
     val birth: String,

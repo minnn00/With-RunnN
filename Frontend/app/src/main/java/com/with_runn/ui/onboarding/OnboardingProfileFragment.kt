@@ -123,8 +123,9 @@ class OnboardingProfileFragment : Fragment() {
                 val characters = viewModel.characters.value!!
                 val styles = viewModel.style.value!!
                 val request = setProfileRequest(
-                    provinceId = 0,
-                    cityId = 0,
+                    provinceId = 1,
+                    cityId = 10,
+                    townId = 100,
                     name = viewModel.name.value!!,
                     gender = viewModel.gender.value!!,
                     birth = viewModel.birth.value!!,
@@ -152,8 +153,8 @@ class OnboardingProfileFragment : Fragment() {
                     }
                 })
                 // MainActivity로 이동
-                val intent = Intent(requireContext(), MainActivity::class.java)
-                startActivity(intent)
+//                val intent = Intent(requireContext(), MainActivity::class.java)
+//                startActivity(intent)
 
                 // 온보딩 액티비티 종료
                 requireActivity().finish()

@@ -3,6 +3,7 @@ package com.with_runn.data.model
 data class setProfileRequest(
     val provinceId: Int,
     val cityId: Int,
+    val townId: Int,
     val name: String,
     val gender: String,
     val birth: String,

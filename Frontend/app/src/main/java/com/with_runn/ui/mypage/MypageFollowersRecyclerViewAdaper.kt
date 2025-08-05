@@ -5,23 +5,41 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.with_runn.R
+import com.with_runn.data.model.Follower
+import com.with_runn.databinding.ItemMypageFollowerProfileBinding
 
-class MypageFollowersRecyclerViewAdaper(private val profiles: List<String>) : RecyclerView.Adapter<MypageFollowersRecyclerViewAdaper.ProfileViewHolder>() {
-        inner class ProfileViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val name: TextView = itemView.findViewById(R.id.name_text)
+class MypageFollowersRecyclerViewAdapter(private var list: List<Follower>) : RecyclerView.Adapter<MypageFollowersRecyclerViewAdapter.FollowerViewHolder>() {
+    inner class FollowerViewHolder(private val binding: ItemMypageFollowerProfileBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: Follower) {
+            binding.nameText.text = item.name
+            Glide.with(binding.userImg.context)
+                .load(item.profileImage)
+                .into(binding.userImg)
         }
+    }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfileViewHolder {
-            val view =
-                LayoutInflater.from(parent.context).inflate(R.layout.item_mypage_follower_profile, parent, false)
-            return ProfileViewHolder(view)
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowerViewHolder {
+        val binding = ItemMypageFollowerProfileBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
+        return FollowerViewHolder(binding)
+    }
 
-        override fun onBindViewHolder(holder: ProfileViewHolder, position: Int) {
-            val profile = profiles[position]
-            holder.name.text = profile
-        }
+    override fun onBindViewHolder(holder: FollowerViewHolder, position: Int) {
+        holder.bind(list[position])
+    }
 
-        override fun getItemCount(): Int = profiles.size
+    override fun getItemCount() = list.size
+
+    fun updateFollowerData(newList: List<Follower>) {
+        list = newList
+        notifyDataSetChanged()
+    }
+    fun updateFollowingData(newList: List<Follower>) {
+        list = newList
+        notifyDataSetChanged()
+    }
 }
