@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.data.WalkCourse
 import com.with_runn.databinding.ItemWalkCourseMoreBinding
+import com.bumptech.glide.Glide
+import com.with_runn.R
 
 class WalkCourseAdapter(
-    private var items: List<WalkCourse>,  // var로 선언
+    private var items: List<WalkCourse>,
     private val onItemClick: (WalkCourse) -> Unit
 ) : RecyclerView.Adapter<WalkCourseAdapter.WalkCourseViewHolder>() {
 
@@ -15,8 +17,6 @@ class WalkCourseAdapter(
         items = newItems
         notifyDataSetChanged()
     }
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WalkCourseViewHolder {
         val binding = ItemWalkCourseMoreBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -33,7 +33,11 @@ class WalkCourseAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(course: WalkCourse) {
-            binding.imageCourse.setImageResource(course.imageResId)
+            // Glide로 서버 이미지 또는 기본 이미지 적용
+            Glide.with(binding.root)
+                .load(course.imageUrl ?: R.drawable.image)
+                .into(binding.imageCourse)
+
             binding.textCourseName.text = course.title
             binding.tag1.text = course.tags.getOrNull(0) ?: ""
             binding.tag2.text = course.tags.getOrNull(1) ?: ""

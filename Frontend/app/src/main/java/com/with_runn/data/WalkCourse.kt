@@ -5,14 +5,17 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class WalkCourse(
+    val id: Int,
     val title: String,
     val tags: List<String>,
     val imageResId: Int,
+    val imageUrl: String? = null,
     val distance: String,
     val time: String,
     val isScrapped: Boolean = false,
     val isLiked: Boolean = false
-) : Parcelable {
+) : Parcelable
+ {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

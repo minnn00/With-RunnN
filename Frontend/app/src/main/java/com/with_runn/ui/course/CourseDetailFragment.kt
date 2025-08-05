@@ -5,21 +5,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.with_runn.R
-import com.with_runn.data.ScrapRequest
 import com.with_runn.data.repository.CourseRepository
+import com.with_runn.data.ShareRequest
 import com.with_runn.data.viewmodel.CourseDetailViewModel
 import com.with_runn.data.viewmodel.CourseDetailViewModelFactory
-import com.with_runn.data.viewmodel.WalkCourseViewModel
 import com.with_runn.databinding.FragmentCourseDetailBinding
-import kotlinx.coroutines.launch
-import androidx.navigation.fragment.findNavController
-
 
 class CourseDetailFragment : Fragment() {
 
@@ -27,10 +22,6 @@ class CourseDetailFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: CourseDetailViewModel
-    private lateinit var likeViewModel: WalkCourseViewModel
-    private lateinit var repository: CourseRepository
-
-    private var isScrapped: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,83 +33,77 @@ class CourseDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("CourseDetail", "onViewCreated 호출됨")
-
         val courseId = arguments?.getInt("courseId") ?: return
-        Log.d("CourseDetail", "받은 courseId: $courseId")
 
-        repository = CourseRepository()
+        val repository = CourseRepository()
         val factory = CourseDetailViewModelFactory(repository)
         viewModel = ViewModelProvider(this, factory)[CourseDetailViewModel::class.java]
-        likeViewModel = ViewModelProvider(this)[WalkCourseViewModel::class.java]
 
-        // 코스 상세 데이터 요청
+        // 상세 데이터 요청
         viewModel.fetchCourseDetail(courseId)
 
-        // 코스 상세정보 LiveData 관찰
+        // 상세 데이터 observe → UI 바인딩
         viewModel.courseDetail.observe(viewLifecycleOwner) { course ->
-            Log.d("CourseDetail", "courseDetail observe 호출됨")
-
-            // UI에 기본 정보 바인딩
-            Glide.with(this).load(course.imageUrl).into(binding.imageCourse)
-            binding.textTitle.text = course.name
-            binding.textDescription.text = "우리 동네 코스 소개\n${course.time} 소요됩니다."
-            binding.textTimeValue.text = course.time.replace("분", "M")
-
-            // 태그 동적 생성
-            val tagContainer = binding.layoutTags
-            tagContainer.removeAllViews()
-            val inflater = LayoutInflater.from(requireContext())
-            course.keywords.take(2).forEach { tag ->
-                val tagView = inflater.inflate(R.layout.item_tag, tagContainer, false) as TextView
-                tagView.text = tag
-                tagContainer.addView(tagView)
-            }
-
-            // 초기 스크랩 상태 저장
-            isScrapped = course.isScrapped
-
-            // 좋아요 버튼 클릭 이벤트 처리
-            binding.btnLike.setOnClickListener {
-                Log.d("Test", "좋아요 버튼 클릭됨")
-                likeViewModel.postLike(course.id)
-                findNavController().navigate(R.id.action_courseDetailFragment_to_mypage_graph)
-            }
-
-            // 스크랩 버튼 클릭 이벤트 처리
-            binding.btnScrap.setOnClickListener {
-                Log.d("CourseDetail", "스크랩 버튼 클릭됨: ${course.name}")
-                val userId = 1 // 임시 사용자 ID
-
-                lifecycleScope.launch {
-                    try {
-                        val response = if (!isScrapped) {
-                            repository.postScrap(ScrapRequest(userId, course.id))
-                        } else {
-                            repository.deleteScrap(course.id)
-                        }
-
-                        if (response.isSuccessful) {
-                            val message = response.body()?.message
-                            Log.d("Scrap", "성공: $message")
-                            isScrapped = !isScrapped
-                        } else {
-                            Log.e("Scrap", "실패: ${response.errorBody()?.string()}")
-                        }
-
-                    } catch (e: Exception) {
-                        Log.e("Scrap", "예외 발생: ${e.message}")
-                        e.printStackTrace()
-                    }
-                }
-            }
-
-            // 공유 버튼 클릭 이벤트 처리
-            binding.btnShare.setOnClickListener {
-                Log.d("CourseDetail", "공유 버튼 클릭됨")
-                // TODO: 공유 바텀시트 연결 예정
+            course?.let {
+                Glide.with(this).load(it.imageUrl).into(binding.imageCourse)
+                binding.textTitle.text = it.name
+                binding.textDescription.text = "우리 동네 코스 소개\n${it.time} 소요됩니다."
+                binding.textTimeValue.text = it.time.replace("분", "M")
+                // ... 태그 등 나머지 UI 세팅
             }
         }
+
+        // 좋아요 버튼 리스너 (ViewModel 통해 API 호출)
+        binding.btnLike.setOnClickListener {
+            Log.d("LikeBtn", "좋아요 버튼 클릭됨 (courseId=$courseId)")
+            viewModel.postLike(courseId)
+        }
+
+        // 좋아요 결과 메시지 observe → Toast 등으로 안내
+        viewModel.likeMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+
+        // 스크랩 버튼 리스너 (ViewModel 통해 API 호출)
+        binding.btnScrap.setOnClickListener {
+            Log.d("ScrapBtn", "스크랩 버튼 클릭됨 (courseId=$courseId)")
+            viewModel.postScrap(courseId) { msg ->
+                Log.d("ScrapResult", "스크랩 API 결과: $msg")
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 공유 버튼 리스너 (ViewModel 통해 API 호출)
+        binding.btnShare.setOnClickListener {
+            Log.d("ShareBtn", "공유 버튼 클릭됨 (courseId=$courseId)")
+            val isChat = true
+            val userId = 1
+            val targetUserId = null     // 채팅방 공유면 null
+            val chatId = 1              // 실제 채팅방 id
+            viewModel.postShareCourse(
+                isChat = isChat,
+                userId = userId,
+                targetUserId = targetUserId,
+                chatId = chatId,
+                courseId = courseId
+            ) { success, msg ->
+                if (success) {
+                    Log.d("ShareResult", "공유 성공: $msg")
+                    Toast.makeText(requireContext(), "공유 성공: $msg", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("ShareResult", "공유 실패: $msg")
+                    Toast.makeText(requireContext(), "공유 실패: $msg", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
+//        binding.btnScrap.setOnClickListener {
+//            Log.d("DeleteScrapBtn", "스크랩 취소 버튼 클릭 (courseId=$courseId)")
+//            viewModel.deleteScrap(courseId) { msg ->
+//                Log.d("DeleteScrapResult", "스크랩 취소 결과: $msg")
+//                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     override fun onDestroyView() {
