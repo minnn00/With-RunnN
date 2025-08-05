@@ -12,10 +12,15 @@ import com.with_runn.R
 import com.with_runn.ui.adapter.DogCard
 import com.with_runn.ui.adapter.DogCardAdapter
 import com.with_runn.ui.chat.activity.ChatRoomActivity
+import com.with_runn.ui.chat.repository.ChatRepository
+import com.with_runn.ui.friend.DogCardMainActivity
+import android.util.Log
+import android.widget.Toast
 
 class RecommendedFriendsFragment : Fragment() {
     private lateinit var dogCardAdapter: DogCardAdapter
     private var currentPage = 0
+    private val chatRepository = ChatRepository()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -97,18 +102,91 @@ class RecommendedFriendsFragment : Fragment() {
             )
 
             dialogFragment.setOnMessageButtonClickListener {
-                //navigateToChatRoom(dogCard)
+                // 채팅방 생성 API 호출
+                createChatRoomWithFriend(dogCard)
             }
 
             dialogFragment.show(childFragmentManager, "FriendProfileDialog")
         }
 
     }
-    private fun navigateToChatRoom(friend: Friend) {
+    
+    /**
+     * 추천 친구와 채팅방 생성
+     */
+    private fun createChatRoomWithFriend(dogCard: DogCard) {
+        Log.d("RecommendedFriendsFragment", "=== 채팅방 생성 시작 ===")
+        Log.d("RecommendedFriendsFragment", "선택된 친구: ${dogCard.name}")
+        
+        // 로딩 표시 (선택적으로 구현 가능)
+        Toast.makeText(requireContext(), "${dogCard.name}님과 채팅방을 생성 중입니다...", Toast.LENGTH_SHORT).show()
+        
+        // 실제 로그인된 사용자 ID (백엔드 개발자 요청)
+        val currentUserId = 10
+        val targetUserId = getTargetUserId(dogCard.name) // 친구 이름으로 targetUserId 매핑
+        
+        Log.d("RecommendedFriendsFragment", "API 호출 파라미터: currentUserId=$currentUserId, targetUserId=$targetUserId")
+        
+        chatRepository.createChatRoomAndFind(currentUserId, targetUserId, dogCard.name) { result ->
+            requireActivity().runOnUiThread {
+                result.fold(
+                    onSuccess = { chatRoom ->
+                        if (chatRoom != null) {
+                            Log.d("RecommendedFriendsFragment", "✅ 채팅방 생성 및 찾기 성공! chatId=${chatRoom.chatId}, name=${chatRoom.name}")
+                            Toast.makeText(requireContext(), "${dogCard.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            
+                            // 생성된 채팅방으로 바로 이동
+                            navigateToChatRoom(chatRoom.chatId, dogCard.name)
+                        } else {
+                            Log.d("RecommendedFriendsFragment", "⚠️ 생성된 채팅방을 찾을 수 없음")
+                            Toast.makeText(requireContext(), "${dogCard.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            
+                            // 채팅 목록으로 이동
+                            navigateToChatList()
+                        }
+                    },
+                    onFailure = { exception ->
+                        Log.e("RecommendedFriendsFragment", "❌ 채팅방 생성 실패", exception)
+                        Toast.makeText(requireContext(), "채팅방 생성에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
+                    }
+                )
+            }
+        }
+    }
+    
+    /**
+     * 친구 이름으로 targetUserId 매핑 (API 명세서에 맞춤)
+     */
+    private fun getTargetUserId(friendName: String): Int {
+        return when (friendName) {
+            "조니" -> 11   // 새로운 ID 할당
+            "밀리" -> 12   // 새로운 ID 할당
+            "호두" -> 13   // 새로운 ID 할당
+            "루시" -> 14   // 새로운 ID 할당
+            else -> 15     // 기본값
+        }
+    }
+    
+    /**
+     * 채팅 목록으로 이동
+     */
+    private fun navigateToChatList() {
+        // BottomNavigationView에서 채팅 탭으로 이동
+        val activity = requireActivity()
+        if (activity is DogCardMainActivity) {
+            activity.navigateToChatTab()
+        }
+    }
+    
+    /**
+     * 생성된 채팅방으로 이동
+     */
+    private fun navigateToChatRoom(chatId: Int, friendName: String) {
+        // 채팅방 입장 API가 아직 구현되지 않아서 바로 이동
+        Log.d("RecommendedFriendsFragment", "채팅방 화면으로 이동: chatId=$chatId")
         val intent = Intent(requireContext(), ChatRoomActivity::class.java).apply {
-            // 친구 정보를 전달
-            putExtra("friend_name", friend.name)
-            putExtra("friend_image", friend.imageResId)
+            putExtra("chatId", chatId)
+            putExtra("friend_name", friendName)
             putExtra("is_new_chat", true) // 새 채팅방 플래그
         }
         startActivity(intent)

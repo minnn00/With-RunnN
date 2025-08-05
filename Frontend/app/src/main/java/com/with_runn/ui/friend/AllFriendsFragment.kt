@@ -169,21 +169,29 @@ class AllFriendsFragment : Fragment() {
         // 로딩 표시 (선택적으로 구현 가능)
         Toast.makeText(requireContext(), "${friend.name}님과 채팅방을 생성 중입니다...", Toast.LENGTH_SHORT).show()
         
-        // 테스트용 사용자 ID (실제로는 로그인한 사용자 ID를 사용)
-        val currentUserId = 1
+        // 실제 로그인된 사용자 ID (백엔드 개발자 요청)
+        val currentUserId = 10
         val targetUserId = getTargetUserId(friend.name) // 친구 이름으로 targetUserId 매핑
         
         Log.d("AllFriendsFragment", "API 호출 파라미터: currentUserId=$currentUserId, targetUserId=$targetUserId")
         
-        chatRepository.createChatRoom(currentUserId, targetUserId) { result ->
+        chatRepository.createChatRoomAndFind(currentUserId, targetUserId, friend.name) { result ->
             requireActivity().runOnUiThread {
                 result.fold(
-                    onSuccess = {
-                        Log.d("AllFriendsFragment", "✅ 채팅방 생성 성공!")
-                        Toast.makeText(requireContext(), "${friend.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
-                        
-                        // 채팅방으로 이동
-                        navigateToChatRoom(friend)
+                    onSuccess = { chatRoom ->
+                        if (chatRoom != null) {
+                            Log.d("AllFriendsFragment", "✅ 채팅방 생성 및 찾기 성공! chatId=${chatRoom.chatId}, name=${chatRoom.name}")
+                            Toast.makeText(requireContext(), "${friend.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            
+                            // 생성된 채팅방으로 바로 이동
+                            navigateToChatRoom(chatRoom.chatId, friend.name)
+                        } else {
+                            Log.d("AllFriendsFragment", "⚠️ 생성된 채팅방을 찾을 수 없음")
+                            Toast.makeText(requireContext(), "${friend.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            
+                            // 채팅 목록으로 이동
+                            navigateToChatList()
+                        }
                     },
                     onFailure = { exception ->
                         Log.e("AllFriendsFragment", "❌ 채팅방 생성 실패", exception)
@@ -195,28 +203,40 @@ class AllFriendsFragment : Fragment() {
     }
     
     /**
-     * 친구 이름으로 targetUserId 매핑 (임시 구현)
+     * 친구 이름으로 targetUserId 매핑 (API 명세서에 맞춤)
      */
     private fun getTargetUserId(friendName: String): Int {
         return when (friendName) {
-            "마루" -> 2
-            "룽이" -> 3
-            "홍이" -> 4
-            "구리" -> 5
-            else -> 999 // 기본값
+            "마루" -> 1   // 2 → 1로 변경 (다른 ID 시도)
+            "룽이" -> 3   // 3 유지
+            "홍이" -> 4   // 4 유지
+            "구리" -> 5   // 5 유지
+            else -> 6     // 6 유지
         }
     }
     
     /**
-     * 채팅방으로 이동
+     * 채팅 목록으로 이동
      */
-    private fun navigateToChatRoom(friend: Friend) {
+    private fun navigateToChatList() {
+        // BottomNavigationView에서 채팅 탭으로 이동
+        val activity = requireActivity()
+        if (activity is DogCardMainActivity) {
+            activity.navigateToChatTab()
+        }
+    }
+    
+    /**
+     * 생성된 채팅방으로 이동
+     */
+    private fun navigateToChatRoom(chatId: Int, friendName: String) {
+        // 채팅방 입장 API가 아직 구현되지 않아서 바로 이동
+        Log.d("AllFriendsFragment", "채팅방 화면으로 이동: chatId=$chatId")
         val intent = Intent(requireContext(), ChatRoomActivity::class.java).apply {
-            // 친구 정보를 전달
-            putExtra("friend_name", friend.name)
-            putExtra("friend_image", friend.imageResId)
+            putExtra("chatId", chatId)
+            putExtra("friend_name", friendName)
             putExtra("is_new_chat", true) // 새 채팅방 플래그
         }
         startActivity(intent)
     }
-} 
+}

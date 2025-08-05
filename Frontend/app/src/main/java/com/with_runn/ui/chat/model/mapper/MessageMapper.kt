@@ -16,23 +16,23 @@ object MessageMapper {
      * @param messageDto API 응답 DTO
      * @param currentUserId 현재 사용자 ID (내가 보낸 메시지 판별용)
      */
-    fun MessageDto.toMessage(currentUserId: String = "나"): Message {
+    fun MessageDto.toMessage(currentUserId: Int = 1): Message {
         return Message(
-            messageId = messageId,
-            sender = sender,
-            content = content,
-            timestamp = formatTimestamp(timestamp),
-            isFromMe = sender == currentUserId,
-            isSystemMessage = messageType == Message.TYPE_SYSTEM,
-            isCourseShare = messageType == Message.TYPE_COURSE_SHARE,
-            senderProfileResId = getProfileImageResId(sender),
-            messageType = messageType
+            messageId = chatId, // 임시로 chatId 사용 (실제로는 별도 messageId가 필요할 수 있음)
+            sender = userName,
+            content = msg,
+            timestamp = formatTimestamp(createdAt),
+            isFromMe = userId == currentUserId,
+            isSystemMessage = false, // 새 API에서는 시스템 메시지 구분이 없음
+            isCourseShare = isCourse,
+            senderProfileResId = getProfileImageResId(userName),
+            messageType = if (isCourse) Message.TYPE_COURSE_SHARE else Message.TYPE_TEXT
         )
     }
     
     /**
      * 타임스탬프 형식 변환
-     * "2025-07-07T14:30:00" → "오후 2:30"
+     * "2025-07-16T15:32:10" → "오후 3:32"
      */
     private fun formatTimestamp(timestamp: String): String {
         return try {

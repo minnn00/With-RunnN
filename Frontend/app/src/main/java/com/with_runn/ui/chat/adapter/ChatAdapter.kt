@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
 import com.with_runn.R
 import com.with_runn.ui.chat.model.ChatRoom
 
@@ -92,21 +93,59 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
             chatTime?.text = chatRoom.time
             lastMessage?.text = chatRoom.lastMessage
             
-            // 프로필 이미지 설정
-            if (chatRoom.profileImageResId != 0) {
-                profileImage?.setImageResource(chatRoom.profileImageResId)
+            // 프로필 이미지 설정 (S3 URL에서 로딩)
+            profileImage?.let { imageView ->
+                if (!chatRoom.profileImageUrl.isNullOrEmpty()) {
+                    // URL 디코딩 후 재인코딩
+                    val decodedUrl = java.net.URLDecoder.decode(chatRoom.profileImageUrl, "UTF-8")
+                    val encodedUrl = java.net.URLEncoder.encode(decodedUrl, "UTF-8")
+                    
+                    // 디버깅 로그
+                    android.util.Log.d("ChatAdapter", "원본 URL: ${chatRoom.profileImageUrl}")
+                    android.util.Log.d("ChatAdapter", "디코딩된 URL: $decodedUrl")
+                    android.util.Log.d("ChatAdapter", "재인코딩된 URL: $encodedUrl")
+                    
+                    // S3 Access Denied 에러 처리
+                    android.util.Log.w("ChatAdapter", "S3 Access Denied 에러 발생 - 백엔드 팀에 S3 권한 설정 요청 필요")
+                    
+                    // S3 URL에서 이미지 로딩
+                    Glide.with(itemView.context)
+                        .load(decodedUrl)
+                        .placeholder(R.drawable.img_profile_default)
+                        .error(R.drawable.img_profile_default)
+                        .into(imageView)
+                } else {
+                    // URL이 없으면 기본 이미지
+                    imageView.setImageResource(R.drawable.img_profile_default)
+                }
             }
             
             // 두 번째 프로필 이미지 설정 (겹친 이미지)
-            if (chatRoom.hasSecondImage && chatRoom.profileImage2ResId != 0) {
+            if (chatRoom.hasSecondImage) {
                 profileImage2?.visibility = View.VISIBLE
-                profileImage2?.setImageResource(chatRoom.profileImage2ResId)
+                profileImage2?.let { imageView ->
+                    if (!chatRoom.profileImage2Url.isNullOrEmpty()) {
+                        // URL 디코딩 후 재인코딩
+                        val decodedUrl = java.net.URLDecoder.decode(chatRoom.profileImage2Url, "UTF-8")
+                        val encodedUrl = java.net.URLEncoder.encode(decodedUrl, "UTF-8")
+                        
+                        // S3 URL에서 이미지 로딩
+                        Glide.with(itemView.context)
+                            .load(decodedUrl)
+                            .placeholder(R.drawable.img_profile_default)
+                            .error(R.drawable.img_profile_default)
+                            .into(imageView)
+                    } else {
+                        // URL이 없으면 기본 이미지
+                        imageView.setImageResource(R.drawable.img_profile_default)
+                    }
+                }
             } else {
                 profileImage2?.visibility = View.GONE
             }
             
             // 참여자 수 설정 (그룹 채팅인 경우)
-            participantCount?.text = chatRoom.notificationCount.toString()
+            participantCount?.text = chatRoom.participants.toString()
             
             // 알림 배지 설정
             if (chatRoom.notificationCount > 0) {

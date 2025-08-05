@@ -93,6 +93,14 @@ dependencies {
     implementation(libs.glide)
     kapt(libs.glide.compiler)
 
+    // WebSocket 관련 의존성 (안정적인 버전으로 교체)
+    implementation("org.java-websocket:Java-WebSocket:1.5.5")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

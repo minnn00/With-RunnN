@@ -3,14 +3,17 @@ package com.with_runn.ui.chat.model.dto
 import com.google.gson.annotations.SerializedName
 
 /**
- * 채팅방 이름 설정 API 응답 DTO
+ * 초대 목록 API 응답 래퍼
  */
-data class UpdateChatNameResponse(
+data class InviteListResponse(
     @SerializedName("code")
     val code: String,
     
     @SerializedName("message")
     val message: String,
+    
+    @SerializedName("result")
+    val result: List<InviteUserDto>,
     
     @SerializedName("success")
     val success: Boolean

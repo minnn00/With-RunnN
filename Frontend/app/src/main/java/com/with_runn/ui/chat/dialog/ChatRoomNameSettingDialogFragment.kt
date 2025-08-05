@@ -21,11 +21,16 @@ class ChatRoomNameSettingDialogFragment : DialogFragment() {
     private lateinit var clearButton: ImageView
     private lateinit var setButton: TextView
     
-    private var onNameSetListener: ((String) -> Unit)? = null
+    private var onNameSetListener: ((String?) -> Unit)? = null
     private val chatRepository = ChatRepository()
+    private var chatId: Int = -1
     
-    fun setOnNameSetListener(listener: (String) -> Unit) {
+    fun setOnNameSetListener(listener: (String?) -> Unit) {
         onNameSetListener = listener
+    }
+    
+    fun setChatId(id: Int) {
+        chatId = id
     }
 
     override fun onCreateView(
@@ -116,18 +121,23 @@ class ChatRoomNameSettingDialogFragment : DialogFragment() {
         setButton.isEnabled = false
         setButton.text = "설정 중..."
         
-        chatRepository.updateChatName(1, newName) { result -> // 임시로 chatId=1 사용
+        if (chatId == -1) {
+            Toast.makeText(context, "채팅방 정보를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        chatRepository.updateChatName(chatId, newName) { result ->
             activity?.runOnUiThread {
                 result.fold(
                     onSuccess = { response ->
                         Log.d("ChatRoomNameSettingDialog", "✅ 채팅방 이름 설정 성공!")
-                        Log.d("ChatRoomNameSettingDialog", "응답: chatId=${response.chatId}, name=${response.name}")
+                        Log.d("ChatRoomNameSettingDialog", "응답: code=${response.code}, message=${response.message}")
                         
                         // 성공 처리
-                        Toast.makeText(context, "채팅방 이름이 '${response.name}'으로 변경되었습니다", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "채팅방 이름이 변경되었습니다", Toast.LENGTH_SHORT).show()
                         
-                        // 콜백 호출
-                        onNameSetListener?.invoke(response.name)
+                        // 콜백 호출 (새로 설정한 이름 전달)
+                        onNameSetListener?.invoke(newName)
                         
                         // 다이얼로그 닫기
                         dismiss()

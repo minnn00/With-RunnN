@@ -19,6 +19,7 @@ import android.widget.FrameLayout
 import com.with_runn.R
 import com.with_runn.ui.chat.model.ChatRoom
 import com.with_runn.ui.chat.model.dto.ChatRoomDto
+import com.with_runn.ui.chat.model.dto.ChatListResponse
 import com.with_runn.ui.chat.model.mapper.ChatRoomMapper.toChatRoom
 import com.with_runn.ui.chat.adapter.ChatAdapter
 import com.with_runn.ui.chat.repository.ChatRepository
@@ -72,13 +73,12 @@ class ChatActivity : AppCompatActivity() {
         
         // 채팅방 클릭 리스너 설정
         chatAdapter.setOnItemClickListener { chatRoom ->
-            if (chatRoom.name == "조니") {
-                // 조니 채팅방 클릭 시 ChatRoomActivity로 이동
-                val intent = Intent(this, ChatRoomActivity::class.java)
-                startActivity(intent)
-            } else {
-                Toast.makeText(this, "${chatRoom.name} 채팅방을 클릭했습니다", Toast.LENGTH_SHORT).show()
+            // 모든 채팅방 클릭 시 ChatRoomActivity로 이동
+            val intent = Intent(this, ChatRoomActivity::class.java).apply {
+                putExtra("chatId", chatRoom.chatId)
+                putExtra("friend_name", chatRoom.name)
             }
+            startActivity(intent)
         }
         
         // 삭제 클릭 리스너 설정
@@ -328,20 +328,18 @@ class ChatActivity : AppCompatActivity() {
             val deletedChatRoom = chatRooms[position]
             
             Log.d("ChatActivity", "=== 실제 채팅방 삭제 시작 ===")
-            Log.d("ChatActivity", "삭제할 채팅방: ${deletedChatRoom.name}, 위치: $position")
+            Log.d("ChatActivity", "삭제할 채팅방: ${deletedChatRoom.name}, chatId: ${deletedChatRoom.chatId}, 위치: $position")
             
             // 실제 API 호출로 채팅방 삭제
-            chatRepository.deleteChatRoom(1) { result -> // 임시로 chatId=1 사용
+            val actualChatId = deletedChatRoom.chatId // 삭제할 채팅방의 실제 chatId 사용
+            chatRepository.deleteChatRoom(actualChatId) { result ->
                 runOnUiThread {
                     result.fold(
                         onSuccess = {
                             Log.d("ChatActivity", "✅ 실제 채팅방 삭제 성공!")
                             
-                            // UI에서 제거
-                            val newChatRooms = chatRooms.toMutableList()
-                            newChatRooms.removeAt(position)
-                            chatRooms = newChatRooms
-                            chatAdapter.updateChatRooms(chatRooms)
+                            // 삭제 성공 후 API에서 최신 채팅 목록을 다시 불러옴
+                            loadChatRoomsFromApi()
                             hideDeleteButton()
                             
                             Toast.makeText(this@ChatActivity, "${deletedChatRoom.name} 채팅방이 삭제되었습니다", Toast.LENGTH_SHORT).show()
@@ -363,18 +361,19 @@ class ChatActivity : AppCompatActivity() {
         Log.d("ChatActivity", "API 호출 시작")
         
         // Retrofit의 enqueue() 메서드 사용
-        RetrofitClient.chatApiService.getChatList().enqueue(object : retrofit2.Callback<List<ChatRoomDto>> {
+        RetrofitClient.chatApiService.getChatList().enqueue(object : retrofit2.Callback<ChatListResponse> {
             override fun onResponse(
-                call: retrofit2.Call<List<ChatRoomDto>>,
-                response: retrofit2.Response<List<ChatRoomDto>>
+                call: retrofit2.Call<ChatListResponse>,
+                response: retrofit2.Response<ChatListResponse>
             ) {
                 Log.d("ChatActivity", "API 응답 성공: ${response.code()}")
                 
                 if (response.isSuccessful) {
-                    val chatRoomDtos = response.body()
-                    Log.d("ChatActivity", "받은 데이터: $chatRoomDtos")
+                    val chatListResponse = response.body()
+                    Log.d("ChatActivity", "받은 데이터: $chatListResponse")
                     
-                    if (chatRoomDtos != null) {
+                    if (chatListResponse != null && chatListResponse.success) {
+                        val chatRoomDtos = chatListResponse.result
                         // DTO를 UI 모델로 변환
                         val chatRooms = chatRoomDtos.map { it.toChatRoom() }
                         Log.d("ChatActivity", "변환된 채팅방: $chatRooms")
@@ -385,7 +384,7 @@ class ChatActivity : AppCompatActivity() {
                             chatAdapter.updateChatRooms(chatRooms)
                         }
                     } else {
-                        Log.e("ChatActivity", "응답 본문이 null")
+                        Log.e("ChatActivity", "응답이 성공하지 않음")
                         loadSampleData() // API 실패 시 샘플 데이터 로드
                     }
                 } else {
@@ -394,7 +393,7 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
             
-            override fun onFailure(call: retrofit2.Call<List<ChatRoomDto>>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<ChatListResponse>, t: Throwable) {
                 Log.e("ChatActivity", "API 호출 실패", t)
                 loadSampleData() // 네트워크 오류 시 샘플 데이터 로드
             }
@@ -407,6 +406,7 @@ class ChatActivity : AppCompatActivity() {
     private fun loadSampleData() {
         chatRooms = listOf(
             ChatRoom(
+                chatId = 1,
                 name = "조니",
                 time = "14:20",
                 lastMessage = "좋아요! 그럼 6시에 연남에서 보는 거 어떠세요?",
@@ -414,18 +414,21 @@ class ChatActivity : AppCompatActivity() {
                 profileImageResId = R.drawable.jonny
             ),
             ChatRoom(
+                chatId = 2,
                 name = "마루",
                 time = "10:00",
                 lastMessage = "산책 즐거웠어요 ~ 다음에 또 같이 해요~!",
                 profileImageResId = R.drawable.maru
             ),
             ChatRoom(
+                chatId = 3,
                 name = "이름 없는 사용자",
                 time = "25.05.29",
                 lastMessage = "저기요 제 개껌 돌려달라고요",
                 profileImageResId = R.drawable.guri
             ),
             ChatRoom(
+                chatId = 4,
                 name = "초코, 모찌",
                 time = "25.05.12",
                 lastMessage = "네 좋아요 ~ ^^",
@@ -435,6 +438,7 @@ class ChatActivity : AppCompatActivity() {
                 profileImage2ResId = R.drawable.ellipse_50
             ),
             ChatRoom(
+                chatId = 5,
                 name = "마루",
                 time = "25.05.09",
                 lastMessage = "간식 감사합니다! 담에 또 같이 산책해요 ㅎㅎ",
@@ -486,12 +490,23 @@ class ChatActivity : AppCompatActivity() {
         
         Log.d("ChatActivity", "테스트 파라미터: currentUserId=$currentUserId, targetUserId=$targetUserId")
         
-        chatRepository.createChatRoom(currentUserId, targetUserId) { result ->
+        chatRepository.createChatRoomAndFind(currentUserId, targetUserId, "테스트 친구") { result ->
             runOnUiThread {
                 result.fold(
-                    onSuccess = {
-                        Log.d("ChatActivity", "✅ 채팅방 생성 성공!")
-                        Toast.makeText(this@ChatActivity, "채팅방이 성공적으로 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                    onSuccess = { chatRoom ->
+                        if (chatRoom != null) {
+                            Log.d("ChatActivity", "✅ 채팅방 생성 및 찾기 성공! chatId=${chatRoom.chatId}, name=${chatRoom.name}")
+                            Toast.makeText(this@ChatActivity, "채팅방이 성공적으로 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            
+                            // 생성된 채팅방으로 바로 이동
+                            navigateToChatRoom(chatRoom.chatId, "테스트 친구")
+                        } else {
+                            Log.d("ChatActivity", "⚠️ 생성된 채팅방을 찾을 수 없음")
+                            Toast.makeText(this@ChatActivity, "채팅방이 성공적으로 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            
+                            // 채팅 목록 새로고침
+                            loadChatRoomsFromApi()
+                        }
                     },
                     onFailure = { exception ->
                         Log.e("ChatActivity", "❌ 채팅방 생성 실패", exception)
@@ -502,5 +517,17 @@ class ChatActivity : AppCompatActivity() {
         }
         
         Log.d("ChatActivity", "채팅방 생성 기능 테스트 호출 완료")
+    }
+    
+    /**
+     * 생성된 채팅방으로 이동
+     */
+    private fun navigateToChatRoom(chatId: Int, friendName: String) {
+        val intent = Intent(this, ChatRoomActivity::class.java).apply {
+            putExtra("chatId", chatId)
+            putExtra("friend_name", friendName)
+            putExtra("is_new_chat", true) // 새 채팅방 플래그
+        }
+        startActivity(intent)
     }
 } 
