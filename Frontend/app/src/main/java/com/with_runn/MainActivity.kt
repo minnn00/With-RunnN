@@ -64,17 +64,15 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
-        }
+                }
+
+        // 1회만 실행: 마스터 토큰 설정
+        TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
+
+        // ViewModel에 로드
+        activityVM.loadToken()
 
         checkAndRequestLocationPermission()
-        
-        // Google Places API 초기화 (API 키가 설정되지 않은 경우 처리)
-        val apiKey = BuildConfig.GOOGLE_MAP_API_KEY
-        if (apiKey.isNotEmpty()) {
-            Places.initializeWithNewPlacesApiEnabled(applicationContext, apiKey)
-        } else {
-            Log.w("MainActivity", "Google Places API 키가 설정되지 않았습니다. local.properties에 GOOGLE_MAP_API_KEY를 추가해주세요.")
-        }
 
 //        val intent = Intent(this, OnboardingActivity::class.java)
 //        startActivity(intent)
