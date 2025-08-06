@@ -2,13 +2,9 @@ package com.with_runn.ui.course
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
@@ -22,10 +18,6 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.with_runn.ActivityViewModel
 import com.with_runn.R
-import com.with_runn.data.repository.CourseRepository
-import com.with_runn.data.ShareRequest
-import com.with_runn.data.viewmodel.CourseDetailViewModel
-import com.with_runn.data.viewmodel.CourseDetailViewModelFactory
 import com.with_runn.data.course.CourseFetchRepository
 import com.with_runn.data.course.CourseService
 import com.with_runn.data.viewmodel.CourseDetailsVMFactory

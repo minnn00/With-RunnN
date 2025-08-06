@@ -49,9 +49,11 @@ class WalkCourseFragment : Fragment() {
         // 미리보기 어댑터만 연결
         localPreviewAdapter = LocalCourseAdapter(mutableListOf()) { course ->
             val bundle = Bundle().apply { putInt("courseId", course.id) }
+        }
         // Local Course Adapter 초기화
         val localAdapter = LocalCourseAdapter(emptyList<LocalCourse>().toMutableList()) { course ->
             val walkCourse = WalkCourse(
+                id = 1,
                 title = course.title,
                 tags = listOf(course.tag),
                 imageResId = course.imageRes,
@@ -76,6 +78,7 @@ class WalkCourseFragment : Fragment() {
         // Hot Course Adapter 초기화
         hotAdapter = HotCourseAdapter(emptyList()) { course ->
             val walkCourse = WalkCourse(
+                id = 1,
                 title = course.title,
                 tags = course.tags,
                 imageResId = course.imageRes,
