@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.maps.android.PolyUtil
 import com.with_runn.mapData.DirectionsRepository
+import com.with_runn.ui.course_edit.CourseData
 import com.with_runn.ui.course_edit.PinItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,16 @@ import kotlinx.coroutines.launch
 
 class CourseEditViewModel : ViewModel() {
     private val repository = DirectionsRepository()
+
+    private val _courseData = MutableStateFlow<CourseData>(
+        CourseData(
+            "샘플 데이터",
+            "샘플 데이터",
+            "샘플 키워드",
+            90
+        )
+    )
+    val courseData : StateFlow<CourseData> = _courseData
 
     private val _locationPermissionGranted = MutableStateFlow(false)
     val locationPermissionGranted : StateFlow<Boolean> = _locationPermissionGranted

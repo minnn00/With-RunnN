@@ -20,6 +20,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -35,6 +36,8 @@ import com.with_runn.MainActivity
 import com.with_runn.R
 import com.with_runn.databinding.FragmentCourseManageBinding
 import com.with_runn.dp
+import com.with_runn.ui.course_edit.CourseData
+import com.with_runn.ui.course_edit.CourseEditDialogFragment
 import com.with_runn.ui.course_edit.PinEditDialogFragment
 import com.with_runn.ui.course_edit.PinEditDialogFragment.Companion.Mode
 import com.with_runn.ui.course_edit.PinItem
@@ -233,6 +236,19 @@ class CourseManageFragment : Fragment() {
                         }
                         googleMap.addMarker(markerOption)
                     }
+
+                    val isPinExist = list.isNotEmpty()
+                    if(isPinExist){
+                        if(behavior.state == BottomSheetBehavior.STATE_HIDDEN){
+                            binding.bottomSheetBehaviour.visibility = View.INVISIBLE
+                            behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                            binding.bottomSheetBehaviour.visibility = View.VISIBLE
+                            behavior.isHideable = false
+                        }
+                    }else{
+                        behavior.isHideable = true
+                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
                 }
             }
         }
@@ -282,6 +298,14 @@ class CourseManageFragment : Fragment() {
                     )
 
                     courseEditViewModel.setPolyline(polyline)
+
+                    val enabled = !directions.isEmpty()
+                        binding.apply{
+                            btnSave.isEnabled = enabled
+                            btnSave.setBackgroundResource(
+                                if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
+                            )
+                        }
                 }
             }
         }
@@ -292,13 +316,19 @@ class CourseManageFragment : Fragment() {
     private fun setupBottomSheet(){
         behavior.apply{
             peekHeight = 150.dp
-            isHideable = false
+            isHideable = courseEditViewModel.pinList.value.isEmpty()
             isFitToContents = true
             halfExpandedRatio = 0.55f
         }
 
         binding.bottomSheetBehaviour.post{
-            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            behavior.isHideable = courseEditViewModel.pinList.value.isEmpty()
+            if(courseEditViewModel.pinList.value.isEmpty()){
+                behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }else{
+                behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            }
+
         }
     }
 
@@ -360,7 +390,20 @@ class CourseManageFragment : Fragment() {
             @SuppressLint("MissingPermission")
             toMyLocationFab.setOnClickListener{
                 moveToMyLocation()
-                courseEditViewModel.askDirections()
+            }
+
+            btnCreate.setOnClickListener {
+                val size = courseEditViewModel.pinList.value.size
+
+                if(size > 1){
+                    courseEditViewModel.askDirections()
+                }
+            }
+
+            btnSave.setOnClickListener {
+                CourseEditDialogFragment.newInstance(
+                    courseEditViewModel.courseData.value
+                ).show(parentFragmentManager, "PinEditDialogFragment")
             }
         }
 
@@ -375,6 +418,13 @@ class CourseManageFragment : Fragment() {
                 courseEditViewModel.updatePin(pin)
             }
 
+        }
+
+        parentFragmentManager.setFragmentResultListener("course_edit_result", viewLifecycleOwner) { key, bundle ->
+            val course = bundle.getParcelable<CourseData>("course_data", CourseData::class.java) ?: error("CourseData argument required")
+
+            // TODO: Course Post
+            // TODO: 상세보기로 이동 (백스택 남기지 않고)ㄹ
         }
     }
 
