@@ -33,6 +33,7 @@ class MapContainerFragment : Fragment() {
         // 🗺️ 지도 이미지 클릭 시 바텀시트 띄우기
         binding.imageMap.setOnClickListener {
             val dummyCourse = WalkCourse(
+                id = 5,
                 title = "반려견과 한강 산책",
                 tags = listOf("#이웃사촌", "#같이산책해요"),
                 imageResId = R.drawable.image,  // 꼭 존재하는 이미지로!
