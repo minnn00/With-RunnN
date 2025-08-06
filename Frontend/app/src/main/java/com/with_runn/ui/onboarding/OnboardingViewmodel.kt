@@ -33,12 +33,13 @@ class OnboardingViewmodel : ViewModel(){
     private var isCharactersValuesSet = false
     private var isWalkingStyleValuesSet = false
 
-    fun setDefaultValues(name: String,gender: String,birth: String,breed: String,size: String) {
+    fun setDefaultValues(name: String,gender: String,birth: String,breed: String,size: String,introduction: String) {
         _name.value = name
         _gender.value = gender
         _birth.value = birth
         _breed.value = breed
         _size.value = size
+        _introduction.value = introduction
         isDefaultValuesSet = true
     }
 

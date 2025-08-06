@@ -47,7 +47,7 @@
             android:exported="false" />
 
         <activity android:name=".ui.onboarding.OnboardingActivity" />
-        <activity android:name=".ui.mypage.MypageFollowersActivity" />
+        <activity android:name=".ui.mypage.MypageFollowerFollowFragment" />
         <activity android:name=".ui.friend.DogCardMainActivity" />
         <activity android:name=".ui.friend.ReportActivity" />
         </application>

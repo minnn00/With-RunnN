@@ -165,7 +165,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-
                         style="@style/Text_Pretendard_Regular_12"
                         android:text="@string/scrap"
                         android:textColor="@color/gray_950"/>
@@ -233,7 +232,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-
                         style="@style/Text_Pretendard_Regular_12"
                         android:text="@string/share"
                         android:textColor="@color/gray_950"/>

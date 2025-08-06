@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.data.LocalCourse
 import com.with_runn.R
+import com.bumptech.glide.Glide
 
 class LocalCourseAdapter(
     private val courseList: MutableList<LocalCourse>,
@@ -28,9 +29,18 @@ class LocalCourseAdapter(
 
     override fun onBindViewHolder(holder: LocalCourseViewHolder, position: Int) {
         val course = courseList[position]
-        holder.imageCourse.setImageResource(course.imageRes)
         holder.tagText.text = course.tag
         holder.titleText.text = course.title
+
+        // Glide로 서버 이미지 로드 (imageUrl 있으면)
+        if (course.imageUrl != null && course.imageUrl.isNotEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(course.imageUrl)
+                .placeholder(R.drawable.image) // 기본 이미지
+                .into(holder.imageCourse)
+        } else {
+            holder.imageCourse.setImageResource(course.imageRes)
+        }
 
         holder.itemView.setOnClickListener {
             onItemClick(course)

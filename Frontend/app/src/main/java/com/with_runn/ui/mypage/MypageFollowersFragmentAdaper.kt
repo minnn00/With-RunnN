@@ -3,6 +3,7 @@ package com.with_runn.ui.mypage
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.with_runn.data.model.Follower
 
 class MypageFollowersFragmentAdaper(fragmentActivity: FragmentActivity) : FragmentStateAdapter(fragmentActivity) {
     override fun getItemCount(): Int = 2
@@ -12,4 +13,6 @@ class MypageFollowersFragmentAdaper(fragmentActivity: FragmentActivity) : Fragme
     override fun createFragment(position: Int): Fragment {
         return MypageFollowersFragment.newInstance(pageTexts[position])
     }
+
+
 }
