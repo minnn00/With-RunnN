@@ -33,20 +33,20 @@ class CourseDetailBottomSheet : BottomSheetDialogFragment() {
         course = arguments?.getParcelable("course") ?: return
 
         // 기본 바인딩
-        binding.imageCourse.setImageResource(course.imageResId)
-        binding.textTitle.text = course.title
-        binding.textDescription.text = "우리 동네 코스 소개\n${course.distance}, ${course.time} 소요됩니다."
-        binding.textTimeValue.text = course.time.replace("분", "M")
+//        binding.imageCourse.setImageResource(course.imageResId)
+//        binding.textTitle.text = course.title
+//        binding.textDescription.text = "우리 동네 코스 소개\n${course.distance}, ${course.time} 소요됩니다."
+//        binding.textTimeValue.text = course.time.replace("분", "M")
 
         // 태그 동적 추가
-        val tagContainer = binding.layoutTags
-        tagContainer.removeAllViews()
-        val inflater = LayoutInflater.from(requireContext())
-        course.tags.take(2).forEach { tag ->
-            val tagView = inflater.inflate(R.layout.item_tag, tagContainer, false) as TextView
-            tagView.text = tag
-            tagContainer.addView(tagView)
-        }
+//        val tagContainer = binding.layoutTags
+//        tagContainer.removeAllViews()
+//        val inflater = LayoutInflater.from(requireContext())
+//        course.tags.take(2).forEach { tag ->
+//            val tagView = inflater.inflate(R.layout.item_tag, tagContainer, false) as TextView
+//            tagView.text = tag
+//            tagContainer.addView(tagView)
+//        }
 
         // 버튼 클릭 리스너
         binding.btnScrap.setOnClickListener {

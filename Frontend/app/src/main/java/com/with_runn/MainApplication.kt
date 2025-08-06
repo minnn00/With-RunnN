@@ -7,7 +7,6 @@ class MainApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
-
         TokenManager.init(applicationContext)
     }
 }

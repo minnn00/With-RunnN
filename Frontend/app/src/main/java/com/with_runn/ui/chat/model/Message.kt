@@ -13,7 +13,10 @@ data class Message(
     val isSystemMessage: Boolean = false, // 시스템 메시지인지 여부
     val isCourseShare: Boolean = false, // 코스 공유 메시지인지 여부
     val senderProfileResId: Int = 0, // 발신자 프로필 이미지 리소스 ID
-    val messageType: String = "TEXT" // 메시지 타입
+    val messageType: String = "TEXT", // 메시지 타입
+    val courseId: Int? = null, // 코스 ID (공유 메시지인 경우)
+    val courseImage: String? = null, // 코스 이미지 URL (공유 메시지인 경우)
+    val courseTags: List<String>? = null // 코스 태그 (공유 메시지인 경우)
 ) {
     companion object {
         // 메시지 타입 상수

@@ -36,14 +36,45 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
             nameText.text = friend.name
             profileImage.setImageResource(friend.imageResId)
             
-            checkbox.isChecked = selectedFriends.contains(friend)
+            // 초기 상태 설정
+            updateSelectionState(friend)
             
+            // 프로필 이미지 클릭 리스너
+            profileImage.setOnClickListener {
+                toggleSelection(friend)
+            }
+            
+            // 체크박스 클릭 리스너
             checkbox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     selectedFriends.add(friend)
                 } else {
                     selectedFriends.remove(friend)
                 }
+                updateSelectionState(friend)
+            }
+        }
+        
+        private fun toggleSelection(friend: Friend) {
+            if (selectedFriends.contains(friend)) {
+                selectedFriends.remove(friend)
+            } else {
+                selectedFriends.add(friend)
+            }
+            updateSelectionState(friend)
+        }
+        
+        private fun updateSelectionState(friend: Friend) {
+            val isSelected = selectedFriends.contains(friend)
+            checkbox.isChecked = isSelected
+            
+            // 선택 상태에 따라 체크박스 표시/숨김 및 테두리 변경
+            if (isSelected) {
+                checkbox.visibility = View.VISIBLE
+                profileImage.background = itemView.context.getDrawable(R.drawable.circular_image_background_selected)
+            } else {
+                checkbox.visibility = View.GONE
+                profileImage.background = itemView.context.getDrawable(R.drawable.circular_image_background)
             }
         }
     }

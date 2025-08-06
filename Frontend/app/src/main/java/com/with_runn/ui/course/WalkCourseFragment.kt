@@ -6,11 +6,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.navigation.fragment.findNavController
 import com.with_runn.data.LocalCourse
 import com.with_runn.data.HotCourse
+import com.with_runn.ActivityViewModel
+import com.with_runn.data.WalkCourse
 import com.with_runn.databinding.FragmentWalkCourseBinding
 import com.with_runn.data.viewmodel.WalkCourseViewModel
 import com.with_runn.R
@@ -23,11 +26,17 @@ class WalkCourseFragment : Fragment() {
     private lateinit var viewModel: WalkCourseViewModel
     private lateinit var localPreviewAdapter: LocalCourseAdapter
     private lateinit var risingPreviewAdapter: HotCourseAdapter
+    private val activityVM : ActivityViewModel by activityViewModels()
+
+    private lateinit var localAdapter: LocalCourseAdapter
+    private lateinit var hotAdapter: HotCourseAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activityVM.setBottomNavVisibility(true)
+
         _binding = FragmentWalkCourseBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -40,11 +49,50 @@ class WalkCourseFragment : Fragment() {
         // 미리보기 어댑터만 연결
         localPreviewAdapter = LocalCourseAdapter(mutableListOf()) { course ->
             val bundle = Bundle().apply { putInt("courseId", course.id) }
+        // Local Course Adapter 초기화
+        val localAdapter = LocalCourseAdapter(emptyList<LocalCourse>().toMutableList()) { course ->
+            val walkCourse = WalkCourse(
+                title = course.title,
+                tags = listOf(course.tag),
+                imageResId = course.imageRes,
+                distance = "2.0km",  // 임시값
+                time = "30분"        // 임시값
+            )
+//            val bundle = Bundle().apply {
+//                putParcelable("course", walkCourse)
+//            }
+//            findNavController().navigate(R.id.courseManageFragment, bundle)
+            val bundle = Bundle().apply {
+                putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
+            }
             findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
         binding.recyclerLocalCourse.apply {
             layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = localPreviewAdapter
+            adapter = localAdapter
+        }
+
+        // Hot Course Adapter 초기화
+        hotAdapter = HotCourseAdapter(emptyList()) { course ->
+            val walkCourse = WalkCourse(
+                title = course.title,
+                tags = course.tags,
+                imageResId = course.imageRes,
+                distance = course.distance,
+                time = course.time
+            )
+//            val bundle = Bundle().apply {
+//                putParcelable("course", walkCourse)
+//            }
+//            findNavController().navigate(R.id.courseManageFragment, bundle)
+            val bundle = Bundle().apply {
+                putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
+            }
+            //val bundle = Bundle().apply {
+            //    putInt("courseId", course.id)
+            //}
+            findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
 
         //  미리보기 데이터만 관찰

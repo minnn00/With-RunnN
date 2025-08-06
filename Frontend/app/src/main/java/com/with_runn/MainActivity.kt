@@ -23,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.libraries.places.api.Places
 import com.google.android.material.snackbar.Snackbar
 import com.with_runn.ui.onboarding.OnboardingActivity
+import com.with_runn.data.TokenManager
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -64,10 +65,15 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }
-        }
+                }
+
+        // 1회만 실행: 마스터 토큰 설정
+        TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
+
+        // ViewModel에 로드
+        activityVM.loadToken()
 
         checkAndRequestLocationPermission()
-        Places.initializeWithNewPlacesApiEnabled(applicationContext, BuildConfig.GOOGLE_MAP_API_KEY)
 
 //        val intent = Intent(this, OnboardingActivity::class.java)
 //        startActivity(intent)

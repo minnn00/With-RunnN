@@ -18,12 +18,12 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
     fun loadScrapCourses() {
         viewModelScope.launch {
             val token = TokenManager.getAccessToken()
-            if (token.isBlank()) {
+            if (token?.isBlank() == true) {
                 Log.e("MyPageViewModel", "토큰이 비어 있음!")
                 return@launch
             }
 
-            Log.d("토큰 값 확인", token)
+            Log.d("토큰 값 확인", token.toString())
 
             try {
                 val response = repository.getScrapCourses(token = "Bearer $token")
@@ -67,12 +67,12 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
     fun loadLikedCourses() {
         viewModelScope.launch {
             val token = TokenManager.getAccessToken()
-            if (token.isBlank()) {
+            if (token?.isBlank() == true) {
                 Log.e("MyPageViewModel", "토큰이 비어 있음! (좋아요)")
                 return@launch
             }
 
-            Log.d("토큰 확인", token)
+            Log.d("토큰 확인", token.toString())
 
             try {
                 val response = repository.getLikedCourses("Bearer $token")

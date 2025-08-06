@@ -2,20 +2,18 @@ package com.with_runn.ui.friend
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import com.google.android.material.tabs.TabLayoutMediator
 import com.with_runn.R
 import com.with_runn.databinding.ActivityDogCardMainBinding
 import com.with_runn.ui.chat.activity.ChatActivity
-import com.with_runn.ui.friend.RecommendedFriendsFragment
-import com.with_runn.ui.friend.AllFriendsFragment
 
 class DogCardMainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDogCardMainBinding
+    private lateinit var friendTabAdapter: FriendTabAdapter
+    
+    private val tabTitles = listOf("추천 친구", "모두 보기")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,26 +24,18 @@ class DogCardMainActivity : AppCompatActivity() {
         binding = ActivityDogCardMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupTabClickListeners()
+        setupTabLayout()
         setupChatButton()
         setupBottomNavigation()
-        
-        // 기본적으로 추천 친구 Fragment 표시
-        showRecommendedFriendsFragment()
     }
 
-    private fun setupTabClickListeners() {
-        // 추천 친구 탭 클릭 이벤트
-        binding.recommendedTab.setOnClickListener {
-            showRecommendedFriendsFragment()
-            updateTabUI(true)
-        }
+    private fun setupTabLayout() {
+        friendTabAdapter = FriendTabAdapter(this)
+        binding.viewPager.adapter = friendTabAdapter
 
-        // 모두 보기 탭 클릭 이벤트
-        binding.allFriendsTab.setOnClickListener {
-            showAllFriendsFragment()
-            updateTabUI(false)
-        }
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = tabTitles[position]
+        }.attach()
     }
 
     private fun setupChatButton() {
@@ -81,50 +71,14 @@ class DogCardMainActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRecommendedFriendsFragment() {
-        val fragment = RecommendedFriendsFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-    }
 
-    private fun showAllFriendsFragment() {
-        val fragment = AllFriendsFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
-            .commit()
-    }
 
-    private fun updateTabUI(isRecommendedActive: Boolean) {
-        if (isRecommendedActive) {
-            // 추천 친구 탭 활성화
-            binding.recommendedTabText.apply {
-                setTextColor(resources.getColor(R.color.black, null))
-                textSize = 16f
-            }
-            binding.recommendedTabIndicator.visibility = View.VISIBLE
-
-            // 모두 보기 탭 비활성화
-            binding.allFriendsTabText.apply {
-                setTextColor(resources.getColor(R.color.gray_400, null))
-                textSize = 16f
-            }
-            binding.allFriendsTabIndicator.visibility = View.GONE
-        } else {
-            // 모두 보기 탭 활성화
-            binding.allFriendsTabText.apply {
-                setTextColor(resources.getColor(R.color.black, null))
-                textSize = 16f
-            }
-            binding.allFriendsTabIndicator.visibility = View.VISIBLE
-
-            // 추천 친구 탭 비활성화
-            binding.recommendedTabText.apply {
-                setTextColor(resources.getColor(R.color.gray_400, null))
-                textSize = 16f
-            }
-            binding.recommendedTabIndicator.visibility = View.GONE
-        }
+    /**
+     * 채팅 탭으로 이동하는 메서드
+     */
+    fun navigateToChatTab() {
+        val intent = Intent(this, ChatActivity::class.java)
+        startActivity(intent)
     }
 
     private fun setupSystemUI() {

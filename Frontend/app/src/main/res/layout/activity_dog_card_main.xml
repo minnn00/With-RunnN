@@ -69,87 +69,27 @@
 
     </LinearLayout>
 
-    <!-- 탭 컨테이너 -->
-    <LinearLayout
-        android:id="@+id/tab_container"
+    <!-- TabLayout 위젯 -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="55dp"
-        android:orientation="horizontal"
         android:background="#FFFFFF"
-        app:layout_constraintTop_toBottomOf="@id/top_bar">
+        app:tabIndicatorColor="#4CAF50"
+        app:tabSelectedTextColor="#121212"
+        app:tabTextColor="#A4A4A4"
+        app:tabIndicatorFullWidth="false"
+        app:tabMode="fixed"
+        app:tabGravity="fill"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/top_bar" />
 
-        <!-- 추천 친구 탭 (활성) -->
-        <LinearLayout
-            android:id="@+id/recommended_tab"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-
-            <TextView
-                android:id="@+id/recommended_tab_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="추천 친구"
-                android:textColor="#121212"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:gravity="center" />
-
-            <!-- 활성 표시선 -->
-            <View
-                android:id="@+id/recommended_tab_indicator"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="8dp"
-                android:background="#4CAF50" />
-
-        </LinearLayout>
-
-        <!-- 모두 보기 탭 (비활성) -->
-        <LinearLayout
-            android:id="@+id/all_friends_tab"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?android:attr/selectableItemBackground">
-
-            <TextView
-                android:id="@+id/all_friends_tab_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="모두 보기"
-                android:textColor="#A4A4A4"
-                android:textSize="16sp"
-                android:gravity="center" />
-
-            <!-- 비활성 표시선 (숨김) -->
-            <View
-                android:id="@+id/all_friends_tab_indicator"
-                android:layout_width="match_parent"
-                android:layout_height="3dp"
-                android:layout_marginTop="8dp"
-                android:background="#4CAF50"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- Fragment 컨테이너 -->
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragment_container"
+    <!-- ViewPager2 for tab content -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/tab_container"
+        app:layout_constraintTop_toBottomOf="@id/tabLayout"
         app:layout_constraintBottom_toTopOf="@id/bottom_navigation" />
 
     <!-- 바텀 네비게이션 -->

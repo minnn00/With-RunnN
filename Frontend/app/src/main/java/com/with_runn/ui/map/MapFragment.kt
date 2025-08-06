@@ -54,7 +54,7 @@ class MapFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val mapViewModel : MapViewModel by viewModels()
-    private val activtyVM : ActivityViewModel by activityViewModels()
+    private val activityVM : ActivityViewModel by activityViewModels()
 
     private lateinit var googleMap: GoogleMap
 
@@ -93,7 +93,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activtyVM.setBottomNavVisibility(true)
+        activityVM.setBottomNavVisibility(true)
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync {
