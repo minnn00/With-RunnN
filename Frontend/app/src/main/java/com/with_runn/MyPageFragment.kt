@@ -7,58 +7,60 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.databinding.FragmentMypageBinding
-import com.with_runn.ui.course.CourseStorage
 import com.with_runn.ui.course.TabType
-import com.with_runn.ui.course.WalkCourse
+import com.with_runn.data.WalkCourse
+import com.with_runn.data.remote.RetrofitInstance
+import com.with_runn.data.repository.MyPageRepository
+import com.with_runn.data.viewmodel.MyPageViewModel
+import com.with_runn.data.viewmodel.MyPageViewModelFactory
+import com.with_runn.data.toWalkCourse
+
 
 class MyPageFragment : Fragment() {
 
     private lateinit var binding: FragmentMypageBinding
     private lateinit var adapter: MyPageCourseAdapter
+    private lateinit var viewModel: MyPageViewModel
+
+    private val activityVM : ActivityViewModel by activityViewModels()
 
     private var currentTab = TabType.SCRAP
     private var isDeleteMode = false
     private var isDeleteButtonVisible = false
 
-    private var scrapList = listOf<WalkCourse>()
-    private var likeList = listOf<WalkCourse>()
     private var myCourseList = listOf<WalkCourse>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
+        activityVM.setBottomNavVisibility(true)
+
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    override fun onResume() {
-        super.onResume()
-        when (currentTab) {
-            TabType.SCRAP -> {
-                Log.d("MyPageFragment", "갱신: scrap=${CourseStorage.scrapList.size}")
-                adapter.setTabType(TabType.SCRAP, isDeleteMode)
-                adapter.submitList(CourseStorage.scrapList.toList())
-            }
-            TabType.LIKE -> {
-                Log.d("MyPageFragment", "갱신: like=${CourseStorage.likeList.size}")
-                adapter.setTabType(TabType.LIKE, isDeleteMode)
-                adapter.submitList(CourseStorage.likeList.toList())
-            }
-            else->{}
-        }
-    }
-
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        scrapList = CourseStorage.scrapList
-        likeList = CourseStorage.likeList
+        Log.d("MyPageFragment", "onViewCreated 진입")
+
+        // ViewModel 연결
+        val repository = MyPageRepository(RetrofitInstance.myPageApi)
+        val factory = MyPageViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[MyPageViewModel::class.java]
 
 
+        Log.d("MyPageFragment", "ViewModel 생성됨")
+
+        viewModel.loadScrapCourses()
+        viewModel.loadLikedCourses()
+        Log.d("MyPageFragment", "viewModel.loadScrapCourses() 호출됨")
+        // Adapter 설정
         adapter = MyPageCourseAdapter(
             currentTab,
             isDeleteMode,
@@ -78,30 +80,47 @@ class MyPageFragment : Fragment() {
                     adapter.setTabType(currentTab, isDeleteMode)
                     adapter.notifyDataSetChanged()
                 }
-            }
-            ,
+            },
             onScrapClick = { item ->
-                val newList = scrapList.toMutableList().apply {
-                    remove(item)
-                }
-                scrapList = newList
-                adapter.submitList(newList)
+                // 서버 기반이면 여기도 추후 삭제 API 연결 필요
             },
             onLikeClick = { item ->
-                val newList = likeList.toMutableList().apply {
-                    remove(item)
-                }
-                likeList = newList
-                adapter.submitList(newList)
+                // 서버 기반이면 여기도 추후 삭제 API 연결 필요
             }
         )
 
         binding.recyclerMypage.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerMypage.adapter = adapter
-        adapter.submitList(scrapList)
+
+        // LiveData observe
+        viewModel.scrapList.observe(viewLifecycleOwner) { list ->
+            if (currentTab == TabType.SCRAP) {
+                adapter.submitList(list.map { it.toWalkCourse() }) //TODO 오류처리
+            }
+        }
+
+        viewModel.likeList.observe(viewLifecycleOwner) { list ->
+            if (currentTab == TabType.LIKE) {
+                adapter.submitList(list.map { it.toWalkCourse() })//TODO 오류처리
+            }
+        }
+
 
         setupTabs()
         setupDeleteButtons()
+
+        binding.layoutFollower.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("initialTab", 0) // 0: 팔로워, 1: 팔로우
+            }
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageFollowerFollowFragment, bundle)
+        }
+        binding.layoutFollowing.setOnClickListener {
+            val bundle = Bundle().apply {
+                putInt("initialTab", 1) // 0: 팔로워, 1: 팔로우
+            }
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageFollowerFollowFragment, bundle)
+        }
     }
 
     private fun setupTabs() {
@@ -110,7 +129,7 @@ class MyPageFragment : Fragment() {
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(CourseStorage.scrapList)
+            viewModel.loadScrapCourses()
             updateTabUI()
             hideDeleteButtons()
         }
@@ -120,18 +139,17 @@ class MyPageFragment : Fragment() {
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(CourseStorage.likeList)
+            viewModel.loadLikedCourses()
             updateTabUI()
             hideDeleteButtons()
         }
-
 
         binding.tabMycourses.setOnClickListener {
             currentTab = TabType.MY_COURSE
             isDeleteMode = false
             isDeleteButtonVisible = false
             adapter.setTabType(currentTab, isDeleteMode)
-            adapter.submitList(myCourseList)
+            adapter.submitList(myCourseList.toList())
             updateTabUI()
             hideDeleteButtons()
         }
@@ -171,64 +189,5 @@ class MyPageFragment : Fragment() {
         binding.indicatorScrap.setBackgroundColor(if (currentTab == TabType.SCRAP) indicatorOn else indicatorOff)
         binding.indicatorLike.setBackgroundColor(if (currentTab == TabType.LIKE) indicatorOn else indicatorOff)
         binding.indicatorMycourses.setBackgroundColor(if (currentTab == TabType.MY_COURSE) indicatorOn else indicatorOff)
-    }
-
-    private fun getDummyData(): Triple<List<WalkCourse>, List<WalkCourse>, List<WalkCourse>> {
-        val scrap = listOf(
-            WalkCourse(
-                title = "반려견과 한강 산책",
-                tags = listOf("탐색활동", "자연친화"),
-                imageResId = R.drawable.image,
-                distance = "3.2km",
-                time = "35분",
-                isScrapped = true
-            ),
-            WalkCourse(
-                title = "여의도 벚꽃길",
-                tags = listOf("후각자극", "풍경좋음"),
-                imageResId = R.drawable.image,
-                distance = "2.1km",
-                time = "20분",
-                isScrapped = true
-            )
-        )
-
-        val like = listOf(
-            WalkCourse(
-                title = "남산 자락길",
-                tags = listOf("운동효과", "경사로 있음"),
-                imageResId = R.drawable.image,
-                distance = "4.5km",
-                time = "50분",
-                isLiked = true
-            ),
-            WalkCourse(
-                title = "성수동 뚝섬 산책로",
-                tags = listOf("도심 속 산책", "풍경좋음"),
-                imageResId = R.drawable.image,
-                distance = "1.8km",
-                time = "25분",
-                isLiked = true
-            )
-        )
-
-        val myCourses = listOf(
-            WalkCourse(
-                title = "우리 집 앞 공원길",
-                tags = listOf("짧은 코스", "초보자 추천"),
-                imageResId = R.drawable.image,
-                distance = "1.2km",
-                time = "15분"
-            ),
-            WalkCourse(
-                title = "망원동 강변 산책",
-                tags = listOf("탐색활동", "강아지 놀이터"),
-                imageResId = R.drawable.image,
-                distance = "3.6km",
-                time = "40분"
-            )
-        )
-
-        return Triple(scrap, like, myCourses)
     }
 }

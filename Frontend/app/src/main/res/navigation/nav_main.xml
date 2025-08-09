@@ -3,34 +3,89 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_main"
-    app:startDestination="@id/mapFragment">
+    app:startDestination="@id/friend_graph">
 
+    <!-- MyPage -->
     <fragment
-        android:id="@+id/myPageFragment"
+        android:id="@+id/mypage_graph"
         android:name="com.with_runn.MyPageFragment"
         android:label="My Page"
-        tools:layout="@layout/fragment_mypage" />
+        tools:layout="@layout/fragment_mypage" >
+        <action
+            android:id="@+id/action_mypage_graph_to_mypageFollowerFollowFragment"
+            app:destination="@id/mypageFollowerFollowFragment" />
+    </fragment>
 
+    <!-- 지도 -->
     <fragment
-        android:id="@+id/mapFragment"
+        android:id="@+id/map_graph"
         android:name="com.with_runn.ui.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" >
-        <action
-            android:id="@+id/action_mapFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+
         <action
             android:id="@+id/action_mapFragment_to_courseManageFragment"
             app:destination="@id/courseManageFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/searchFragment"
-        android:name="com.with_runn.ui.map.search.SearchFragment"
-        android:label="SearchFragment"
-        tools:layout="@layout/fragment_search"/>
+
+    <!-- 검색 -->
+    <!-- 코스 관리 -->
     <fragment
         android:id="@+id/courseManageFragment"
         android:name="com.with_runn.ui.map.CourseManageFragment"
         android:label="CourseManageFragment"
-        tools:layout="@layout/fragment_course_manage"/>
+        tools:layout="@layout/fragment_course_manage" />
+
+    <!-- 산책코스 메인 -->
+    <fragment
+        android:id="@+id/course_graph"
+        android:name="com.with_runn.ui.course.WalkCourseFragment"
+        android:label="WalkCourseFragment"
+        tools:layout="@layout/fragment_walk_course">
+
+        <action
+            android:id="@+id/action_walkCourse_to_localMoreFragment"
+            app:destination="@id/localMoreFragment" />
+
+        <action
+            android:id="@+id/action_walkCourse_to_hotMoreFragment"
+            app:destination="@id/hotMoreFragment" />
+    </fragment>
+
+    <!-- 우리 동네 산책코스 더보기 -->
+    <fragment
+        android:id="@+id/localMoreFragment"
+        android:name="com.with_runn.ui.course.LocalMoreFragment"
+        android:label="LocalMoreFragment"
+        tools:layout="@layout/fragment_local_more" />
+
+    <!-- 떠오르는 산책코스 더보기 -->
+    <fragment
+        android:id="@+id/hotMoreFragment"
+        android:name="com.with_runn.ui.course.HotMoreFragment"
+        android:label="HotMoreFragment"
+        tools:layout="@layout/fragment_hot_more" />
+    <fragment
+        android:id="@+id/friend_graph"
+        android:name="com.with_runn.ui.friend.FriendFragment"
+        android:label="FriendFragment"
+        tools:layout="@layout/fragment_friend"/>
+
+    <fragment
+        android:id="@+id/courseDetailFragment"
+        android:name="com.with_runn.ui.course.CourseDetailFragment"
+        android:label="CourseDetailFragment" >
+
+        <action
+            android:id="@+id/action_courseDetailFragment_to_mypage_graph"
+            app:destination="@id/mypage_graph" />
+    </fragment>
+    <fragment
+        android:id="@+id/mypageFollowerFollowFragment"
+        android:name="com.with_runn.ui.mypage.MypageFollowerFollowFragment"
+        android:label="MypageFollowerFollowFragment"
+        tools:layout="@layout/fragment_mypage_follower_follow">
+    </fragment>
+
+
 </navigation>

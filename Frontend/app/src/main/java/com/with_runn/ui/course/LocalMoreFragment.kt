@@ -5,17 +5,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.with_runn.R
+import androidx.navigation.fragment.findNavController
 import com.with_runn.databinding.FragmentLocalMoreBinding
+import com.with_runn.data.viewmodel.LocalMoreViewModel
+import com.with_runn.R
+import com.with_runn.data.WalkCourse
 
 class LocalMoreFragment : Fragment() {
 
     private var _binding: FragmentLocalMoreBinding? = null
     private val binding get() = _binding!!
 
+    private val viewModel: LocalMoreViewModel by viewModels()
     private lateinit var adapter: WalkCourseAdapter
-    private lateinit var localList: List<WalkCourse>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,45 +32,79 @@ class LocalMoreFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 더미 데이터 - WalkCourse 생성자에 맞게 distance, time 추가
-        localList = listOf(
-            WalkCourse(
-                title = "우리 동네 강아지 모임",
-                tags = listOf("#이웃사촌", "#같이산책해요"),
-                imageResId = R.drawable.img_dog_meeting,
-                distance = "1.5km",
-                time = "15분"
-            ),
-            WalkCourse(
-                title = "발바닥 힐링길",
-                tags = listOf("#부드러운산책", "#노령견"),
-                imageResId = R.drawable.img_healing_trail,
-                distance = "2.5km",
-                time = "25분"
-            ),
-            WalkCourse(
-                title = "놀이터 한 바퀴",
-                tags = listOf("#애견운동장", "#사회성키우기"),
-                imageResId = R.drawable.img_playground,
-                distance = "1.3km",
-                time = "12분"
-            )
-            // 추가 데이터 필요시 여기에 계속 추가 가능
-        )
-
-        adapter = WalkCourseAdapter(localList,
+        adapter = WalkCourseAdapter(mutableListOf(),
             onItemClick = { item ->
-                // 상세페이지 이동 등 클릭 이벤트 처리 구현 가능
+                val bundle = Bundle().apply {
+                    putParcelable("course", item)
+                }
+                findNavController().navigate(R.id.courseManageFragment, bundle)
             }
         )
+
         binding.recyclerLocalMore.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerLocalMore.adapter = adapter
+        binding.editTextSearch.setOnEditorActionListener { v, actionId, event ->
+            val keyword = binding.editTextSearch.text.toString()
+            if (keyword.isNotBlank()) {
+                viewModel.searchCourses(
+                    provinceId = 11,
+                    keyword = keyword
+                )
+                true
+            } else {
+                false
+            }
+        }
 
-        // 뒤로가기 버튼 처리
+
+        viewModel.fetchNearbyCourses(provinceId = 11)
+        android.util.Log.d("LocalMoreFragment", "API 호출: fetchNearbyCourses provinceId=11")
+
+        viewModel.localCourses.observe(viewLifecycleOwner) { list ->
+            android.util.Log.d("LocalMoreFragment", "RecyclerView 데이터 size: ${list.size} / $list")
+            adapter.updateItems(list)
+        }
+
+        viewModel.searchResults.observe(viewLifecycleOwner) { results ->
+            if (results.isNullOrEmpty()) {
+                adapter.updateItems(results.map {
+                    WalkCourse(
+                        id = it.courseId,
+                        title = it.name,
+                        tags = it.keyword, // WalkCourse의 tags가 List<String>이면 이렇게
+                        imageResId = R.drawable.image,
+                        distance = "",
+                        time = it.time,
+                        isScrapped = false, // 필요시
+                        isLiked = false,    // 필요시
+                        imageUrl = it.courseImage
+                    )
+                }.toMutableList())
+            } else {
+                // 검색 결과 표시
+                adapter.updateItems(results.map {
+                    WalkCourse(
+                        id = it.courseId,
+                        title = it.name,
+                        tags = it.keyword, // WalkCourse의 tags가 List<String>이면 이렇게
+                        imageResId = R.drawable.image,
+                        distance = "",
+                        time = it.time,
+                        isScrapped = false, // 필요시
+                        isLiked = false,    // 필요시
+                        imageUrl = it.courseImage
+                    )
+                }.toMutableList())
+            }
+        }
+
         binding.btnBack.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+
     }
+
+
 
     override fun onDestroyView() {
         super.onDestroyView()

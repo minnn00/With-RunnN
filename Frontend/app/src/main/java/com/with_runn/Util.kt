@@ -3,6 +3,7 @@ package com.with_runn
 import android.content.res.Resources
 import android.icu.util.Calendar
 import android.view.LayoutInflater
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
@@ -83,6 +84,20 @@ fun getCurrentTimeInt(): Int {
     val hour = now.get(java.util.Calendar.HOUR_OF_DAY)
     val minute = now.get(java.util.Calendar.MINUTE)
     return hour * 100 + minute
+}
+
+fun BottomNavigationView.slideDown(){
+    animate()
+        .translationY(height.toFloat())
+        .setDuration(500)
+        .start()
+}
+
+fun BottomNavigationView.slideUp(){
+    animate()
+        .translationY(0f)
+        .setDuration(500)
+        .start()
 }
 
 val Int.dp: Int

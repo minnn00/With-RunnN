@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_onboarding"
+    app:startDestination="@id/onboardingFragment">
+
+    <fragment
+        android:id="@+id/onboardingFragment"
+        android:name="com.with_runn.ui.onboarding.OnboardingFragment"
+        android:label="OnboardingFragment" >
+        <action
+            android:id="@+id/action_onboardingFragment_to_onboardingLoginFragment"
+            app:destination="@id/onboardingLoginFragment"
+            app:enterAnim="@anim/slide_in_right"/>
+    </fragment>
+    <fragment
+        android:id="@+id/onboardingLoginFragment"
+        android:name="com.with_runn.ui.onboarding.OnboardingLoginFragment"
+        android:label="OnboardingLoginFragment"
+        tools:layout="@layout/fragment_onboarding_login">
+        <action
+            android:id="@+id/action_onboardingLoginFragment_to_onboardingProfileFragment"
+            app:destination="@id/onboardingProfileFragment"
+            app:enterAnim="@anim/slide_in_right" />
+        <action
+            android:id="@+id/action_onboardingLoginFragment_to_mypageOptionFragment"
+            app:destination="@id/mypageOptionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/onboardingProfileFragment"
+        android:name="com.with_runn.ui.onboarding.OnboardingProfileFragment"
+        android:label="OnboardingProfileFragment"
+        tools:layout="@layout/fragment_onboarding_profile">
+        <action
+            android:id="@+id/action_onboardingProfileFragment_to_onboardingProfileDefaultFragment"
+            app:destination="@id/onboardingProfileDefaultFragment"
+            app:enterAnim="@anim/slide_in_right" />
+        <action
+            android:id="@+id/action_onboardingProfileFragment_to_onboardingProfilePersonalityFragment"
+            app:destination="@id/onboardingProfilePersonalityFragment"
+            app:enterAnim="@anim/slide_in_right" />
+        <action
+            android:id="@+id/action_onboardingProfileFragment_to_onboardingProfileWalkingStyleFragment"
+            app:destination="@id/onboardingProfileWalkingStyleFragment"
+            app:enterAnim="@anim/slide_in_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/onboardingProfileDefaultFragment"
+        android:name="com.with_runn.ui.onboarding.OnboardingProfileDefaultFragment"
+        android:label="OnboardingProfileDefaultFragment"
+        tools:layout="@layout/fragment_onboarding_profile_default"/>
+    <fragment
+        android:id="@+id/onboardingProfilePersonalityFragment"
+        android:name="com.with_runn.ui.onboarding.OnboardingProfilePersonalityFragment"
+        android:label="OnboardingProfilePersonalityFragment"
+        tools:layout="@layout/fragment_onboarding_profile_personality"/>
+    <fragment
+        android:id="@+id/onboardingProfileWalkingStyleFragment"
+        android:name="com.with_runn.ui.onboarding.OnboardingProfileWalkingStyleFragment"
+        android:label="OnboardingProfileWalkingStyleFragment"
+        tools:layout="@layout/fragment_onboarding_profile_walkingstyle"/>
+    <fragment
+        android:id="@+id/mypageOptionFragment"
+        android:name="com.with_runn.ui.mypage.MypageOptionFragment"
+        android:label="MypageOptionFragment"
+        tools:layout="@layout/fragment_mypage_option"/>
+</navigation>

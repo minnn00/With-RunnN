@@ -1,20 +1,19 @@
 package com.with_runn.ui.friend
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.ImageView
-import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import com.with_runn.ui.adapter.DogCard
-import com.with_runn.ui.adapter.DogCardAdapter
-import com.with_runn.databinding.ActivityMainBinding
-import android.content.Intent
+import com.google.android.material.tabs.TabLayoutMediator
 import com.with_runn.R
-import com.with_runn.ui.chat.ChatActivity
+import com.with_runn.databinding.ActivityDogCardMainBinding
+import com.with_runn.ui.chat.activity.ChatActivity
 
 class DogCardMainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var dogCardAdapter: DogCardAdapter
+    private lateinit var binding: ActivityDogCardMainBinding
+    private lateinit var friendTabAdapter: FriendTabAdapter
+    
+    private val tabTitles = listOf("추천 친구", "모두 보기")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,121 +21,66 @@ class DogCardMainActivity : AppCompatActivity() {
         // 시스템 UI 설정
         setupSystemUI()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityDogCardMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupViewPager()
-        setupTabClickListeners()
+        setupTabLayout()
         setupChatButton()
+        setupBottomNavigation()
     }
-    
-    private fun setupViewPager() {
-        // 4개의 강아지 카드 데이터 생성 (모두 jonny.png 사용!)
-        val dogCards = listOf(
-            DogCard(
-                name = "조니",
-                tag = "#에너지 폭발",
-                imageResId = R.drawable.jonny, // jonny.png 사용
-                tags = listOf("#에너지 폭발", "#강아지 친구 찾기형")
-            ),
-            DogCard(
-                name = "밀리",
-                tag = "#호기심 왕성",
-                imageResId = R.drawable.jonny, // jonny.png 사용
-                tags = listOf("#차분함", "#고집 셈")
-            ),
-            DogCard(
-                name = "호두",
-                tag = "#그치만안물어요",
-                imageResId = R.drawable.jonny, // jonny.png 사용
-                tags = listOf("#낯가림", "#방어적")
-            ),
-            DogCard(
-                name = "루시",
-                tag = "#활발함",
-                imageResId = R.drawable.jonny, // jonny.png 사용
-                tags = listOf("#친화적", "#장난기 많음")
-            )
-        )
-        
-        dogCardAdapter = DogCardAdapter(dogCards)
-        //binding.cardViewpager.adapter = dogCardAdapter
-        
-        // 페이지 변경 리스너 추가
-//        binding.cardViewpager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-//            override fun onPageSelected(position: Int) {
-//                updatePaginationIndicators(position)
-//            }
-//        })
 
-        // 카드 클릭 리스너 추가
-        dogCardAdapter.setOnItemClickListener { position ->
-            val dogCard = dogCards[position]
-            val intent = Intent(this, FriendDetailActivity::class.java).apply {
-                putExtra("dog_name", dogCard.name)
-                putExtra("dog_age", when(position) {
-                    0 -> "3년 6개월"
-                    1 -> "2년 3개월"
-                    2 -> "4년 1개월"
-                    3 -> "1년 8개월"
-                    else -> "3년 6개월"
-                })
-                putExtra("dog_breed", when(position) {
-                    0 -> "래브라도 리트리버"
-                    1 -> "골든 리트리버"
-                    2 -> "허스키"
-                    3 -> "보더 콜리"
-                    else -> "래브라도 리트리버"
-                })
-                putExtra("dog_category", when(position) {
-                    0 -> "대형견"
-                    1 -> "대형견"
-                    2 -> "중형견"
-                    3 -> "중형견"
-                    else -> "대형견"
-                })
-                putExtra("dog_intro", when(position) {
-                    0 -> "안녕하세요! 달리기 좋아하는 3살 조니예요 :)"
-                    1 -> "호기심 많은 밀리입니다! 새로운 친구 만나고 싶어요~"
-                    2 -> "조용한 호두입니다. 천천히 친해져요 :)"
-                    3 -> "활발한 루시예요! 함께 놀아요!"
-                    else -> "안녕하세요! 달리기 좋아하는 3살 조니예요 :)"
-                })
-            }
-            startActivity(intent)
-        }
+    private fun setupTabLayout() {
+        friendTabAdapter = FriendTabAdapter(this)
+        binding.viewPager.adapter = friendTabAdapter
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = tabTitles[position]
+        }.attach()
     }
-    
-    private fun updatePaginationIndicators(selectedPosition: Int) {
-        val indicator0 = findViewById<ImageView>(R.id.indicator_0)
-        val indicator1 = findViewById<ImageView>(R.id.indicator_1)
-        val indicator2 = findViewById<ImageView>(R.id.indicator_2)
-        val indicator3 = findViewById<ImageView>(R.id.indicator_3)
-        val indicators = listOf(indicator0, indicator1, indicator2, indicator3)
-        indicators.forEachIndexed { idx, imageView ->
-            imageView.setImageResource(
-                if (idx == selectedPosition) R.drawable.ic_indicator_active
-                else R.drawable.ic_indicator_inactive
-            )
-            }
-    }
-    
-    private fun setupTabClickListeners() {
-        // 모두 보기 탭 클릭 이벤트
-        findViewById<LinearLayout>(R.id.all_friends_tab).setOnClickListener {
-            val intent = Intent(this, AllFriendsActivity::class.java)
-            startActivity(intent)
-        }
-    }
-    
+
     private fun setupChatButton() {
         // 채팅 버튼 클릭 이벤트
-        findViewById<ImageView>(R.id.chat_button).setOnClickListener {
+        binding.chatButton.setOnClickListener {
             val intent = Intent(this, ChatActivity::class.java)
             startActivity(intent)
         }
     }
-    
+
+    private fun setupBottomNavigation() {
+        // 바텀 네비게이션 설정 - 현재는 단순히 메뉴만 설정
+        binding.bottomNavigation.setOnItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.friend_graph -> {
+                    // 이미 친구 화면이므로 아무것도 하지 않음
+                    true
+                }
+                R.id.course_graph -> {
+                    // 코스 화면으로 이동 (필요시 구현)
+                    true
+                }
+                R.id.map_graph -> {
+                    // 지도 화면으로 이동 (필요시 구현)
+                    true
+                }
+                R.id.mypage_graph -> {
+                    // 마이페이지 화면으로 이동 (필요시 구현)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+
+
+    /**
+     * 채팅 탭으로 이동하는 메서드
+     */
+    fun navigateToChatTab() {
+        val intent = Intent(this, ChatActivity::class.java)
+        startActivity(intent)
+    }
+
     private fun setupSystemUI() {
         // WindowCompat를 사용한 현대적인 시스템 UI 설정
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -145,10 +89,5 @@ class DogCardMainActivity : AppCompatActivity() {
         val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
         windowInsetsController.isAppearanceLightStatusBars = true
         windowInsetsController.isAppearanceLightNavigationBars = true
-        
-//        // 최신 API를 사용하여 상태바와 네비게이션바를 투명하게 설정
-//        window.insetsController?.let { controller ->
-//            controller.systemBarsBehavior = android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-//        }
     }
 } 

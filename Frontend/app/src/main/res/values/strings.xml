@@ -23,4 +23,11 @@
     <string name="choose_color">색상 선택</string>
     <string name="cancel">취소</string>
     <string name="hint_add_pin">지도를 터치해 핀을 생성하세요</string>
+    <string name="course_info">산책코스 소개</string>
+    <string name="scrap">북마크</string>
+    <string name="like">좋아요</string>
+    <string name="share">공유하기</string>
+    <string name="estimated_time">소요 시간</string>
+    <string name="create_course">경로 생성</string>
+    <string name="save_course">경로 저장</string>
 </resources>

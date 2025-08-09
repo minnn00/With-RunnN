@@ -6,17 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.with_runn.data.LocalCourse
 import com.with_runn.R
-
-data class LocalCourse(
-    val imageRes: Int,
-    val tag: String,
-    val title: String
-)
+import com.bumptech.glide.Glide
 
 class LocalCourseAdapter(
-    private val courseList: List<LocalCourse>,
-    private val onItemClick: (LocalCourse) -> Unit  // 클릭 콜백 추가
+    private val courseList: MutableList<LocalCourse>,
+    private val onItemClick: (LocalCourse) -> Unit
 ) : RecyclerView.Adapter<LocalCourseAdapter.LocalCourseViewHolder>() {
 
     inner class LocalCourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -33,9 +29,18 @@ class LocalCourseAdapter(
 
     override fun onBindViewHolder(holder: LocalCourseViewHolder, position: Int) {
         val course = courseList[position]
-        holder.imageCourse.setImageResource(course.imageRes)
         holder.tagText.text = course.tag
         holder.titleText.text = course.title
+
+        // Glide로 서버 이미지 로드 (imageUrl 있으면)
+        if (course.imageUrl != null && course.imageUrl.isNotEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(course.imageUrl)
+                .placeholder(R.drawable.image) // 기본 이미지
+                .into(holder.imageCourse)
+        } else {
+            holder.imageCourse.setImageResource(course.imageRes)
+        }
 
         holder.itemView.setOnClickListener {
             onItemClick(course)
@@ -43,4 +48,10 @@ class LocalCourseAdapter(
     }
 
     override fun getItemCount(): Int = courseList.size
+
+    fun updateData(newList: List<LocalCourse>) {
+        courseList.clear()
+        courseList.addAll(newList)
+        notifyDataSetChanged()
+    }
 }

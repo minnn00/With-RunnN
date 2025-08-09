@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#802F2F2F">
+
+    <!-- 차단하기 다이얼로그 -->
+    <androidx.cardview.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="113dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#FEFEFE"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- 제목 -->
+            <TextView
+                android:id="@+id/block_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="조니님을 차단하시겠습니까?"
+                android:textColor="#222222"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_semibold"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp" />
+
+            <!-- 버튼 영역 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <!-- 취소 버튼 -->
+                <TextView
+                    android:id="@+id/cancel_button"
+                    android:layout_width="124dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/rounded_button_gray"
+                    android:text="취소"
+                    android:textColor="#808080"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:letterSpacing="0.35" />
+
+                <!-- 차단 버튼 -->
+                <TextView
+                    android:id="@+id/block_button"
+                    android:layout_width="124dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="16dp"
+                    android:background="@drawable/rounded_button_green"
+                    android:text="차단"
+                    android:textColor="#FEFEFE"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/pretendard_medium"
+                    android:gravity="center"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
+                    android:letterSpacing="0.35" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout> 

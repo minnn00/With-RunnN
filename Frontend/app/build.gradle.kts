@@ -9,6 +9,8 @@ if (localPropertiesFile.exists()) {
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+
+    id("org.jetbrains.kotlin.kapt")
     id("kotlin-parcelize")
     id("androidx.navigation.safeargs.kotlin") version "2.7.7"
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
@@ -60,10 +62,6 @@ android {
         buildConfig = true
     }
 
-    secrets {
-        propertiesFileName = "secrets.properties"
-        defaultPropertiesFileName = "local.defaults.properties"
-    }
 }
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -86,10 +84,22 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+    implementation(libs.androidx.fragment.ktx)
     implementation(libs.google.maps)
     implementation(libs.google.places)
     implementation(libs.play.services.location)
     implementation(libs.maps.utils)
+    implementation(libs.security.crypto)
+    implementation(libs.glide)
+    kapt(libs.glide.compiler)
+
+    // WebSocket 관련 의존성 (안정적인 버전으로 교체)
+    implementation("org.java-websocket:Java-WebSocket:1.5.5")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
