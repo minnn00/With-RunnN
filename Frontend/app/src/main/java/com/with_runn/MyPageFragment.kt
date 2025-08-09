@@ -121,6 +121,9 @@ class MyPageFragment : Fragment() {
             }
             findNavController().navigate(R.id.action_mypage_graph_to_mypageFollowerFollowFragment, bundle)
         }
+        binding.settingBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageOptionFragment2)
+        }
     }
 
     private fun setupTabs() {
