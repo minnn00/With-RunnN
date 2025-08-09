@@ -1,10 +1,15 @@
 package com.with_runn.data.api
 
 import com.with_runn.data.LikedCoursesResponse
+import com.with_runn.data.MyCourseResponse
+import com.with_runn.data.ProfileResponse
 import com.with_runn.data.ScrapResponseWrapper
+import com.with_runn.data.TokenManager
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.HeaderMap
+import retrofit2.http.Headers
 
 interface MyPageApiService {
 
@@ -17,4 +22,15 @@ interface MyPageApiService {
     suspend fun getLikedCourses(
         @Header("Authorization") token: String
     ): Response<LikedCoursesResponse>
+
+    @GET("api/users/courses")
+    suspend fun getMyCourses(
+        @Header("Authorization") accessToken: String
+    ): Response<MyCourseResponse>
+
+    @GET("/api/users/profile")   //
+    suspend fun getUserProfile(
+        @Header("Authorization") auth: String
+    ): Response<ProfileResponse>
+
 }

@@ -2,6 +2,7 @@ package com.with_runn.data
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import org.json.JSONArray
 
 @Parcelize
 data class WalkCourse(
@@ -35,5 +36,19 @@ data class WalkCourse(
         result = 31 * result + time.hashCode()
         result = 31 * result + tags.hashCode()
         return result
+    }
+}
+
+fun parseTags(keyword: String): List<String> {
+    return try {
+        if (keyword.startsWith("[")) {
+            JSONArray(keyword).let { jsonArray ->
+                List(jsonArray.length()) { i -> jsonArray.getString(i) }
+            }
+        } else {
+            keyword.split(",").map { it.trim() }
+        }
+    } catch (e: Exception) {
+        emptyList()
     }
 }

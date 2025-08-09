@@ -10,6 +10,7 @@ import com.with_runn.data.NeighborhoodPreviewResponse
 import com.with_runn.data.WalkCourse
 import com.with_runn.data.repository.CourseRepository
 import kotlinx.coroutines.launch
+import com.with_runn.data.TokenManager
 
 class LocalMoreViewModel : ViewModel() {
     private val repository = CourseRepository()
@@ -21,10 +22,13 @@ class LocalMoreViewModel : ViewModel() {
     val searchResults: LiveData<List<NeighborhoodPreviewResponse>> = _searchResults
 
 
+    private fun getToken(): String = "Bearer ${TokenManager.getAccessToken() ?: ""}"
+
     fun fetchNearbyCourses(provinceId: Int, cityId: Int? = null, townId: Int? = null) {
         viewModelScope.launch {
             try {
-                val response = repository.getNearbyCourses(provinceId, cityId, townId)
+                val token = getToken()
+                val response = repository.getNearbyCourses(token, provinceId, cityId, townId)
                 if (response.isSuccessful) {
                     val list = response.body()?.map {
                         WalkCourse(
@@ -37,16 +41,13 @@ class LocalMoreViewModel : ViewModel() {
                             imageUrl = it.courseImage
                         )
                     } ?: emptyList()
-                    // ★ API 정상 응답 로그
                     android.util.Log.d("LocalMoreVM", "API Success: ${list.size}개 / $list")
                     _localCourses.value = list
                 } else {
-                    // ★ API 실패 로그
                     android.util.Log.e("LocalMoreVM", "API Error: ${response.code()} / ${response.errorBody()?.string()}")
                     _localCourses.value = emptyList()
                 }
             } catch (e: Exception) {
-                // ★ 예외 발생 로그
                 android.util.Log.e("LocalMoreVM", "API Exception: ${e.message}")
                 _localCourses.value = emptyList()
             }
@@ -56,7 +57,8 @@ class LocalMoreViewModel : ViewModel() {
     fun searchCourses(provinceId: Int, keyword: String, cityId: Int? = null, townId: Int? = null) {
         viewModelScope.launch {
             try {
-                val response = repository.searchNearbyCourses(provinceId, cityId, townId, keyword)
+                val token = getToken()
+                val response = repository.searchNearbyCourses(token, provinceId, cityId, townId, keyword)
                 if (response.isSuccessful) {
                     _searchResults.value = response.body() ?: emptyList()
                 } else {
@@ -70,3 +72,4 @@ class LocalMoreViewModel : ViewModel() {
         }
     }
 }
+

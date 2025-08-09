@@ -25,3 +25,31 @@ fun RisingPreviewResponse.toWalkCourse(): WalkCourse {
         isLiked = false
     )
 }
+
+fun MyCourse.toWalkCourse(): WalkCourse {
+    return WalkCourse(
+        id = courseId,
+        title = courseName,
+        tags = parseTags(keyword),
+        imageResId = 0,
+        imageUrl = courseImage,
+        distance = "0km", // 서버에서 제공되지 않음 → 기본값 설정
+        time = time.take(5), // "00:30:00" → "00:30"
+        isScrapped = false,
+        isLiked = false
+    )
+}
+
+fun NeighborhoodPreviewResponse.toWalkCourse(): WalkCourse {
+    return WalkCourse(
+        id = this.courseId,
+        title = this.name,          // name → title로 매핑
+        tags = this.keyword,        // keyword → tags로 매핑
+        imageResId = 0,              // Glide에서 courseImage로 로드
+        imageUrl = this.courseImage, // 이미지 URL 지정
+        distance = "",               // 서버에서 거리 안 주면 빈 값
+        time = this.time,            // API time 그대로 사용
+        isScrapped = false,          // 우리동네 미리보기엔 스크랩 여부 정보 없음
+        isLiked = false              // 좋아요 여부 정보 없음
+    )
+}

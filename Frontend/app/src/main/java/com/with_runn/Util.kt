@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
+import org.json.JSONArray
 
 fun populateChips(
     chipGroup: ChipGroup,
@@ -99,6 +100,58 @@ fun BottomNavigationView.slideUp(){
         .setDuration(500)
         .start()
 }
+
+fun parseJsonArrayString(src: String?): List<String> {
+    if (src.isNullOrBlank()) return emptyList()
+    return try {
+        val arr = JSONArray(src)
+        List(arr.length()) { i -> arr.getString(i) }
+    } catch (_: Exception) { emptyList() }
+}
+
+fun parseTags(src: String?): List<String> {
+    if (src.isNullOrBlank() || src.equals("string", true)) return emptyList()
+    return try {
+        if (src.trim().startsWith("[")) {
+            val arr = org.json.JSONArray(src)
+            (0 until arr.length()).map { arr.getString(it) }
+        } else {
+            listOf(src)
+        }
+    } catch (_: Exception) {
+        emptyList()
+    }.filter { it.isNotBlank() && !it.equals("string", true) }
+}
+
+
+fun cleanText(src: String?): String =
+    if (src.isNullOrBlank() || src.equals("string", ignoreCase = true)) "" else src
+
+fun ageFromBirth(yyyyMmDd: String?): String {
+    if (yyyyMmDd.isNullOrBlank()) return ""
+    return try {
+        val y = yyyyMmDd.substring(0,4).toInt()
+        val m = yyyyMmDd.substring(5,7).toInt()
+        val d = yyyyMmDd.substring(8,10).toInt()
+
+        val cal = java.util.Calendar.getInstance()
+        val nowY = cal.get(java.util.Calendar.YEAR)
+        val nowM = cal.get(java.util.Calendar.MONTH) + 1
+        val nowD = cal.get(java.util.Calendar.DAY_OF_MONTH)
+
+        var years = nowY - y
+        var months = nowM - m
+        if (nowD < d) months -= 1
+        if (months < 0) { years -= 1; months += 12 }
+
+        buildString {
+            if (years > 0) append("${years}년 ")
+            append("${months}개월")
+        }.trim()
+    } catch (_: Exception) { "" }
+}
+
+
 
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()

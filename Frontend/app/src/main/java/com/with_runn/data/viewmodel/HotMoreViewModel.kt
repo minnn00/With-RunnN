@@ -10,6 +10,7 @@ import com.with_runn.data.RisingCourseResponse
 import com.with_runn.data.WalkCourse
 import com.with_runn.data.repository.CourseRepository
 import kotlinx.coroutines.launch
+import com.with_runn.data.TokenManager
 
 class HotMoreViewModel : ViewModel() {
 
@@ -19,11 +20,14 @@ class HotMoreViewModel : ViewModel() {
     val searchResults: LiveData<List<RisingCourseResponse>> = _searchResults
     val hotCourses: LiveData<List<WalkCourse>> get() = _hotCourses
 
+    private fun getToken(): String = "Bearer ${TokenManager.getAccessToken() ?: ""}"
+
     fun fetchRisingCourses() {
         android.util.Log.d("HotMoreVM", "API 호출: fetchRisingCourses")
         viewModelScope.launch {
             try {
-                val response = repository.getRisingCourses()
+                val token = getToken()
+                val response = repository.getRisingCourses(token)
                 if (response.isSuccessful) {
                     val list = response.body()?.map {
                         WalkCourse(
@@ -36,16 +40,13 @@ class HotMoreViewModel : ViewModel() {
                             imageUrl = it.courseImage
                         )
                     } ?: emptyList()
-                    // ★ 성공 로그
                     android.util.Log.d("HotMoreVM", "API Success: ${list.size}개 / $list")
                     _hotCourses.value = list
                 } else {
-                    // ★ 실패 로그
                     android.util.Log.e("HotMoreVM", "API Error: ${response.code()} / ${response.errorBody()?.string()}")
                     _hotCourses.value = emptyList()
                 }
             } catch (e: Exception) {
-                // ★ 예외 로그
                 android.util.Log.e("HotMoreVM", "API Exception: ${e.message}")
                 _hotCourses.value = emptyList()
             }
@@ -55,7 +56,8 @@ class HotMoreViewModel : ViewModel() {
     fun searchRisingCourses(keyword: String) {
         viewModelScope.launch {
             try {
-                val response = repository.searchRisingCourses(keyword)
+                val token = getToken()
+                val response = repository.searchRisingCourses(token, keyword)
                 if (response.isSuccessful) {
                     _searchResults.value = response.body() ?: emptyList()
                     Log.d("HotMoreVM", "떠오르는 검색 성공: ${response.body()}")
@@ -67,5 +69,5 @@ class HotMoreViewModel : ViewModel() {
             }
         }
     }
-
 }
+

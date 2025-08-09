@@ -33,10 +33,16 @@ class LocalCourseAdapter(
         holder.titleText.text = course.title
 
         // Glide로 서버 이미지 로드 (imageUrl 있으면)
-        if (course.imageUrl != null && course.imageUrl.isNotEmpty()) {
+        if (!course.imageUrl.isNullOrEmpty()) {
+            val fullUrl = if (course.imageUrl.startsWith("http")) {
+                course.imageUrl
+            } else {
+                "https://api서버주소.com${course.imageUrl}"
+            }
+
             Glide.with(holder.itemView.context)
-                .load(course.imageUrl)
-                .placeholder(R.drawable.image) // 기본 이미지
+                .load(fullUrl)
+                .placeholder(R.drawable.image)
                 .into(holder.imageCourse)
         } else {
             holder.imageCourse.setImageResource(course.imageRes)

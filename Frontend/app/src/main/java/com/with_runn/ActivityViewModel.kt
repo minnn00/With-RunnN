@@ -12,12 +12,37 @@ class ActivityViewModel: ViewModel() {
     private val _accessToken = MutableStateFlow<String?>(null)
     val accessToken: StateFlow<String?> = _accessToken
 
+    private val _selectedProvinceId = MutableStateFlow(11)
+    val selectedProvinceId: StateFlow<Int> = _selectedProvinceId
+
+    private val _selectedCityId = MutableStateFlow(-1)
+    val selectedCityId: StateFlow<Int> = _selectedCityId
+
+    private val _selectedTownId = MutableStateFlow(-1)
+    val selectedTownId: StateFlow<Int> = _selectedTownId
+
     fun setBottomNavVisibility(isVisible: Boolean){
         _isBottomNavVisible.value = isVisible
     }
 
+    fun setSelectedProvinceId(id: Int) {
+        _selectedProvinceId.value = id
+    }
+    fun setSelectedCityId(id: Int) {
+        _selectedCityId.value = id
+    }
+    fun setSelectedTownId(id: Int) {
+        _selectedTownId.value = id
+    }
+
     fun loadToken() {
         _accessToken.value = TokenManager.getAccessToken()
+    }
+
+    fun setLocation(provinceId: Int, cityId: Int, townId: Int) {
+        _selectedProvinceId.value = provinceId
+        _selectedCityId.value = cityId
+        _selectedTownId.value = townId
     }
 
     /*fun clearToken() {

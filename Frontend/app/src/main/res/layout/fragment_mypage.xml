@@ -68,7 +68,7 @@
             android:layout_marginStart="16dp">
 
             <TextView
-                android:id="@+id/text_nickname"
+                android:id="@+id/textName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="보리"
@@ -156,6 +156,7 @@
                     android:gravity="center_vertical">
 
                     <TextView
+                        android:id="@+id/tvMetaAge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1년 3개월"
@@ -170,6 +171,7 @@
                         android:background="@drawable/rectangle" />
 
                     <TextView
+                        android:id="@+id/tvMetaBreed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="래브라도 리트리버"
@@ -184,6 +186,7 @@
                         android:background="@drawable/rectangle" />
 
                     <TextView
+                        android:id="@+id/tvMetaSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="대형견"
@@ -213,6 +216,7 @@
                         android:layout_marginEnd="10dp" />
 
                     <TextView
+                        android:id="@+id/tvCharMain"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="에너지 폭발"
@@ -222,6 +226,7 @@
                         android:layout_marginEnd="4dp" />
 
                     <TextView
+                        android:id="@+id/tvCharMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="외 2개"
@@ -251,6 +256,7 @@
                         android:layout_marginEnd="10dp" />
 
                     <TextView
+                        android:id="@+id/tvStyleMain"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="속도 균형"
@@ -260,6 +266,7 @@
                         android:layout_marginEnd="4dp" />
 
                     <TextView
+                        android:id="@+id/tvStyleMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="외 2개"
@@ -374,7 +381,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- ✅ 리스트 영역 -->
+    <!--  리스트 영역 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_mypage"
         android:layout_width="match_parent"
@@ -382,7 +389,7 @@
         android:paddingHorizontal="20dp"
         android:clipToPadding="false" />
 
-    <!-- ✅ 삭제 모드 / 완료 버튼 영역 -->
+    <!--  삭제 모드 / 완료 버튼 영역 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
