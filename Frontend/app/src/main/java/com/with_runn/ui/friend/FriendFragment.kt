@@ -26,6 +26,7 @@ class FriendFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         activityVM.setBottomNavVisibility(true)
+        activityVM.setUpperToolbarVisibility(true)
 
         super.onCreateView(inflater, container, savedInstanceState)
         _binding = FragmentFriendBinding.inflate(inflater, container, false)
@@ -35,21 +36,12 @@ class FriendFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupChatButton()
         setupViewPagerWithTabs()  // 초기 진입화면
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    private fun setupChatButton() {
-        // 채팅 버튼 클릭 이벤트
-        binding.chatButton.setOnClickListener {
-            val intent = Intent(requireContext(), ChatActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun setupViewPagerWithTabs() {

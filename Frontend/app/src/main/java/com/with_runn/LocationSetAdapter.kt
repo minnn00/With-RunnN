@@ -1,23 +1,18 @@
-package com.with_runn.ui
+package com.with_runn
 
-import com.with_runn.R
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.with_runn.data.region.RegionResponse
 import com.with_runn.databinding.ItemRegionBinding
-
-data class RegionItem(
-    val id: Int,
-    val name: String
-)
-
 
 
 class LocationSetAdapter (
-    private val onItemClick: (Int) -> Unit,
+    private val onItemClick: (RegionResponse) -> Unit,
 ) : RecyclerView.Adapter<LocationSetAdapter.ViewHolder>() {
 
-    private val items: MutableList<RegionItem> = mutableListOf()
+    private val items: MutableList<RegionResponse> = mutableListOf()
     private var selectedId: Int? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,15 +27,15 @@ class LocationSetAdapter (
 
             val ctx = root.context
             val bg = if (item.id == selectedId)
-                androidx.core.content.ContextCompat.getColor(ctx, R.color.gray_400)
+                ContextCompat.getColor(ctx, R.color.gray_400)
             else
-                androidx.core.content.ContextCompat.getColor(ctx, R.color.gray_050)
+                ContextCompat.getColor(ctx, R.color.gray_050)
             root.setBackgroundColor(bg)
 
             val tc = if (item.id == selectedId)
-                androidx.core.content.ContextCompat.getColor(ctx, R.color.green_700)
+                ContextCompat.getColor(ctx, R.color.green_700)
             else
-                androidx.core.content.ContextCompat.getColor(ctx, R.color.gray_950)
+                ContextCompat.getColor(ctx, R.color.gray_950)
             regionText.setTextColor(tc)
 
             root.setOnClickListener {
@@ -56,7 +51,7 @@ class LocationSetAdapter (
                 }
                 notifyItemChanged(holder.bindingAdapterPosition)
 
-                onItemClick(item.id)
+                onItemClick(item)
             }
         }
     }
@@ -66,10 +61,15 @@ class LocationSetAdapter (
 
     inner class ViewHolder(val binding: ItemRegionBinding) : RecyclerView.ViewHolder(binding.root)
 
-    fun submitList(newList: List<RegionItem>) {
+    fun submitList(newList: List<RegionResponse>) {
         items.clear()
         selectedId = null
         items.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    fun reset(){
+        selectedId = null
         notifyDataSetChanged()
     }
 }
