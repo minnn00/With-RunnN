@@ -24,6 +24,14 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${googleMapApiKey}" />
 
+        <meta-data
+            android:name="com.naver.maps.map.NCP_KEY_ID"
+            android:value="${naverClientId}"/>
+
+        <meta-data
+            android:name="com.skt.TmapApiKey"
+            android:value="${tmapApiKey}"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true">

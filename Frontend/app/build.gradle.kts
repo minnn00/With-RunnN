@@ -30,6 +30,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        buildConfigField("String", "TMAP_API_KEY", "\"${localProperties.getProperty("TMAP_API_KEY") ?: ""}\"")
+        manifestPlaceholders["tmapApiKey"] = localProperties.getProperty("TMAP_API_KEY") ?: ""
+
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${localProperties.getProperty("NAVER_CLIENT_ID") ?: ""}\"")
+        manifestPlaceholders["naverClientId"] = localProperties.getProperty("NAVER_CLIENT_ID") ?: ""
+
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${localProperties.getProperty("NAVER_CLIENT_SECRET") ?: ""}\"")
+        manifestPlaceholders["naverClientSecret"] = localProperties.getProperty("NAVER_CLIENT_SECRET") ?: ""
+
         buildConfigField("String", "GOOGLE_MAP_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""}\"")
         manifestPlaceholders["googleMapApiKey"] = localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""
 
@@ -63,6 +72,7 @@ android {
     }
 
 }
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -100,6 +110,10 @@ dependencies {
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // T MAP 로컬 의존성
+    add("implementation", mapOf("name" to "vsm-tmap-sdk-v2-android-1.7.45", "ext" to "aar"))
+    add("implementation", mapOf("name" to "tmap-sdk-3.0", "ext" to "aar"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
