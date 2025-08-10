@@ -13,6 +13,10 @@ dependencyResolutionManagement {
         mavenCentral()
 
         maven { url = uri("https://repository.map.naver.com/archive/maven") }
+
+        flatDir {
+            dirs("app/libs")
+        }
     }
 }
 

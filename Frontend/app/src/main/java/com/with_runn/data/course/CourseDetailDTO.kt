@@ -8,6 +8,6 @@ data class CourseDetailResponse(
     val imageUrl: String?,
     val keywords: List<String>,
     val description: String,
-    val time: String,
+    val time: Int,
     val pins: List<PinItem>
 )

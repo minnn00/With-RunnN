@@ -100,5 +100,15 @@ fun BottomNavigationView.slideUp(){
         .start()
 }
 
+fun formatMinutesToHM(minutes: Int): String {
+    val hours = minutes / 60
+    val mins = minutes % 60
+    return buildString {
+        if (hours > 0) append("${hours}H ")
+        if (mins > 0) append("${mins}M")
+        if (hours == 0 && mins == 0) append("0M")
+    }.trim()
+}
+
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
