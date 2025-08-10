@@ -7,14 +7,14 @@ import com.google.gson.annotations.SerializedName
  */
 data class SendMessageRequest(
     @SerializedName("userId") val userId: Int,
-    @SerializedName("message") val message: String,
-    @SerializedName("isCourse") val isCourse: Boolean = false
+    @SerializedName("message") val message: String
 )
 
 /**
  * WebSocket 메시지 수신 DTO (일반 메시지)
  */
 data class ReceiveMessageResponse(
+    @SerializedName("chatId") val chatId: Int,
     @SerializedName("userId") val userId: Int,
     @SerializedName("userName") val userName: String,
     @SerializedName("userProfileImage") val userProfileImage: String,
@@ -27,6 +27,7 @@ data class ReceiveMessageResponse(
  * WebSocket 메시지 수신 DTO (공유 메시지)
  */
 data class ReceiveCourseMessageResponse(
+    @SerializedName("chatId") val chatId: Int,
     @SerializedName("userId") val userId: Int,
     @SerializedName("userName") val userName: String,
     @SerializedName("userProfileImage") val userProfileImage: String,

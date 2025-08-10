@@ -20,6 +20,8 @@ import com.with_runn.ui.chat.model.dto.InviteUserDto
 import com.with_runn.ui.chat.model.dto.InviteListResponse
 import com.with_runn.ui.chat.model.dto.ChatListResponse
 import com.with_runn.ui.chat.model.dto.CreateChatResponse
+import com.with_runn.ui.chat.model.dto.SendMessageRequest
+import com.with_runn.ui.chat.model.dto.LeaveChatRoomRequest
 
 /**
  * 채팅 관련 API 서비스 인터페이스
@@ -39,6 +41,16 @@ interface ChatApiService {
      */
     @GET("api/chat/{chatId}")
     fun getChatMessages(@retrofit2.http.Path("chatId") chatId: Int): retrofit2.Call<MessageListResponse>
+    
+    /**
+     * 메시지 전송
+     * POST /api/chat/{chatId}/msg
+     */
+    @POST("api/chat/{chatId}/msg")
+    fun sendMessage(
+        @retrofit2.http.Path("chatId") chatId: Int,
+        @Body request: SendMessageRequest
+    ): retrofit2.Call<Void>
     
     /**
      * 채팅 초대 목록 조회
@@ -69,14 +81,10 @@ interface ChatApiService {
      * PATCH /api/chat/{chatId}
      */
     @PATCH("api/chat/{chatId}")
-    fun leaveChatRoom(@retrofit2.http.Path("chatId") chatId: Int): retrofit2.Call<Void>
-    
-    /**
-     * 채팅방 입장 (새 API 명세서)
-     * POST /api/chat/{chatId}
-     */
-    @POST("api/chat/{chatId}")
-    fun enterChatRoom(@retrofit2.http.Path("chatId") chatId: Int): retrofit2.Call<Void>
+    fun leaveChatRoom(
+        @retrofit2.http.Path("chatId") chatId: Int,
+        @retrofit2.http.Body request: LeaveChatRoomRequest
+    ): retrofit2.Call<Void>
     
     /**
      * 채팅방 이름 설정
