@@ -20,8 +20,8 @@ class ActivityViewModel: ViewModel() {
         _accessToken.value = TokenManager.getAccessToken()
     }
 
-    fun clearToken() {
+    /*fun clearToken() {
         _accessToken.value = null
         TokenManager.clearAccessToken()
-    }
+    }*/
 }

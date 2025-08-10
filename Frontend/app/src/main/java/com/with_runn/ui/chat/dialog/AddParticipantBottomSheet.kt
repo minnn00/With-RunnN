@@ -16,6 +16,7 @@ import com.with_runn.ui.friend.Friend
 import com.with_runn.ui.friend.FriendAddAdapter
 import com.with_runn.R
 import com.with_runn.ui.chat.repository.ChatRepository
+import com.with_runn.ui.chat.model.dto.InviteUserDto
 
 class AddParticipantBottomSheet : BottomSheetDialogFragment() {
 
@@ -26,9 +27,14 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
     private val chatRepository = ChatRepository()
     
     private var onParticipantAddedListener: ((String) -> Unit)? = null
+    private var chatId: Int = -1
     
     fun setOnParticipantAddedListener(listener: (String) -> Unit) {
         onParticipantAddedListener = listener
+    }
+    
+    fun setChatId(id: Int) {
+        chatId = id
     }
 
     override fun onCreateView(
@@ -44,7 +50,7 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
         
         setupViews(view)
         setupRecyclerView()
-        loadFriends()
+        loadInviteUserList()
         setupClickListeners()
     }
 
@@ -62,7 +68,66 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun loadFriends() {
+    /**
+     * API를 통해 초대 가능한 사용자 목록을 불러옴
+     */
+    private fun loadInviteUserList() {
+        if (chatId == -1) {
+            Log.e("AddParticipant", "chatId가 설정되지 않았습니다")
+            return
+        }
+        
+        Log.d("AddParticipant", "초대 목록 조회 시작: chatId=$chatId")
+        
+        chatRepository.getInviteUserList(chatId) { result ->
+            result.fold(
+                onSuccess = { inviteUserList ->
+                    Log.d("AddParticipant", "✅ 초대 목록 조회 성공: ${inviteUserList.size}명")
+                    
+                    // InviteUserDto를 Friend 모델로 변환
+                    val friends = inviteUserList.map { inviteUser ->
+                        Friend(
+                            name = inviteUser.name,
+                            imageResId = R.drawable.maru, // 기본 이미지 사용
+                            isSelected = false
+                        )
+                    }
+                    
+                    activity?.runOnUiThread {
+                        friendAdapter.submitList(friends)
+                    }
+                },
+                onFailure = { exception ->
+                    Log.e("AddParticipant", "❌ 초대 목록 조회 실패: ${exception.message}", exception)
+                    
+                    activity?.runOnUiThread {
+                        // 채팅방이 꽉 찬 경우 특별 처리
+                        if (exception.message?.contains("꽉 찼습니다") == true || 
+                            exception.message?.contains("CHAT4004") == true ||
+                            exception.message?.contains("채탕방은 꽉 찼습니다") == true) {
+                            
+                            val errorMessage = "채팅방이 가득 찼습니다. 더 이상 초대할 수 없어요! 😅"
+                            Log.d("AddParticipant", "채팅방이 꽉 찬 경우 처리: $errorMessage")
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                            
+                            // 다이얼로그 닫기
+                            dismiss()
+                        } else {
+                            // 기타 에러의 경우 샘플 데이터 로드
+                            Log.d("AddParticipant", "기타 에러로 인한 샘플 데이터 로드")
+                            loadSampleData()
+                            Toast.makeText(context, "초대 목록을 불러오는데 실패했습니다: ${exception.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            )
+        }
+    }
+    
+    /**
+     * 샘플 데이터 로드 (API 실패 시 사용)
+     */
+    private fun loadSampleData() {
         val friends = listOf(
             Friend("마루", imageResId = R.drawable.maru, isSelected = true),
             Friend("조이", imageResId = R.drawable.maru),
@@ -95,11 +160,17 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
     private fun callInviteAPI(selectedFriends: List<Friend>) {
         Log.d("AddParticipant", "=== API 초대 호출 시작 ===")
         
-        // 임시로 chatId 1 사용 (실제로는 현재 채팅방 ID를 받아와야 함)
-        val chatId = 1
-        val userIds = selectedFriends.map { friend ->
-            // 임시로 친구 이름을 ID로 변환 (실제로는 친구의 실제 ID를 사용해야 함)
-            when (friend.name) {
+        if (chatId == -1) {
+            Toast.makeText(context, "채팅방 정보를 찾을 수 없습니다", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        // 현재 사용자 이름 (실제로는 로그인된 사용자 정보에서 가져와야 함)
+        val username = "현재사용자"
+        
+        // InviteUser 리스트 생성
+        val inviteUserList = selectedFriends.map { friend ->
+            val userId = when (friend.name) {
                 "마루" -> 1
                 "조이" -> 2
                 "위니" -> 3
@@ -108,11 +179,12 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                 "솜이" -> 6
                 else -> 1
             }
+            com.with_runn.ui.chat.model.dto.InviteUser(friend.name, userId)
         }
         
-        Log.d("AddParticipant", "API 호출 파라미터: chatId=$chatId, userIds=$userIds")
+        Log.d("AddParticipant", "API 호출 파라미터: chatId=$chatId, username=$username, inviteUserList=$inviteUserList")
         
-        chatRepository.inviteUsers(chatId, userIds) { result ->
+        chatRepository.inviteUsers(chatId, username, inviteUserList) { result ->
             result.fold(
                 onSuccess = { invitedChatId ->
                     Log.d("AddParticipant", "✅ API 초대 성공! chatId=$invitedChatId")

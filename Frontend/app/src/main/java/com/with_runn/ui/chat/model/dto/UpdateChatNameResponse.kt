@@ -6,9 +6,12 @@ import com.google.gson.annotations.SerializedName
  * 채팅방 이름 설정 API 응답 DTO
  */
 data class UpdateChatNameResponse(
-    @SerializedName("chatId")
-    val chatId: Int,
+    @SerializedName("code")
+    val code: String,
     
-    @SerializedName("name")
-    val name: String
+    @SerializedName("message")
+    val message: String,
+    
+    @SerializedName("success")
+    val success: Boolean
 ) 

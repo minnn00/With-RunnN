@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.naver.maps)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
@@ -92,6 +93,21 @@ dependencies {
     implementation(libs.security.crypto)
     implementation(libs.glide)
     kapt(libs.glide.compiler)
+
+    // WebSocket 관련 의존성 (안정적인 버전으로 교체)
+    implementation("org.java-websocket:Java-WebSocket:1.5.5")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
+    // STOMP 웹소켓 라이브러리
+    implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
+    
+    // RxJava 의존성 (STOMP 라이브러리에서 필요)
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+
+    // Glide for image loading
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -5,6 +5,7 @@ import com.with_runn.data.WalkCourseResponse
 
 fun WalkCourseResponse.toWalkCourse(): WalkCourse {
     return WalkCourse(
+        id = 6,
         title = this.title,
         tags = this.tags,
         imageResId = 0,

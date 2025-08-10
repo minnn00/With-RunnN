@@ -28,4 +28,6 @@
     <string name="like">좋아요</string>
     <string name="share">공유하기</string>
     <string name="estimated_time">소요 시간</string>
+    <string name="create_course">경로 생성</string>
+    <string name="save_course">경로 저장</string>
 </resources>

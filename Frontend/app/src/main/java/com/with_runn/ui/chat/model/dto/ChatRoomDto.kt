@@ -4,27 +4,27 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * API 응답용 ChatRoom DTO
- * api/chat/list 응답 구조에 맞춤
+ * 실제 API 응답에 맞춤
  */
 data class ChatRoomDto(
     @SerializedName("chatId")
     val chatId: Int,
     
-    @SerializedName("users")
-    val users: List<String>,
+    @SerializedName("chatName")
+    val chatName: String?,
     
-    @SerializedName("userProfiles")
-    val userProfiles: List<String>,
+    @SerializedName("usernameList")
+    val usernameList: List<String>?,
+    
+    @SerializedName("userProfileList")
+    val userProfileList: List<String>?,
     
     @SerializedName("participants")
     val participants: Int,
     
-    @SerializedName("lastMsgReceived")
-    val lastMsgReceived: String,
+    @SerializedName("lastReceivedMsg")
+    val lastReceivedMsg: String?,
     
-    @SerializedName("lastMessage")
-    val lastMessage: String,
-    
-    @SerializedName("notificationCount")
-    val notificationCount: Int
+    @SerializedName("unReadMsgCount")
+    val unReadMsgCount: Int
 ) 

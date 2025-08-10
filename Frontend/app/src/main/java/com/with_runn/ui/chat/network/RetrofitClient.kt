@@ -17,6 +17,7 @@ object RetrofitClient {
     // OkHttpClient 설정
     private val okHttpClient = OkHttpClient.Builder()
         //.addInterceptor(MockInterceptor()) // Mock 데이터 사용
+        .addInterceptor(createAuthInterceptor())
         .addInterceptor(createLoggingInterceptor())
         .connectTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -37,6 +38,19 @@ object RetrofitClient {
     
     // ChatApiService 인스턴스
     val chatApiService: ChatApiService = retrofit.create(ChatApiService::class.java)
+    
+    /**
+     * 인증 토큰 인터셉터 생성
+     */
+    private fun createAuthInterceptor(): okhttp3.Interceptor {
+        return okhttp3.Interceptor { chain ->
+            val originalRequest = chain.request()
+            val newRequest = originalRequest.newBuilder()
+                .addHeader("Authorization", "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
+                .build()
+            chain.proceed(newRequest)
+        }
+    }
     
     /**
      * HTTP 로깅 인터셉터 생성

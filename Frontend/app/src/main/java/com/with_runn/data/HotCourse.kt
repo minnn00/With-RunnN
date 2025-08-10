@@ -6,5 +6,6 @@ data class HotCourse(
     val tags: List<String>,
     val distance: String,
     val time: String,
-    val imageRes: Int
+    val imageRes: Int,
+    val imageUrl: String? = null
 )

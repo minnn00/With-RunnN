@@ -4,28 +4,27 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * 채팅 메시지 API 응답 DTO
- * api/chat/{chatId} 응답 구조에 맞춤
+ * 실제 API 응답 구조에 맞춤
  */
 data class MessageDto(
-    @SerializedName("messageId")
-    val messageId: Int,
+    @SerializedName("userId")
+    val userId: Int,
     
-    @SerializedName("sender")
-    val sender: String,
+    @SerializedName("chatId")
+    val chatId: Int,
     
-    @SerializedName("content")
-    val content: String,
+    @SerializedName("userName")
+    val userName: String,
     
-    @SerializedName("timestamp")
-    val timestamp: String,
+    @SerializedName("userProfileImage")
+    val userProfileImage: String?,
     
-    @SerializedName("messageType")
-    val messageType: String = "TEXT" // TEXT, SYSTEM, COURSE_SHARE 등
+    @SerializedName("msg")
+    val msg: String,
     
-    // 추가 필드들 (API 명세서에 따라 확장 가능)
-    // @SerializedName("senderProfile")
-    // val senderProfile: String? = null,
+    @SerializedName("createdAt")
+    val createdAt: String,
     
-    // @SerializedName("isRead")
-    // val isRead: Boolean = false
+    @SerializedName("course")
+    val course: Boolean
 ) 
