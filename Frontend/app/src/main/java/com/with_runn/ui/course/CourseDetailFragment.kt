@@ -110,7 +110,7 @@ class CourseDetailFragment : Fragment() {
                     binding.apply {
                         courseName.text = course.name
                         courseInfo.text = course.description
-                        estimatedTime.text = course.time
+                        estimatedTime.text = course.time.toString()
                         setTags(course.keywords)
 
                         Glide.with(requireContext())

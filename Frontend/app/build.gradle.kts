@@ -120,8 +120,8 @@ dependencies {
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
     // T MAP 로컬 의존성
-    add("implementation", mapOf("name" to "vsm-tmap-sdk-v2-android-1.7.45", "ext" to "aar"))
-    add("implementation", mapOf("name" to "tmap-sdk-3.0", "ext" to "aar"))
+    implementation(files("libs/vsm-tmap-sdk-v2-android-1.7.45.aar"))
+    implementation(files("libs/tmap-sdk-3.0.aar"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
