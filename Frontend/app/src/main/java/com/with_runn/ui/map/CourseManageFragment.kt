@@ -454,8 +454,45 @@ class CourseManageFragment : Fragment() {
         parentFragmentManager.setFragmentResultListener("course_edit_result", viewLifecycleOwner) { key, bundle ->
             val course = bundle.getParcelable<CourseData>("course_data", CourseData::class.java) ?: error("CourseData argument required")
 
-            // TODO: Course Post
-            // TODO: 상세보기로 이동 (백스택 남기지 않고)ㄹ
+            // 저장 버튼 잠금
+            binding.btnSave.isEnabled = false
+
+            // ViewModel의 필드/ActivityVM에서 파라미터 모으기
+            val accessToken = activityVM.accessToken.value.toString()// raw or "Bearer ..."
+            val userId = 1
+            val provinceId = activityVM.firstRegion.value?.id
+            val cityId = activityVM.secondRegion.value?.id
+
+            val keywords = course.keyword?.takeIf { it.isNotBlank() }?.let { listOf(it) } ?: emptyList()
+            Log.e("KEYWORDS", "$keywords")
+            val regions = listOfNotNull(activityVM.firstRegion.value?.name, activityVM.secondRegion.value?.name)
+            val regionsData = listOf(
+                com.with_runn.data.course.RegionDataPayload(
+                    id = cityId ?: 1,
+                    name = activityVM.secondRegion.value?.name.toString()
+                )
+            )
+
+            // ViewModel 통해 호출
+            courseEditViewModel.postCourse(
+                accessToken = accessToken,
+                keywords = keywords,
+                regions = regions,
+                regionsData = regionsData,
+                userId = userId,
+                provinceId = provinceId ?: 9,
+                cityId = cityId ?: 9
+            ) { success, createdId ->
+                if (success && createdId != null) {
+                    val bundle = Bundle().apply {
+                        putInt("courseId", createdId)
+                    }
+                    findNavController().navigate(R.id.courseDetailFragment, bundle)
+                } else {
+                    (activity as? MainActivity)?.showSnackbar("코스 생성 실패 또는 ID 누락")
+                    binding.btnSave.isEnabled = true
+                }
+            }
         }
     }
 

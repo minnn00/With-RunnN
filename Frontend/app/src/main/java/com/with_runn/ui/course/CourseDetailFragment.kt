@@ -53,12 +53,6 @@ class CourseDetailFragment : Fragment() {
 
         courseDetailsVM.fetchCourse(courseId)
     }
-/*
-    private lateinit var viewModel: CourseDetailViewModel
-    private lateinit var likeViewModel: WalkCourseViewModel
-    private lateinit var repository: CourseRepository
-    private var isScrapped: Boolean = false
-*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -142,94 +136,16 @@ class CourseDetailFragment : Fragment() {
             }
         }
     }
-/*
-        Log.d("CourseDetail", "onViewCreated 호출됨")
-        val courseId = arguments?.getInt("courseId") ?: return
 
-        val repository = CourseRepository()
-        val factory = CourseDetailViewModelFactory(repository)
-        viewModel = ViewModelProvider(this, factory)[CourseDetailViewModel::class.java]
-
-        // 상세 데이터 요청
-        viewModel.fetchCourseDetail(courseId)
-
-        // 상세 데이터 observe → UI 바인딩
-        viewModel.courseDetail.observe(viewLifecycleOwner) { course ->
-            course?.let {
-                Glide.with(this).load(it.imageUrl).into(binding.imageCourse)
-                binding.textTitle.text = it.name
-                binding.textDescription.text = "우리 동네 코스 소개\n${it.time} 소요됩니다."
-                binding.textTimeValue.text = it.time.replace("분", "M")
-                // ... 태그 등 나머지 UI 세팅
-            }
-        }
-
-        // 좋아요 버튼 리스너 (ViewModel 통해 API 호출)
-        binding.btnLike.setOnClickListener {
-            Log.d("LikeBtn", "좋아요 버튼 클릭됨 (courseId=$courseId)")
-            viewModel.postLike(courseId)
-        }
-
-        // 좋아요 결과 메시지 observe → Toast 등으로 안내
-        viewModel.likeMessage.observe(viewLifecycleOwner) { message ->
-            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-        }
-
-        // 스크랩 버튼 리스너 (ViewModel 통해 API 호출)
-        binding.btnScrap.setOnClickListener {
-            Log.d("ScrapBtn", "스크랩 버튼 클릭됨 (courseId=$courseId)")
-            viewModel.postScrap(courseId) { msg ->
-                Log.d("ScrapResult", "스크랩 API 결과: $msg")
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-            }
-        }
-        // 공유 버튼 리스너 (ViewModel 통해 API 호출)
-        binding.btnShare.setOnClickListener {
-            Log.d("ShareBtn", "공유 버튼 클릭됨 (courseId=$courseId)")
-            val isChat = true
-            val userId = 1
-            val targetUserId = null     // 채팅방 공유면 null
-            val chatId = 1              // 실제 채팅방 id
-            viewModel.postShareCourse(
-                isChat = isChat,
-                userId = userId,
-                targetUserId = targetUserId,
-                chatId = chatId,
-                courseId = courseId
-            ) { success, msg ->
-                if (success) {
-                    Log.d("ShareResult", "공유 성공: $msg")
-                    Toast.makeText(requireContext(), "공유 성공: $msg", Toast.LENGTH_SHORT).show()
-                } else {
-                    Log.e("ShareResult", "공유 실패: $msg")
-                    Toast.makeText(requireContext(), "공유 실패: $msg", Toast.LENGTH_SHORT).show()
-                }
-            // 공유 버튼 클릭 이벤트 처리
-            binding.btnShare.setOnClickListener {
-                Log.d("CourseDetail", "공유 버튼 클릭됨")
-                // TODO: 공유 바텀시트 연결 예정
-
-            }
-        }
-    }
-*/
     private fun setTags(tags: List<String>){
         binding.tagContainer.apply{
             removeAllViews()
-            tags.take(2).forEach { tag ->
+            tags.take(1).forEach { tag ->
                 val tagView = layoutInflater.inflate(R.layout.item_tag, this, false) as TextView
                 tagView.text = "#" + tag
                 addView(tagView)
             }
         }
-
-//        binding.btnScrap.setOnClickListener {
-//            Log.d("DeleteScrapBtn", "스크랩 취소 버튼 클릭 (courseId=$courseId)")
-//            viewModel.deleteScrap(courseId) { msg ->
-//                Log.d("DeleteScrapResult", "스크랩 취소 결과: $msg")
-//                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-//            }
-//        }
     }
 
     private fun setListeners(){

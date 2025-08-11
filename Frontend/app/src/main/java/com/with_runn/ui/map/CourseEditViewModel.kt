@@ -7,7 +7,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polyline
 import com.with_runn.BuildConfig
-import com.with_runn.mapData.DirectionsRepository
+import com.with_runn.data.course.CourseRepository
+import com.with_runn.data.course.RegionDataPayload
 import com.with_runn.ui.course_edit.CourseData
 import com.with_runn.ui.course_edit.PinItem
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +23,8 @@ class CourseEditViewModel : ViewModel() {
         val service = TmapRetrofit.createService()
         TmapDirectionsRepository(service, appKey = BuildConfig.TMAP_API_KEY)
     }
+
+    private val courseRepo = CourseRepository()
 
     private val _courseData = MutableStateFlow<CourseData>(
         CourseData(
@@ -147,10 +150,63 @@ class CourseEditViewModel : ViewModel() {
 
                 // 시간 분 단위 변환 (올림)
                 val minutes = result.totalTimeSeconds?.let { (it + 59) / 60 } ?: 0
+                _courseData.value.time = minutes
 
             }.onFailure { t ->
                 Log.e("TMAP_ROUTE", "failed", t)
                 _polyLineData.value = emptyList()
+            }
+        }
+    }
+
+
+    fun postCourse(
+        accessToken: String,
+        keywords: List<String>,
+        regions: List<String>,
+        regionsData: List<RegionDataPayload>,
+        userId: Int,
+        provinceId: Int,
+        cityId: Int,
+        onComplete: (Boolean, Int?) -> Unit
+    ) {
+        viewModelScope.launch {
+            // 사전검증
+            val pins = pinList.value
+            val path = polyLineData.value
+            if (pins.size < 2 || path.isEmpty()) {
+                onComplete(false, null)
+                return@launch
+            }
+
+            val resp = runCatching {
+                courseRepo.createCourse(
+                    course = courseData.value,    // time은 이미 분 단위로 세팅됨
+                    pins = pins,
+                    keywords = keywords,
+                    regions = regions,
+                    regionsData = regionsData,
+                    userId = userId,
+                    regionProvinceId = provinceId,
+                    regionsCityId = cityId,
+                    path = path,
+                    accessToken = accessToken
+                )
+            }.getOrElse {
+                Log.e("COURSE_CREATE", "request failed", it)
+                onComplete(false, null)
+                return@launch
+            }
+
+            if (resp.isSuccessful) {
+                val createdId = resp.body()?.result?.courseId
+                if (createdId != null) {
+                    onComplete(true, createdId)
+                } else {
+                    onComplete(false, null)
+                }
+            } else {
+                onComplete(false, null)
             }
         }
     }

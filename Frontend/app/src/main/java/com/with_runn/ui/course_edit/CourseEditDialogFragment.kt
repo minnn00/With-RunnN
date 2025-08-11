@@ -127,6 +127,7 @@ class CourseEditDialogFragment : DialogFragment(){
             btnConfirm.setOnClickListener {
                 course.title = binding.courseName.text.toString()
                 course.info = binding.courseInfo.text.toString()
+                course.keyword = binding.courseKeyword.text.toString()
 
                 val result = Bundle().apply{
                     putParcelable("course_data", course)
