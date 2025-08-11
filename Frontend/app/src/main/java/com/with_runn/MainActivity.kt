@@ -19,11 +19,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.libraries.places.api.Places
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.combine
 import com.google.android.material.snackbar.Snackbar
 import com.with_runn.ui.onboarding.OnboardingActivity
 import com.with_runn.data.TokenManager
+import com.with_runn.ui.chat.activity.ChatActivity
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -63,9 +66,43 @@ class MainActivity : AppCompatActivity() {
                     //binding.bottomNavigationView.visibility = View.GONE
                     binding.bottomNavigationView.slideDown()
                 }
-
             }
+        }
+
+        lifecycleScope.launch {
+            activityVM.isToolBarVisible.collect { isVisible ->
+                if(isVisible){
+                    binding.upperToolBar.visibility = View.VISIBLE
+                }else{
+                    binding.upperToolBar.visibility = View.GONE
                 }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                combine(
+                    activityVM.firstRegion,
+                    activityVM.secondRegion,
+                    activityVM.thirdRegion
+                ) { f, s, t ->
+                    listOfNotNull(f?.name, s?.name, t?.name)
+                        .joinToString(" ")
+                        .ifEmpty { "지역 미설정" }
+                }.collect { text ->
+                    binding.regionText.text = text
+                }
+            }
+        }
+
+        binding.apply {
+            setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)}
+            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)} /* TODO: 알람 화면으로 연결되도록*/
+            chatBtn.setOnClickListener {
+                val intent = Intent(this@MainActivity, ChatActivity :: class.java)
+                startActivity(intent)
+            }
+        }
 
         // 1회만 실행: 마스터 토큰 설정
         TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
