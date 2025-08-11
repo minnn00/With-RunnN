@@ -1,15 +1,12 @@
 package com.with_runn.ui.map
 
-import android.graphics.Color
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polyline
-import com.google.android.gms.maps.model.PolylineOptions
-import com.google.maps.android.PolyUtil
+import com.with_runn.BuildConfig
 import com.with_runn.mapData.DirectionsRepository
 import com.with_runn.ui.course_edit.CourseData
 import com.with_runn.ui.course_edit.PinItem
@@ -17,9 +14,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.with_runn.tmap.TmapRetrofit
+import com.with_runn.tmap.TmapDirectionsRepository
 
 class CourseEditViewModel : ViewModel() {
-    private val repository = DirectionsRepository()
+    private val repository: TmapDirectionsRepository by lazy {
+        val service = TmapRetrofit.createService()
+        TmapDirectionsRepository(service, appKey = BuildConfig.TMAP_API_KEY)
+    }
 
     private val _courseData = MutableStateFlow<CourseData>(
         CourseData(
@@ -132,16 +134,25 @@ class CourseEditViewModel : ViewModel() {
 
     fun askDirections(){
         viewModelScope.launch {
-            val response = repository.getWalkingRouteFromPins(pinList.value)
-            Log.e("DIRECTIONS", "status=${response?.status}, err=${response?.errorMessage}")
-
-            val encoded = response?.routes?.firstOrNull()?.overviewPolyline?.points
-            if (encoded != null) {
-                _polyLineData.value = PolyUtil.decode(encoded)
-            } else {
+            val pins = pinList.value
+            if (pins.size < 2) {
                 _polyLineData.value = emptyList()
+                return@launch
             }
 
+            runCatching {
+                repository.getWalkingRouteFromPins(pins)
+            }.onSuccess { result ->
+                _polyLineData.value = result.path
+
+                // 시간 분 단위 변환 (올림)
+                val minutes = result.totalTimeSeconds?.let { (it + 59) / 60 } ?: 0
+
+            }.onFailure { t ->
+                Log.e("TMAP_ROUTE", "failed", t)
+                _polyLineData.value = emptyList()
+            }
         }
     }
+
 }

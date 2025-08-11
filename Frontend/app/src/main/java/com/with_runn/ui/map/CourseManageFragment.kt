@@ -43,6 +43,7 @@ import com.with_runn.ui.course_edit.PinEditDialogFragment.Companion.Mode
 import com.with_runn.ui.course_edit.PinItem
 import com.with_runn.ui.course_edit.PinListAdapter
 import kotlinx.coroutines.launch
+import androidx.core.graphics.toColorInt
 
 class CourseManageFragment : Fragment() {
 
@@ -162,8 +163,6 @@ class CourseManageFragment : Fragment() {
 
                 setCoroutines()
                 courseEditViewModel.setSampleData()
-
-                courseEditViewModel.askDirections()
             }
         }
 
@@ -286,29 +285,61 @@ class CourseManageFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                courseEditViewModel.polyLineData.collect{ directions ->
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                courseEditViewModel.polyLineData.collect { directions ->
+                    // 1) 이전 라인 제거 (메인 + 외곽)
+                    courseEditViewModel.polyLine.value?.let { prevMain ->
+                        (prevMain.tag as? com.google.android.gms.maps.model.Polyline)?.remove() // outline
+                        prevMain.remove() // main
+                    }
                     courseEditViewModel.removePolyline()
 
-                    val polyline = googleMap.addPolyline(
+                    if (directions.isEmpty()) {
+                        binding.btnSave.isEnabled = false
+                        binding.btnSave.setBackgroundResource(R.drawable.bg_btn_filled_inactive)
+                        return@collect
+                    }
+
+                    // 2) 외곽선(underlay)
+                    val outline = googleMap.addPolyline(
                         PolylineOptions()
                             .addAll(directions)
-                            .color(Color.BLUE)
-                            .width(10f)
+                            .width(20f)
+                            .color(Color.argb(80, 0, 0, 0)) // 반투명 짙은 회색
+                            .zIndex(0f)
+                            .startCap(com.google.android.gms.maps.model.RoundCap())
+                            .endCap(com.google.android.gms.maps.model.RoundCap())
+                            .jointType(com.google.android.gms.maps.model.JointType.ROUND)
                     )
 
-                    courseEditViewModel.setPolyline(polyline)
+                    // 3) 본선(overlay)
+                    val main = googleMap.addPolyline(
+                        PolylineOptions()
+                            .addAll(directions)
+                            .width(7f)
+                            .color("#2F7CF6".toColorInt()) // 메인 컬러
+                            .zIndex(1f)
+                            .startCap(com.google.android.gms.maps.model.RoundCap())
+                            .endCap(com.google.android.gms.maps.model.RoundCap())
+                            .jointType(com.google.android.gms.maps.model.JointType.ROUND)
+                    )
 
-                    val enabled = !directions.isEmpty()
-                        binding.apply{
-                            btnSave.isEnabled = enabled
-                            btnSave.setBackgroundResource(
-                                if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
-                            )
-                        }
+                    // 4) ViewModel에는 "메인"만 저장하고, 외곽은 tag로 함께 보관 → 다음 업데이트 때 같이 제거
+                    main.tag = outline
+                    courseEditViewModel.setPolyline(main)
+
+                    // 5) 버튼 상태
+                    val enabled = directions.isNotEmpty()
+                    binding.apply {
+                        btnSave.isEnabled = enabled
+                        btnSave.setBackgroundResource(
+                            if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
+                        )
+                    }
                 }
             }
         }
+
     }
 
 
