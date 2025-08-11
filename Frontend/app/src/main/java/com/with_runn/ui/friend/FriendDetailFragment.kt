@@ -77,11 +77,6 @@ class FriendDetailFragment : Fragment() {
     }
     
     private fun setupButtonListeners() {
-        // 팔로우 버튼
-        view?.findViewById<TextView>(R.id.follow_button)?.setOnClickListener {
-            // 팔로우 기능 구현
-        }
-        
         // 메시지 버튼
         view?.findViewById<TextView>(R.id.message_button)?.setOnClickListener {
             // 메시지 기능 구현

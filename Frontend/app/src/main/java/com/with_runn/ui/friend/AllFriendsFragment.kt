@@ -1,6 +1,9 @@
 package com.with_runn.ui.friend
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -8,23 +11,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.R
 import com.with_runn.ui.chat.repository.ChatRepository
 import com.with_runn.ui.chat.activity.ChatRoomActivity
-import android.content.Intent
-import android.util.Log
-import android.widget.Toast
+import com.with_runn.ui.friend.adapter.RecommendedFriendAdapter
+import com.with_runn.ui.friend.viewmodel.RecommendedFriendViewModel
 
 class AllFriendsFragment : Fragment() {
     
-    private lateinit var friendsAdapter: FriendsAdapter
-    private lateinit var allFriends: List<Friend>
+    private lateinit var friendsAdapter: RecommendedFriendAdapter
     private lateinit var searchEditText: EditText
     private lateinit var clearSearchButton: ImageView
+    private lateinit var viewModel: RecommendedFriendViewModel
     private val chatRepository = ChatRepository()
+    private var allFriends: List<com.with_runn.ui.friend.model.dto.RecommendedFriendResponse> = emptyList()
+    
+    // 검색 디바운싱을 위한 Handler
+    private val searchHandler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,14 +47,23 @@ class AllFriendsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        // 검색 UI 설정
+        setupViewModel()
         setupSearchUI()
-        
-        // RecyclerView 설정
         setupRecyclerView()
+        setupObservers()
         
-        // 샘플 데이터 로드
-        loadSampleData()
+        // 기본값으로 모든 친구 조회 (provinceId = 1, 서울)
+        loadAllFriends()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Handler 정리
+        searchHandler.removeCallbacksAndMessages(null)
+    }
+
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(this)[RecommendedFriendViewModel::class.java]
     }
 
     private fun setupRecyclerView() {
@@ -55,14 +74,11 @@ class AllFriendsFragment : Fragment() {
         recyclerView?.layoutManager = layoutManager
         
         // 어댑터 설정
-        friendsAdapter = FriendsAdapter()
-        recyclerView?.adapter = friendsAdapter
-        
-        // 카드 클릭 리스너 설정
-        friendsAdapter.setOnItemClickListener { friend ->
+        friendsAdapter = RecommendedFriendAdapter { friend ->
             // 프로필 다이얼로그 표시
             showFriendProfileDialog(friend)
         }
+        recyclerView?.adapter = friendsAdapter
     }
 
     private fun setupSearchUI() {
@@ -81,8 +97,13 @@ class AllFriendsFragment : Fragment() {
                 // 검색어가 있으면 지우기 버튼 표시
                 clearSearchButton.visibility = if (searchQuery.isNotEmpty()) View.VISIBLE else View.GONE
                 
-                // 검색 실행
-                filterFriends(searchQuery)
+                // 이전 검색 요청 취소
+                searchHandler.removeCallbacks(searchRunnable)
+                
+                // 500ms 후에 검색 실행 (디바운싱)
+                searchHandler.postDelayed({
+                    filterFriends(searchQuery)
+                }, 500)
             }
         })
         
@@ -90,64 +111,121 @@ class AllFriendsFragment : Fragment() {
         clearSearchButton.setOnClickListener {
             searchEditText.text.clear()
             clearSearchButton.visibility = View.GONE
+            // 이전 검색 요청 취소
+            searchHandler.removeCallbacks(searchRunnable)
             filterFriends("")
         }
     }
 
-    private fun loadSampleData() {
-        allFriends = listOf(
-            Friend(
-                name = "마루",
-                personalityTag = "#호기심 쟁이",
-                personalityTags = listOf("#차분함", "#똑똑함"),
-                imageResId = R.drawable.maru
-            ),
-            Friend(
-                name = "룽이",
-                personalityTag = "#우리 친해질래?",
-                personalityTags = listOf("#조용함", "#사교적"),
-                imageResId = R.drawable.roongji
-            ),
-            Friend(
-                name = "홍이",
-                personalityTag = "#달리기 실시",
-                personalityTags = listOf("#독립적", "#에너지 폭발"),
-                imageResId = R.drawable.hongi
-            ),
-            Friend(
-                name = "구리",
-                personalityTag = "#같이 놀자",
-                personalityTags = listOf("#느긋함", "#스퀸십좋아함"),
-                imageResId = R.drawable.guri
-            ),
-        )
-        
-        friendsAdapter.updateFriends(allFriends)
-    }
+    private fun setupObservers() {
+        viewModel.allFriends.observe(viewLifecycleOwner) { friends ->
+            allFriends = friends
+            if (friends.isEmpty()) {
+                showEmptyState("현재 친구가 없습니다.\n다른 지역을 선택하거나 나중에 다시 시도해보세요.")
+            } else {
+                hideEmptyState()
+                friendsAdapter.updateFriends(friends)
+            }
+        }
 
-    private fun filterFriends(searchQuery: String) {
-        val filteredFriends = if (searchQuery.isEmpty()) {
-            allFriends
-        } else {
-            allFriends.filter { friend ->
-                friend.name.contains(searchQuery, ignoreCase = true) ||
-                friend.personalityTag.contains(searchQuery, ignoreCase = true) ||
-                friend.personalityTags.any { it.contains(searchQuery, ignoreCase = true) }
+        viewModel.searchResults.observe(viewLifecycleOwner) { searchResults ->
+            if (searchResults.isNotEmpty()) {
+                hideEmptyState()
+                friendsAdapter.updateFriends(searchResults)
+            } else {
+                // 검색 결과가 없을 때만 빈 상태 표시 (검색 중일 때는 로딩 상태 유지)
+                if (viewModel.isLoading.value == false) {
+                    val searchQuery = searchEditText.text.toString().trim()
+                    if (searchQuery.isNotEmpty()) {
+                        showEmptyState("'${searchQuery}'에 대한 검색 결과가 없습니다.\n다른 키워드로 검색해보세요.")
+                    }
+                }
             }
         }
         
-        friendsAdapter.updateFriends(filteredFriends)
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                val searchQuery = searchEditText.text.toString().trim()
+                if (searchQuery.isNotEmpty()) {
+                    // 검색 중일 때는 검색 중임을 표시
+                    showLoadingState("'${searchQuery}' 검색 중...")
+                } else {
+                    showLoadingState()
+                }
+            } else {
+                hideLoadingState()
+            }
+        }
+        
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
+                viewModel.clearError()
+            }
+        }
+    }
+
+    private fun showEmptyState(message: String) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.friends_grid)
+        val emptyTextView = view?.findViewById<TextView>(R.id.emptyStateTextView)
+        
+        recyclerView?.visibility = View.GONE
+        emptyTextView?.visibility = View.VISIBLE
+        emptyTextView?.text = message
+    }
+
+    private fun hideEmptyState() {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.friends_grid)
+        val emptyTextView = view?.findViewById<TextView>(R.id.emptyStateTextView)
+        
+        recyclerView?.visibility = View.VISIBLE
+        emptyTextView?.visibility = View.GONE
+    }
+
+    private fun showLoadingState(message: String? = null) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.friends_grid)
+        val loadingTextView = view?.findViewById<TextView>(R.id.loadingTextView)
+        
+        recyclerView?.visibility = View.GONE
+        loadingTextView?.visibility = View.VISIBLE
+        loadingTextView?.text = message ?: "로딩 중..."
+    }
+
+    private fun hideLoadingState() {
+        val loadingTextView = view?.findViewById<TextView>(R.id.loadingTextView)
+        loadingTextView?.visibility = View.GONE
+    }
+
+    private fun loadAllFriends(provinceId: Int = 1, cityId: Int? = null, townId: Int? = null) {
+        viewModel.loadAllFriends(provinceId, cityId, townId)
+    }
+
+    private fun filterFriends(searchQuery: String) {
+        if (searchQuery.isEmpty()) {
+            // 검색어가 비어있으면 모든 친구 다시 로드
+            loadAllFriends()
+            viewModel.clearSearchResults()
+        } else {
+            // 검색어가 있으면 API 검색 실행
+            viewModel.searchFriends(
+                provinceId = 1, // 기본값: 서울
+                cityId = null,
+                townId = null,
+                keyword = searchQuery
+            )
+        }
     }
     
     /**
      * 친구 프로필 다이얼로그 표시
      */
-    private fun showFriendProfileDialog(friend: Friend) {
+    private fun showFriendProfileDialog(friend: com.with_runn.ui.friend.model.dto.RecommendedFriendResponse) {
         val dialogFragment = FriendProfileDialogFragment.newInstance(
-            friend.name,
-            friend.personalityTag,
-            ArrayList(friend.personalityTags),
-            friend.imageResId
+            friendName = friend.userName ?: "",
+            personalityTag = friend.style?.firstOrNull() ?: "",
+            personalityTags = ArrayList((friend.style ?: emptyList()) + (friend.characters ?: emptyList())),
+            imageResId = R.drawable.default_profile,
+            userId = friend.userId
         )
         
         // 메시지 버튼 클릭 리스너 설정
@@ -162,40 +240,39 @@ class AllFriendsFragment : Fragment() {
     /**
      * 친구와 채팅방 생성
      */
-    private fun createChatRoomWithFriend(friend: Friend) {
-        Log.d("AllFriendsFragment", "=== 채팅방 생성 시작 ===")
-        Log.d("AllFriendsFragment", "선택된 친구: ${friend.name}")
-        
-        // 로딩 표시 (선택적으로 구현 가능)
-        Toast.makeText(requireContext(), "${friend.name}님과 채팅방을 생성 중입니다...", Toast.LENGTH_SHORT).show()
+    private fun createChatRoomWithFriend(friend: com.with_runn.ui.friend.model.dto.RecommendedFriendResponse) {
+        // 로딩 표시
+        val userName = friend.userName ?: "친구"
+        Toast.makeText(requireContext(), "${userName}님과 채팅방을 생성 중입니다...", Toast.LENGTH_SHORT).show()
         
         // 실제 로그인된 사용자 ID (백엔드 개발자 요청)
         val currentUserId = 10
-        val targetUserId = getTargetUserId(friend.name) // 친구 이름으로 targetUserId 매핑
         
-        Log.d("AllFriendsFragment", "API 호출 파라미터: currentUserId=$currentUserId, targetUserId=$targetUserId")
-        
-        chatRepository.createChatRoomAndFind(currentUserId, targetUserId, friend.name) { result ->
+        chatRepository.createChatRoomAndFind(currentUserId, friend.userId, userName) { result ->
             requireActivity().runOnUiThread {
                 result.fold(
                     onSuccess = { chatRoom ->
                         if (chatRoom != null) {
-                            Log.d("AllFriendsFragment", "✅ 채팅방 생성 및 찾기 성공! chatId=${chatRoom.chatId}, name=${chatRoom.name}")
-                            Toast.makeText(requireContext(), "${friend.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
-                            
-                            // 생성된 채팅방으로 바로 이동
-                            navigateToChatRoom(chatRoom.chatId, friend.name)
+                            Toast.makeText(requireContext(), "${userName}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
+                            navigateToChatRoom(chatRoom.chatId, userName)
                         } else {
-                            Log.d("AllFriendsFragment", "⚠️ 생성된 채팅방을 찾을 수 없음")
-                            Toast.makeText(requireContext(), "${friend.name}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
-                            
-                            // 채팅 목록으로 이동
+                            Toast.makeText(requireContext(), "${userName}님과의 채팅방이 생성되었습니다!", Toast.LENGTH_SHORT).show()
                             navigateToChatList()
                         }
                     },
                     onFailure = { exception ->
-                        Log.e("AllFriendsFragment", "❌ 채팅방 생성 실패", exception)
-                        Toast.makeText(requireContext(), "채팅방 생성에 실패했습니다: ${exception.message}", Toast.LENGTH_LONG).show()
+                        val errorMessage = when {
+                            exception.message?.contains("서버 오류") == true -> {
+                                "서버에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해주세요! 😅"
+                            }
+                            exception.message?.contains("네트워크") == true -> {
+                                "네트워크 연결을 확인해주세요! 📶"
+                            }
+                            else -> {
+                                "채팅방 생성에 실패했습니다. 잠시 후 다시 시도해주세요! 🤔"
+                            }
+                        }
+                        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_LONG).show()
                     }
                 )
             }
@@ -203,23 +280,9 @@ class AllFriendsFragment : Fragment() {
     }
     
     /**
-     * 친구 이름으로 targetUserId 매핑 (API 명세서에 맞춤)
-     */
-    private fun getTargetUserId(friendName: String): Int {
-        return when (friendName) {
-            "마루" -> 1   // 2 → 1로 변경 (다른 ID 시도)
-            "룽이" -> 3   // 3 유지
-            "홍이" -> 4   // 4 유지
-            "구리" -> 5   // 5 유지
-            else -> 6     // 6 유지
-        }
-    }
-    
-    /**
      * 채팅 목록으로 이동
      */
     private fun navigateToChatList() {
-        // BottomNavigationView에서 채팅 탭으로 이동
         val activity = requireActivity()
         if (activity is DogCardMainActivity) {
             activity.navigateToChatTab()
@@ -230,12 +293,10 @@ class AllFriendsFragment : Fragment() {
      * 생성된 채팅방으로 이동
      */
     private fun navigateToChatRoom(chatId: Int, friendName: String) {
-        // 채팅방 입장 API가 아직 구현되지 않아서 바로 이동
-        Log.d("AllFriendsFragment", "채팅방 화면으로 이동: chatId=$chatId")
         val intent = Intent(requireContext(), ChatRoomActivity::class.java).apply {
             putExtra("chatId", chatId)
             putExtra("friend_name", friendName)
-            putExtra("is_new_chat", true) // 새 채팅방 플래그
+            putExtra("is_new_chat", true)
         }
         startActivity(intent)
     }

@@ -94,6 +94,7 @@ class MapFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         activityVM.setBottomNavVisibility(true)
+        activityVM.setUpperToolbarVisibility(false)
 
         binding.mapView.onCreate(savedInstanceState)
         binding.mapView.getMapAsync {

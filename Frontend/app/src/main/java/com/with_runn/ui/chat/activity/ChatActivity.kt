@@ -24,6 +24,9 @@ import com.with_runn.ui.chat.model.mapper.ChatRoomMapper.toChatRoom
 import com.with_runn.ui.chat.adapter.ChatAdapter
 import com.with_runn.ui.chat.repository.ChatRepository
 import com.with_runn.ui.chat.network.RetrofitClient
+import com.with_runn.ui.chat.data.UnreadMessageManager
+import com.with_runn.ui.chat.network.WebSocketManager
+import com.with_runn.ui.chat.model.dto.MessageListResponse
 
 
 class ChatActivity : AppCompatActivity() {
@@ -32,6 +35,7 @@ class ChatActivity : AppCompatActivity() {
     private var chatRooms: List<ChatRoom> = listOf()
     private var currentSwipedPosition = -1
     private val chatRepository = ChatRepository()
+    private lateinit var unreadMessageManager: UnreadMessageManager
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,6 +44,9 @@ class ChatActivity : AppCompatActivity() {
         setupSystemUI()
         
         setContentView(R.layout.activity_chat)
+        
+        // UnreadMessageManager 초기화
+        unreadMessageManager = UnreadMessageManager.getInstance(this)
         
         // 뒤로가기 버튼 설정
         setupBackButton()
@@ -52,6 +59,29 @@ class ChatActivity : AppCompatActivity() {
         
         // 스와이프 삭제 기능 설정
         setupSwipeToDelete()
+        
+        // 실시간 업데이트를 위한 WebSocket 연결
+        setupWebSocketForUpdates()
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // 채팅방 목록의 unreadMsgCnt를 로컬 저장소에서 업데이트
+        updateUnreadCountsFromLocal()
+    }
+    
+    /**
+     * 로컬 저장소에서 unreadMsgCnt를 가져와서 UI 업데이트
+     */
+    private fun updateUnreadCountsFromLocal() {
+        val updatedChatRooms = chatRooms.map { chatRoom ->
+            val localUnreadCount = unreadMessageManager.getUnreadCount(chatRoom.chatId)
+            chatRoom.copy(notificationCount = localUnreadCount)
+        }
+        
+        chatRooms = updatedChatRooms
+        chatAdapter.updateChatRooms(updatedChatRooms)
+        Log.d("ChatActivity", "로컬 저장소에서 unreadMsgCnt 업데이트 완료")
     }
     
     private fun setupBackButton() {
@@ -374,28 +404,154 @@ class ChatActivity : AppCompatActivity() {
                     
                     if (chatListResponse != null && chatListResponse.success) {
                         val chatRoomDtos = chatListResponse.result
-                        // DTO를 UI 모델로 변환
+                        Log.d("ChatActivity", "API에서 가져온 채팅방 개수: ${chatRoomDtos.size}")
+                        
+                        // DTO를 UI 모델로 변환 (마지막 메시지는 나중에 추가)
                         val chatRooms = chatRoomDtos.map { it.toChatRoom() }
                         Log.d("ChatActivity", "변환된 채팅방: $chatRooms")
                         
-                        // UI 업데이트
+                        // UI 업데이트 (마지막 메시지 없이 먼저 표시)
                         runOnUiThread {
                             this@ChatActivity.chatRooms = chatRooms
                             chatAdapter.updateChatRooms(chatRooms)
                         }
+                        
+                        // 각 채팅방의 마지막 메시지를 가져와서 업데이트
+                        loadLastMessagesForChatRooms(chatRooms)
                     } else {
                         Log.e("ChatActivity", "응답이 성공하지 않음")
                         loadSampleData() // API 실패 시 샘플 데이터 로드
                     }
                 } else {
-                    Log.e("ChatActivity", "API 호출 실패: ${response.code()} - ${response.message()}")
-                    loadSampleData() // API 실패 시 샘플 데이터 로드
+                    // 400 에러인 경우 (참여 중인 채팅방이 없음) 빈 리스트 처리
+                    if (response.code() == 400) {
+                        Log.d("ChatActivity", "참여 중인 채팅방이 없습니다. 빈 리스트를 표시합니다.")
+                        runOnUiThread {
+                            this@ChatActivity.chatRooms = emptyList()
+                            chatAdapter.updateChatRooms(emptyList())
+                        }
+                    } else {
+                        Log.e("ChatActivity", "API 호출 실패: ${response.code()} - ${response.message()}")
+                        loadSampleData() // API 실패 시 샘플 데이터 로드
+                    }
                 }
             }
             
             override fun onFailure(call: retrofit2.Call<ChatListResponse>, t: Throwable) {
                 Log.e("ChatActivity", "API 호출 실패", t)
                 loadSampleData() // 네트워크 오류 시 샘플 데이터 로드
+            }
+        })
+    }
+    
+    /**
+     * 각 채팅방의 마지막 메시지를 가져와서 업데이트
+     */
+    private fun loadLastMessagesForChatRooms(chatRooms: List<ChatRoom>) {
+        chatRooms.forEach { chatRoom ->
+            loadLastMessageForChatRoom(chatRoom.chatId) { lastMessage ->
+                // 마지막 메시지가 있으면 채팅방 정보 업데이트
+                if (lastMessage.isNotEmpty()) {
+                    val updatedChatRooms = this@ChatActivity.chatRooms.map { room ->
+                        if (room.chatId == chatRoom.chatId) {
+                            room.copy(lastMessage = lastMessage)
+                        } else {
+                            room
+                        }
+                    }
+                    
+                    runOnUiThread {
+                        this@ChatActivity.chatRooms = updatedChatRooms
+                        chatAdapter.updateChatRooms(updatedChatRooms)
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * 특정 채팅방의 마지막 메시지를 가져오기
+     */
+    private fun loadLastMessageForChatRoom(chatId: Int, callback: (String) -> Unit) {
+        RetrofitClient.chatApiService.getChatMessages(chatId).enqueue(object : retrofit2.Callback<MessageListResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<MessageListResponse>,
+                response: retrofit2.Response<MessageListResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val messageListResponse = response.body()
+                    if (messageListResponse != null && messageListResponse.success) {
+                        val messages = messageListResponse.result
+                        if (messages.isNotEmpty()) {
+                            // 가장 최근 메시지 (마지막 메시지) 가져오기
+                            val lastMessage = messages.last()
+                            Log.d("ChatActivity", "채팅방 $chatId 마지막 메시지: ${lastMessage.msg}")
+                            callback(lastMessage.msg)
+                        } else {
+                            Log.d("ChatActivity", "채팅방 $chatId 메시지가 없음")
+                            callback("")
+                        }
+                    } else {
+                        Log.e("ChatActivity", "메시지 조회 실패: 응답이 성공하지 않음")
+                        callback("")
+                    }
+                } else {
+                    // 500 에러인 경우 특별 처리
+                    if (response.code() == 500) {
+                        val errorBody = response.errorBody()?.string()
+                        Log.w("ChatActivity", "⚠️ 서버 오류 발생: $errorBody")
+                        
+                        // 에러 응답에서 메시지 추출
+                        val errorMessage = try {
+                            if (!errorBody.isNullOrEmpty()) {
+                                val gson = com.google.gson.Gson()
+                                val jsonObject = gson.fromJson(errorBody, com.google.gson.JsonObject::class.java)
+                                jsonObject.get("message")?.asString ?: "서버 오류가 발생했습니다."
+                            } else {
+                                "서버 오류가 발생했습니다."
+                            }
+                        } catch (e: Exception) {
+                            Log.e("ChatActivity", "에러 응답 파싱 실패", e)
+                            "서버 오류가 발생했습니다."
+                        }
+                        
+                        // "Query did not return a unique result" 에러인 경우 특별 처리
+                        if (errorMessage.contains("Query did not return a unique result") || 
+                            errorMessage.contains("2 results were returned")) {
+                            Log.w("ChatActivity", "⚠️ 데이터베이스 중복 데이터 문제: $chatId")
+                            // 중복 데이터 문제는 서버 측 문제이므로 빈 메시지 반환
+                            callback("")
+                        } else {
+                            Log.w("ChatActivity", "⚠️ 기타 서버 오류: $errorMessage")
+                            callback("")
+                        }
+                    } else {
+                        Log.e("ChatActivity", "메시지 조회 실패: ${response.code()}")
+                        callback("")
+                    }
+                }
+            }
+            
+            override fun onFailure(call: retrofit2.Call<MessageListResponse>, t: Throwable) {
+                Log.e("ChatActivity", "메시지 조회 네트워크 실패", t)
+                
+                // EOFException인 경우 특별 처리
+                when {
+                    t is java.io.EOFException -> {
+                        Log.w("ChatActivity", "서버 연결이 끊어짐: $chatId")
+                    }
+                    t is java.net.SocketTimeoutException -> {
+                        Log.w("ChatActivity", "요청 시간 초과: $chatId")
+                    }
+                    t is java.net.UnknownHostException -> {
+                        Log.w("ChatActivity", "서버에 연결할 수 없음: $chatId")
+                    }
+                    else -> {
+                        Log.w("ChatActivity", "기타 네트워크 오류: $chatId")
+                    }
+                }
+                
+                callback("")
             }
         })
     }
@@ -426,23 +582,6 @@ class ChatActivity : AppCompatActivity() {
                 time = "25.05.29",
                 lastMessage = "저기요 제 개껌 돌려달라고요",
                 profileImageResId = R.drawable.guri
-            ),
-            ChatRoom(
-                chatId = 4,
-                name = "초코, 모찌",
-                time = "25.05.12",
-                lastMessage = "네 좋아요 ~ ^^",
-                notificationCount = 3,
-                hasSecondImage = true,
-                profileImageResId = R.drawable.ellipse_52,
-                profileImage2ResId = R.drawable.ellipse_50
-            ),
-            ChatRoom(
-                chatId = 5,
-                name = "마루",
-                time = "25.05.09",
-                lastMessage = "간식 감사합니다! 담에 또 같이 산책해요 ㅎㅎ",
-                profileImageResId = R.drawable.maru
             )
         )
         
@@ -529,5 +668,70 @@ class ChatActivity : AppCompatActivity() {
             putExtra("is_new_chat", true) // 새 채팅방 플래그
         }
         startActivity(intent)
+    }
+    
+    /**
+     * 실시간 업데이트를 위한 WebSocket 연결
+     */
+    private fun setupWebSocketForUpdates() {
+        val webSocketManager = WebSocketManager.getInstance()
+        webSocketManager.connect(
+            onConnected = {
+                Log.d("ChatActivity", "WebSocket 연결 성공 (실시간 업데이트용)")
+                // 모든 채팅방에 대해 메시지 수신 리스너 설정
+                setupMessageListeners()
+            },
+            onError = { error ->
+                Log.e("ChatActivity", "WebSocket 연결 실패 (실시간 업데이트용): $error")
+            }
+        )
+    }
+    
+    /**
+     * 메시지 수신 리스너 설정
+     */
+    private fun setupMessageListeners() {
+        val webSocketManager = WebSocketManager.getInstance()
+        
+        // 현재 채팅방 목록의 모든 채팅방에 대해 메시지 수신 리스너 설정
+        chatRooms.forEach { chatRoom ->
+            webSocketManager.subscribeToChatRoom(chatRoom.chatId) { message ->
+                // 새 메시지 수신 시 unreadMsgCnt 증가 (내가 보낸 메시지가 아닌 경우만)
+                if (!message.isFromMe) {
+                    runOnUiThread {
+                        updateUnreadCount(chatRoom.chatId, +1)
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * 특정 채팅방의 unreadMsgCnt 업데이트
+     */
+    private fun updateUnreadCount(chatId: Int, increment: Int) {
+        val currentCount = unreadMessageManager.getUnreadCount(chatId)
+        val newCount = maxOf(0, currentCount + increment)
+        unreadMessageManager.setUnreadCount(chatId, newCount)
+        
+        // UI 업데이트
+        updateChatRoomUnreadCount(chatId, newCount)
+        Log.d("ChatActivity", "채팅방 $chatId unreadMsgCnt 업데이트: $currentCount -> $newCount")
+    }
+    
+    /**
+     * 채팅방 리스트의 특정 채팅방 unreadMsgCnt 업데이트
+     */
+    private fun updateChatRoomUnreadCount(chatId: Int, newCount: Int) {
+        val updatedChatRooms = chatRooms.map { chatRoom ->
+            if (chatRoom.chatId == chatId) {
+                chatRoom.copy(notificationCount = newCount)
+            } else {
+                chatRoom
+            }
+        }
+        
+        chatRooms = updatedChatRooms
+        chatAdapter.updateChatRooms(updatedChatRooms)
     }
 } 

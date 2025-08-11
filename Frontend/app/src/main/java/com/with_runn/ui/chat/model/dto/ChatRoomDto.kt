@@ -4,15 +4,14 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * API 응답용 ChatRoom DTO
- * api/chat/list 응답 구조에 맞춤
- * unReadMsgCount는 BE에서 계산해서 제공
+ * 실제 API 응답에 맞춤
  */
 data class ChatRoomDto(
     @SerializedName("chatId")
     val chatId: Int,
     
     @SerializedName("chatName")
-    val chatName: String,
+    val chatName: String?,
     
     @SerializedName("usernameList")
     val usernameList: List<String>?,
@@ -25,9 +24,6 @@ data class ChatRoomDto(
     
     @SerializedName("lastReceivedMsg")
     val lastReceivedMsg: String?,
-    
-    @SerializedName("lastMessage")
-    val lastMessage: String?,
     
     @SerializedName("unReadMsgCount")
     val unReadMsgCount: Int
