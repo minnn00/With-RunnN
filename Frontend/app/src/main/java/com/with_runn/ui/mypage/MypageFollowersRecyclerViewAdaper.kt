@@ -60,6 +60,10 @@ class MypageFollowersRecyclerViewAdapter(
         list = newList
         notifyDataSetChanged()
     }
+    fun updateFollowingData(newList: List<Follower>) {
+        list = newList
+        notifyDataSetChanged()
+    }
 
     private fun showFollowerDialog(context: Context, followerId: Int) {
         val dialogBinding = DialogFriendProfileBinding.inflate(LayoutInflater.from(context))

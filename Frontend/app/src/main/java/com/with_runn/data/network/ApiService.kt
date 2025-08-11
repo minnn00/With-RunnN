@@ -11,6 +11,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("/api/users/profile")
@@ -24,8 +25,8 @@ interface ApiService {
     @GET("/api/users/followings")
     suspend fun getFollowings(): Response<FollowingResponse>
 
-    @GET("friends/{userId}")
+    @GET("api/friends/detail")
     suspend fun getFriendDetail(
-        @Path("userId") userId: Int
+        @Query("userId") userId: Int
     ): Response<FriendDetailResponse>
 }
