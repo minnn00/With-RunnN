@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -60,6 +61,7 @@ class MypageFollowersRecyclerViewAdapter(
         list = newList
         notifyDataSetChanged()
     }
+
     fun updateFollowingData(newList: List<Follower>) {
         list = newList
         notifyDataSetChanged()
@@ -96,6 +98,10 @@ class MypageFollowersRecyclerViewAdapter(
         // 버튼 이벤트
         dialogBinding.followButton.setOnClickListener {
 //            viewModel.followUser(followerId)
+            dialogBinding.followButton.background =
+                AppCompatResources.getDrawable(context, R.drawable.bg_button_inactive)
+            dialogBinding.followButton.text = "팔로잉"
+            dialogBinding.followButton.setTextColor(context.getColor(R.color.green_700))
         }
 
         dialogBinding.messageButton.setOnClickListener {

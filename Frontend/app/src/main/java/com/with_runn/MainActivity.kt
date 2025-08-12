@@ -95,14 +95,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        binding.apply {
-            setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)}
-            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)} /* TODO: 알람 화면으로 연결되도록*/
-            chatBtn.setOnClickListener {
-                val intent = Intent(this@MainActivity, ChatActivity :: class.java)
-                startActivity(intent)
-            }
-        }
+//        binding.apply {
+//            setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)}
+//            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)} /* TODO: 알람 화면으로 연결되도록*/
+//            chatBtn.setOnClickListener {
+//                val intent = Intent(this@MainActivity, ChatActivity :: class.java)
+//                startActivity(intent)
+//            }
+//        }
 
         // 1회만 실행: 마스터 토큰 설정
         TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")

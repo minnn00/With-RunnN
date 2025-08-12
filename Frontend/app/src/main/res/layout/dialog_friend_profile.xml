@@ -147,7 +147,7 @@
                     android:textSize="12sp"
                     android:textColor="#15AB6C"
                     android:fontFamily="@font/pretendard_medium"
-                    android:background="#FBFBFB"
+                    android:background="@drawable/bg_button_inactive"
                     android:gravity="center"
                     android:clickable="true"
                     android:focusable="true"

@@ -16,18 +16,25 @@
             android:id="@+id/user_img"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:srcCompat="@drawable/img_profile_default"
-            tools:layout_editor_absoluteY="8dp" />
+            android:layout_marginVertical="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/img_profile_default" />
 
         <TextView
             android:id="@+id/name_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
             android:fontFamily="@font/pretendard_medium"
             android:text="조니"
             android:textSize="16sp"
-            tools:layout_editor_absoluteX="62dp"
-            tools:layout_editor_absoluteY="22dp" />
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/user_img"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <android.widget.Button
@@ -45,5 +52,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:fontFamily="@font/pretendard_regular"
         android:textSize="12sp"
-        android:textColor="@color/gray_700"/>
+        android:textColor="@color/gray_700"
+        android:stateListAnimator="@null"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
