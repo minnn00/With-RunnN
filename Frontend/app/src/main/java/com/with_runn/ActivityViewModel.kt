@@ -16,6 +16,9 @@ class ActivityViewModel: ViewModel() {
     private val _accessToken = MutableStateFlow<String?>(null)
     val accessToken: StateFlow<String?> = _accessToken
 
+    private val _memberId = MutableStateFlow<Int?>(null)
+    val memberId: StateFlow<Int?> = _memberId
+
     private val _firstRegion = MutableStateFlow<RegionResponse?>(null)
     val firstRegion: StateFlow<RegionResponse?> = _firstRegion
 
@@ -35,6 +38,7 @@ class ActivityViewModel: ViewModel() {
 
     fun loadToken() {
         _accessToken.value = TokenManager.getAccessToken()
+        _memberId.value = TokenManager.getCurrentUserId()
     }
 
     /*fun clearToken() {

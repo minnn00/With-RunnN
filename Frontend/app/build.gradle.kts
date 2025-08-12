@@ -102,6 +102,9 @@ dependencies {
     implementation(libs.maps.utils)
     implementation(libs.security.crypto)
     implementation(libs.glide)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     kapt(libs.glide.compiler)
 
     // WebSocket 관련 의존성 (안정적인 버전으로 교체)
