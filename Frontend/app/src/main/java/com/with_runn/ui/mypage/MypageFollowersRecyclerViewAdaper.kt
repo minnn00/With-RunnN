@@ -18,11 +18,11 @@ import com.with_runn.data.viewmodel.MypageFollowerViewmodel
 import com.with_runn.databinding.DialogFriendProfileBinding
 import com.with_runn.databinding.ItemMypageFollowerProfileBinding
 import com.with_runn.ui.chat.activity.ChatActivity
+import com.with_runn.ui.friend.FriendProfileDialogFragment
 
 class MypageFollowersRecyclerViewAdapter(
     private var list: List<Follower>,
-    private val viewModel: MypageFollowerViewmodel,
-    private val lifecycleOwner: LifecycleOwner
+    private val fragmentManager: androidx.fragment.app.FragmentManager
 ) : RecyclerView.Adapter<MypageFollowersRecyclerViewAdapter.FollowerViewHolder>() {
 
     inner class FollowerViewHolder(private val binding: ItemMypageFollowerProfileBinding) :
@@ -36,10 +36,13 @@ class MypageFollowersRecyclerViewAdapter(
                 .into(binding.userImg)
 
             binding.profileLayout.setOnClickListener {
-                showFollowerDialog(binding.root.context, item.targetUserId)
+                MypageUserProfileDialogFragment
+                    .newInstance(item.targetUserId)
+                    .show(fragmentManager, "FriendProfileDialog")
             }
+
             binding.followBtn.setOnClickListener {
-//                viewModel.followUser(item.targetUserId)
+                // TODO: follow API 호출
             }
         }
     }
@@ -65,50 +68,5 @@ class MypageFollowersRecyclerViewAdapter(
     fun updateFollowingData(newList: List<Follower>) {
         list = newList
         notifyDataSetChanged()
-    }
-
-    private fun showFollowerDialog(context: Context, followerId: Int) {
-        val dialogBinding = DialogFriendProfileBinding.inflate(LayoutInflater.from(context))
-        val dialog = AlertDialog.Builder(context)
-            .setView(dialogBinding.root)
-            .create()
-
-        // 다이얼로그 표시
-        dialog.show()
-
-
-        // 프로필 정보 API 호출
-        viewModel.loadFriendDetail(followerId)
-
-        // LiveData 옵저빙
-        viewModel.friendDetail.observe(lifecycleOwner) { detail ->
-            dialogBinding.dogName.text = detail.name
-            dialogBinding.dogIntro.text = detail.introduction
-            Glide.with(context)
-                .load(detail.profileImage ?: R.drawable.default_profile)
-                .into(dialogBinding.profileImage)
-        }
-
-        viewModel.error.observe(lifecycleOwner) { errorMsg ->
-            errorMsg?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        // 버튼 이벤트
-        dialogBinding.followButton.setOnClickListener {
-//            viewModel.followUser(followerId)
-            dialogBinding.followButton.background =
-                AppCompatResources.getDrawable(context, R.drawable.bg_button_inactive)
-            dialogBinding.followButton.text = "팔로잉"
-            dialogBinding.followButton.setTextColor(context.getColor(R.color.green_700))
-        }
-
-        dialogBinding.messageButton.setOnClickListener {
-//            val intent = Intent(context, ChatActivity::class.java)
-//            intent.putExtra("targetUserId", followerId)
-//            context.startActivity(intent)
-//            dialog.dismiss()
-        }
     }
 }

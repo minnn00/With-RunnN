@@ -1,5 +1,6 @@
 package com.with_runn.data.network
 
+import com.with_runn.data.model.FollowResponse
 import com.with_runn.data.model.FollowerResponse
 import com.with_runn.data.model.FollowingResponse
 import com.with_runn.data.model.setProfileResponse
@@ -29,4 +30,7 @@ interface ApiService {
     suspend fun getFriendDetail(
         @Query("userId") userId: Int
     ): Response<FriendDetailResponse>
+
+    @POST("api/friends/follow")
+    suspend fun followUser(@Query("userId") userId: Int) : Response<FollowResponse>
 }

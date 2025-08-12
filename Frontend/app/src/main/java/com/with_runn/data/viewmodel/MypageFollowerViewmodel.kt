@@ -27,7 +27,7 @@ class MypageFollowerViewmodel : ViewModel() {
 
     fun loadFollowings() {
         viewModelScope.launch {
-            val result = repository.fetchFollowings() // 따로 구현 필요
+            val result = repository.fetchFollowings()
             result?.let { _followings.value = it }
         }
     }
@@ -40,6 +40,9 @@ class MypageFollowerViewmodel : ViewModel() {
 
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
+
+    private val _followResult = MutableLiveData<Boolean>() // true = 팔로우 성공
+    val followResult: LiveData<Boolean> = _followResult
 
     fun loadFriendDetail(userId: Int) {
         viewModelScope.launch {
@@ -54,6 +57,19 @@ class MypageFollowerViewmodel : ViewModel() {
                     _error.value = exception.message ?: "친구 상세 정보 조회에 실패했습니다."
                 }
             _isLoading.value = false
+        }
+    }
+
+    fun followUser(userId: Int) {
+        viewModelScope.launch {
+            _error.value = null
+            repository.followUser(userId)
+                .onSuccess {
+                    _followResult.value = true
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message ?: "팔로우 요청에 실패했습니다."
+                }
         }
     }
 }
