@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.Marker
 import com.with_runn.data.course.CourseDetailResponse
 import com.with_runn.data.course.CourseFetchRepository
+import com.with_runn.data.course.CourseActionRepository
 import com.with_runn.ui.course_edit.PinItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,10 +15,11 @@ import kotlinx.coroutines.launch
 
 class CourseDetailsViewModel(
     private val accessToken: String,
-    private val repository: CourseFetchRepository
+    private val fetchRepository: CourseFetchRepository,
+    private val actionRepository: CourseActionRepository
 ) : ViewModel() {
 
-    private val _courseData = MutableStateFlow<CourseDetailResponse>(
+    private val _courseData = MutableStateFlow(
         CourseDetailResponse(
             -1,
             "샘플 데이터",
@@ -48,9 +50,9 @@ class CourseDetailsViewModel(
     fun fetchCourse(courseId: Int) {
         viewModelScope.launch {
             try {
-                val course = repository.getCourseDetail(courseId, accessToken)
+                val course = fetchRepository.getCourseDetail(courseId, accessToken)
                 _courseData.value = course
-                // _isLiked.value = course.isLiked  // 추후 추가
+                // _isLiked.value = course.isLiked
                 // _isBookmarked.value = course.isBookmarked
             } catch (e: Exception) {
                 Log.e("CourseDetailsVM", "Course fetch failed", e)
@@ -58,29 +60,54 @@ class CourseDetailsViewModel(
         }
     }
 
-    fun toggleLike() {
+    fun toggleLike(): suspend () -> Boolean = {
+        try {
+            val courseId = _courseData.value.id
+            val isSuccessful = if (_isLiked.value) {
+                actionRepository.unlikeCourse(courseId, accessToken)
+            } else {
+                actionRepository.likeCourse(courseId, accessToken)
+            }
 
-        // TODO: 서버 전송
-        // TODO: 서버의 Response 성공 여부를 분석해서 분기
-        // 성공 시
-        _isLiked.value = !_isLiked.value
-        // 실패 시 ToastMessage로 실패 알림
+            if (isSuccessful) {
+                _isLiked.value = !_isLiked.value
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("CourseDetailsVM", "Like toggle failed", e)
+            false
+        }
     }
 
-    fun toggleScrap() {
-        // TODO: 서버 전송
-        // TODO: 서버의 Response 성공 여부를 분석해서 분기
-        // 성공 시
-        _isBookmarked.value = !_isBookmarked.value
-        // 실패 시 ToastMessage로 실패 알림
+    fun toggleScrap(): suspend () -> Boolean = {
+        try {
+            val courseId = _courseData.value.id
+            val isSuccessful = if (_isBookmarked.value) {
+                actionRepository.unbookmarkCourse(courseId, accessToken)
+            } else {
+                actionRepository.bookmarkCourse(courseId, accessToken)
+            }
+
+            if (isSuccessful) {
+                _isBookmarked.value = !_isBookmarked.value
+                true
+            } else {
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("CourseDetailsVM", "Bookmark toggle failed", e)
+            false
+        }
     }
 
-    fun setTempMarker(marker: Marker?){
+    fun setTempMarker(marker: Marker?) {
         _tempMarker.value?.remove()
         _tempMarker.value = marker
     }
 
-    fun removeTempMarker(){
+    fun removeTempMarker() {
         _tempMarker.value?.remove()
     }
 }

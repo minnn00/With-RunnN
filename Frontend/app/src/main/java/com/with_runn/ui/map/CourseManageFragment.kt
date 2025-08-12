@@ -2,7 +2,9 @@ package com.with_runn.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -13,7 +15,10 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -44,6 +49,10 @@ import com.with_runn.ui.course_edit.PinItem
 import com.with_runn.ui.course_edit.PinListAdapter
 import kotlinx.coroutines.launch
 import androidx.core.graphics.toColorInt
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class CourseManageFragment : Fragment() {
 
@@ -106,7 +115,9 @@ class CourseManageFragment : Fragment() {
                                 MarkerOptions()
                                     .position(poi.latLng)
                                     .title(poi.name)
+                                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
                             )
+
                             courseEditViewModel.setTempMarker(marker)
                             marker?.showInfoWindow()
                         }
@@ -123,6 +134,7 @@ class CourseManageFragment : Fragment() {
                                 MarkerOptions()
                                     .position(latLng)
                                     .title(latLng.toString())
+                                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
                             )
                             courseEditViewModel.setTempMarker(marker)
                             marker?.showInfoWindow()
@@ -229,6 +241,7 @@ class CourseManageFragment : Fragment() {
                         val markerOption = MarkerOptions()
                             .position(LatLng(pin.lat, pin.lng))
                             .title(pin.name)
+                            .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
 
                         if(pin.content != ""){
                             markerOption.snippet(pin.content)
@@ -545,5 +558,26 @@ class CourseManageFragment : Fragment() {
             }
         }
         override fun isLongPressDragEnabled() = false
+    }
+
+    fun resToMarkerIcon(resId: Int, maxSizeDp: Float? = null): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(requireContext(), resId) ?: error("Resource not found")
+        val dm = requireContext().resources.displayMetrics
+        val density = dm.density
+
+        val intrinsicW = drawable.intrinsicWidth.takeIf { it > 0 } ?: (24 * density).toInt()
+        val intrinsicH = drawable.intrinsicHeight.takeIf { it > 0 } ?: (24 * density).toInt()
+
+        val (outW, outH) = if (maxSizeDp == null) {
+            intrinsicW to intrinsicH
+        } else {
+            val maxPx = (maxSizeDp * density).toInt().coerceAtLeast(1)
+            val ratio = min(maxPx / intrinsicW.toFloat(), maxPx / intrinsicH.toFloat())
+            (intrinsicW * ratio).roundToInt().coerceAtLeast(1) to
+                    (intrinsicH * ratio).roundToInt().coerceAtLeast(1)
+        }
+
+        val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }

@@ -4,6 +4,7 @@ import FacilityItem
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -42,8 +44,11 @@ import kotlinx.coroutines.launch
 import com.with_runn.ui.map.search.SearchResultFragment
 import com.with_runn.ui.map.search.SearchResultItem
 import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.with_runn.parseOperatingHours
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 
 class MapFragment : Fragment() {
@@ -551,29 +556,36 @@ class MapFragment : Fragment() {
         else -> R.drawable.ic_basic_pin
     }
 
-    private fun getMarkerIcon(category: String?, sizeDp: Float = 30f): BitmapDescriptor? {
+    private fun getMarkerIcon(category: String?, maxSizeDp: Float? = null): BitmapDescriptor? {
+        // 캐시 히트
         if (category != null) {
             markerIconCache[category]?.let { return it }
         }
 
         val resId = getIconResForCategory(category) ?: return null
-        val context = requireContext()
-        val drawable = getDrawable(context, resId) ?: return null
+        val drawable = getDrawable(requireContext(), resId) ?: return null
 
-        val scale = context.resources.displayMetrics.density
-        val w = (sizeDp * scale).toInt()
-        val h = (sizeDp * scale).toInt()
+        val dm = resources.displayMetrics
+        val density = dm.density
 
-        drawable.setBounds(0, 0, w, h)
+        // 드로어블의 고유 크기 (벡터면 intrinsic, -1일 수 있어요)
+        val intrinsicW = (drawable.intrinsicWidth).takeIf { it > 0 } ?: (24 * density).toInt()
+        val intrinsicH = (drawable.intrinsicHeight).takeIf { it > 0 } ?: (24 * density).toInt()
 
-        val bmp = createBitmap(w, h)
-        val cvs = android.graphics.Canvas(bmp)
-        drawable.draw(cvs)
-
-        val desc = BitmapDescriptorFactory.fromBitmap(bmp)
-        if (category != null) {
-            markerIconCache[category] = desc
+        val (outW, outH) = if (maxSizeDp == null) {
+            // 스케일 없음: 고유 크기 그대로
+            intrinsicW to intrinsicH
+        } else {
+            // 긴 변을 maxSizeDp로 맞추고 비율 유지
+            val maxPx = (maxSizeDp * density).toInt().coerceAtLeast(1)
+            val ratio = min(maxPx / intrinsicW.toFloat(), maxPx / intrinsicH.toFloat())
+            (intrinsicW * ratio).roundToInt().coerceAtLeast(1) to
+                    (intrinsicH * ratio).roundToInt().coerceAtLeast(1)
         }
+
+        val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
+        val desc = BitmapDescriptorFactory.fromBitmap(bitmap)
+        if (category != null) markerIconCache[category] = desc
         return desc
     }
 

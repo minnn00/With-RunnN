@@ -1,6 +1,7 @@
 package com.with_runn.ui.course
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -8,7 +9,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -35,6 +39,10 @@ import com.google.maps.android.PolyUtil
 import com.with_runn.data.course.CourseDetailResponse
 import com.with_runn.ui.course_edit.PinItem
 import androidx.core.graphics.toColorInt
+import com.with_runn.data.course.CourseActionRepository
+import com.with_runn.toHM
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class CourseDetailFragment : Fragment() {
 
@@ -61,7 +69,8 @@ class CourseDetailFragment : Fragment() {
 
         val token = activityVM.accessToken.value.orEmpty()
         val repository = CourseFetchRepository(CourseService.api)
-        courseDetailsVM = CourseDetailsVMFactory(token, repository)
+        val actionRepo = CourseActionRepository(CourseService.actionApi)
+        courseDetailsVM = CourseDetailsVMFactory(token, repository, actionRepo)
             .create(CourseDetailsViewModel::class.java)
 
         courseDetailsVM.fetchCourse(courseId)
@@ -131,6 +140,25 @@ class CourseDetailFragment : Fragment() {
         setListeners()
 
         viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    courseDetailsVM.isLiked.collect { liked ->
+                        binding.likeIc.setImageResource(
+                            if (liked) R.drawable.ic_heart_active else R.drawable.ic_heart_outlined
+                        )
+                    }
+                }
+                launch {
+                    courseDetailsVM.isBookmarked.collect { bookmarked ->
+                        binding.bookmarkIc.setImageResource(
+                            if (bookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark_outlined
+                        )
+                    }
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 courseDetailsVM.courseData.collect { course ->
                     if (rendered) return@collect
@@ -139,7 +167,7 @@ class CourseDetailFragment : Fragment() {
                     binding.apply {
                         courseName.text = course.name
                         courseInfo.text = course.description
-                        estimatedTime.text = course.time.toString()
+                        estimatedTime.text = course.time.toHM()
                         setTags(course.keywords)
 
                         Glide.with(requireContext())
@@ -192,6 +220,23 @@ class CourseDetailFragment : Fragment() {
     private fun setListeners(){
         binding.apply {
             backBtn.setOnClickListener { findNavController().popBackStack() }
+            btnLike.setOnClickListener {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val result = courseDetailsVM.toggleLike()()
+                    if (!result) {
+                        showToast("좋아요 처리 실패")
+                    }
+                }
+            }
+            btnScrap.setOnClickListener {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val result = courseDetailsVM.toggleScrap()()
+                    if (!result) {
+                        showToast("북마크 처리 실패")
+                    }
+                }
+            }
+            btnShare
         }
     }
 
@@ -212,6 +257,7 @@ class CourseDetailFragment : Fragment() {
                     .position(LatLng(p.lat, p.lng))
                     .title(p.name)
                     .snippet(p.content)
+                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
             )
             if (m != null) markerToPin[m] = p
         }
@@ -269,6 +315,28 @@ class CourseDetailFragment : Fragment() {
         googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 80))
     }
 
+    fun resToMarkerIcon(resId: Int, maxSizeDp: Float? = null): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(requireContext(), resId) ?: error("Resource not found")
+        val dm = requireContext().resources.displayMetrics
+        val density = dm.density
+
+        val intrinsicW = drawable.intrinsicWidth.takeIf { it > 0 } ?: (24 * density).toInt()
+        val intrinsicH = drawable.intrinsicHeight.takeIf { it > 0 } ?: (24 * density).toInt()
+
+        val (outW, outH) = if (maxSizeDp == null) {
+            intrinsicW to intrinsicH
+        } else {
+            val maxPx = (maxSizeDp * density).toInt().coerceAtLeast(1)
+            val ratio = min(maxPx / intrinsicW.toFloat(), maxPx / intrinsicH.toFloat())
+            (intrinsicW * ratio).roundToInt().coerceAtLeast(1) to
+                    (intrinsicH * ratio).roundToInt().coerceAtLeast(1)
+        }
+
+        val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+
     override fun onStart() {
         binding.mapView.onStart()
         super.onStart()
@@ -299,5 +367,9 @@ class CourseDetailFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         binding.mapView.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

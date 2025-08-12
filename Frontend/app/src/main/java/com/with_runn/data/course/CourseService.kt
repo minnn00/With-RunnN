@@ -19,4 +19,5 @@ object CourseService {
         .build()
 
     val api : CourseApi = retrofit.create(CourseApi::class.java)
+    val actionApi : CourseActionService = retrofit.create(CourseActionService::class.java)
 }
