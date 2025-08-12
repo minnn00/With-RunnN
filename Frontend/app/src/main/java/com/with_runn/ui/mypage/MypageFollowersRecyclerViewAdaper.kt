@@ -3,12 +3,14 @@ package com.with_runn.ui.mypage
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -19,32 +21,34 @@ import com.with_runn.databinding.DialogFriendProfileBinding
 import com.with_runn.databinding.ItemMypageFollowerProfileBinding
 import com.with_runn.ui.chat.activity.ChatActivity
 import com.with_runn.ui.friend.FriendProfileDialogFragment
+import kotlin.getValue
 
 class MypageFollowersRecyclerViewAdapter(
     private var list: List<Follower>,
-    private val fragmentManager: androidx.fragment.app.FragmentManager
+    private val fragmentManager: androidx.fragment.app.FragmentManager,
+    private val viewModel: MypageFollowerViewmodel
 ) : RecyclerView.Adapter<MypageFollowersRecyclerViewAdapter.FollowerViewHolder>() {
 
     inner class FollowerViewHolder(private val binding: ItemMypageFollowerProfileBinding) :
         RecyclerView.ViewHolder(binding.root) {
+            fun bind(item: Follower) {
+                binding.nameText.text = item.name
+                Glide.with(binding.userImg.context)
+                    .load(item.profileImage)
+                    .placeholder(R.drawable.default_profile)
+                    .into(binding.userImg)
 
-        fun bind(item: Follower) {
-            binding.nameText.text = item.name
-            Glide.with(binding.userImg.context)
-                .load(item.profileImage)
-                .placeholder(R.drawable.default_profile)
-                .into(binding.userImg)
+                binding.profileLayout.setOnClickListener {
+                    MypageUserProfileDialogFragment
+                        .newInstance(item.targetUserId)
+                        .show(fragmentManager, "FriendProfileDialog")
+                }
 
-            binding.profileLayout.setOnClickListener {
-                MypageUserProfileDialogFragment
-                    .newInstance(item.targetUserId)
-                    .show(fragmentManager, "FriendProfileDialog")
+                binding.followBtn.setOnClickListener {
+                    viewModel.followUser(item.targetUserId)
+                    Log.d("followBtn", "followBtn clicked")
+                }
             }
-
-            binding.followBtn.setOnClickListener {
-                // TODO: follow API 호출
-            }
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowerViewHolder {

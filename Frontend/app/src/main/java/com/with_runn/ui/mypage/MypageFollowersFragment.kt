@@ -49,7 +49,7 @@ class MypageFollowersFragment : Fragment() {
         binding.followersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = MypageFollowersRecyclerViewAdapter(
-            emptyList(), childFragmentManager)
+            emptyList(), childFragmentManager,viewModel)
         binding.followersRecyclerView.adapter = adapter
 
         if (tabTitle == "모든 팔로워"){
