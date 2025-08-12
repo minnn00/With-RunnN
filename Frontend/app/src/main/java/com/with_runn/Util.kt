@@ -173,7 +173,11 @@ fun BottomNavigationView.slideUp(){
         .setDuration(500)
         .start()
 }
-
+open class Event<out T>(private val content: T) {
+    private var handled = false
+    fun getContentIfNotHandled(): T? =
+        if (handled) null else { handled = true; content }
+}
 fun formatMinutesToHM(minutes: Int): String {
     val hours = minutes / 60
     val mins = minutes % 60

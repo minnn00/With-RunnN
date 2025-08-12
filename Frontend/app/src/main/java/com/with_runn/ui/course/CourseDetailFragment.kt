@@ -41,6 +41,7 @@ import com.with_runn.ui.course_edit.PinItem
 import androidx.core.graphics.toColorInt
 import com.with_runn.data.course.CourseActionRepository
 import com.with_runn.toHM
+import com.with_runn.ui.ShareBottomSheetDialogFragment
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -185,6 +186,25 @@ class CourseDetailFragment : Fragment() {
             }
         }
 
+        parentFragmentManager.setFragmentResultListener(
+            ShareBottomSheetDialogFragment.REQ_SHARE_RESULT,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val success = bundle.getBoolean(
+                ShareBottomSheetDialogFragment.KEY_SHARE_SUCCESS, false
+            )
+            if (success) {
+                val roomId = bundle.getInt(
+                    ShareBottomSheetDialogFragment.KEY_ROOM_ID
+                )
+                val roomName = bundle.getString(
+                    ShareBottomSheetDialogFragment.KEY_ROOM_NAME
+                )
+                // TODO: 채팅방 화면으로 이동
+                // findNavController().navigate(R.id.chatFragment, bundleOf("roomId" to roomId))
+            }
+        }
+
     }
 
     private fun setupBottomSheet(){
@@ -236,9 +256,15 @@ class CourseDetailFragment : Fragment() {
                     }
                 }
             }
-            btnShare
+            btnShare.setOnClickListener {
+                val courseId = courseDetailsVM.courseData.value.id
+                ShareBottomSheetDialogFragment
+                    .newInstance(courseId)
+                    .show(parentFragmentManager, "ShareSheet")
+            }
         }
     }
+
 
     private fun renderCourseOnMap(course: CourseDetailResponse) {
         // 안전 제거
