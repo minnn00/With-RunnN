@@ -9,5 +9,6 @@ data class CourseDetailResponse(
     val keywords: List<String>,
     val description: String,
     val time: Int,
-    val pins: List<PinItem>
+    val pins: List<PinItem>,
+    val overviewPolyline: String? = null
 )

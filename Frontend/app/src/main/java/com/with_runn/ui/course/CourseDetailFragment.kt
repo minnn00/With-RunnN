@@ -1,5 +1,7 @@
 package com.with_runn.ui.course
 
+import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -27,6 +29,12 @@ import kotlinx.coroutines.launch
 import kotlin.getValue
 import androidx.fragment.app.Fragment
 import com.with_runn.databinding.FragmentCourseDetailBinding
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.*
+import com.google.maps.android.PolyUtil
+import com.with_runn.data.course.CourseDetailResponse
+import com.with_runn.ui.course_edit.PinItem
+import androidx.core.graphics.toColorInt
 
 class CourseDetailFragment : Fragment() {
 
@@ -35,6 +43,13 @@ class CourseDetailFragment : Fragment() {
     private val activityVM : ActivityViewModel by activityViewModels()
     private lateinit var courseDetailsVM: CourseDetailsViewModel
 
+    private var isMapReady = false
+    private var rendered = false
+    private var cachedCourse: CourseDetailResponse? = null
+
+    private var routeMain: Polyline? = null
+    private val markerToPin = mutableMapOf<Marker, PinItem>()
+
     private lateinit var behavior : BottomSheetBehavior<View>
     private lateinit var googleMap: GoogleMap
 
@@ -42,10 +57,8 @@ class CourseDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // [1] Argument에서 courseId만 받기
         val courseId = arguments?.getInt("courseId") ?: throw IllegalStateException("courseId is required for CourseDetailFragment")
 
-        // [2] ViewModel 생성 및 fetchCourse
         val token = activityVM.accessToken.value.orEmpty()
         val repository = CourseFetchRepository(CourseService.api)
         courseDetailsVM = CourseDetailsVMFactory(token, repository)
@@ -75,14 +88,29 @@ class CourseDetailFragment : Fragment() {
 
 
                 googleMap.apply{
-                    setOnPoiClickListener { poi ->
-                        val marker = googleMap.addMarker(
-                            MarkerOptions()
-                                .position(poi.latLng)
-                                .title(poi.name)
+
+
+                    @SuppressLint("PotentialBehaviorOverride")
+                    setOnMarkerClickListener{ marker ->
+                        val pin = markerToPin[marker]
+
+                        val args = Bundle().apply {
+                            putString("pin_name", pin?.name ?: marker.title)
+                            putString("pin_detail", pin?.content ?: marker.snippet)
+                        }
+
+                        googleMap.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(marker.position, 16f),
+                            object : GoogleMap.CancelableCallback {
+                                override fun onFinish() {
+                                    PinInfoDialogFragment
+                                        .newInstance(args)
+                                        .show(parentFragmentManager, "PinInfo")
+                                }
+                                override fun onCancel() { /* 필요시 처리 */ }
+                            }
                         )
-                        courseDetailsVM.setTempMarker(marker)
-                        marker?.showInfoWindow()
+                        true
                     }
 
                     uiSettings.apply {
@@ -90,7 +118,11 @@ class CourseDetailFragment : Fragment() {
                         isMyLocationButtonEnabled = false
                         isMapToolbarEnabled = false
                     }
+
+                    isMapReady = true
+                    cachedCourse?.let { if (!rendered) renderCourseOnMap(it) }
                 }
+
             }
         }
 
@@ -101,6 +133,9 @@ class CourseDetailFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 courseDetailsVM.courseData.collect { course ->
+                    if (rendered) return@collect
+
+
                     binding.apply {
                         courseName.text = course.name
                         courseInfo.text = course.description
@@ -111,6 +146,12 @@ class CourseDetailFragment : Fragment() {
                             .load(course.imageUrl)
                             .error(R.drawable.img_app_logo)
                             .into(courseImage)
+                    }
+
+                    cachedCourse = course
+
+                    if (isMapReady) {
+                        renderCourseOnMap(course)
                     }
                 }
             }
@@ -154,6 +195,80 @@ class CourseDetailFragment : Fragment() {
         }
     }
 
+    private fun renderCourseOnMap(course: CourseDetailResponse) {
+        // 안전 제거
+        googleMap.clear()
+        routeMain?.let { main ->
+            (main.tag as? Polyline)?.remove()
+            main.remove()
+        }
+        routeMain = null
+        markerToPin.clear()
+
+        // 핀 생성
+        course.pins.forEach { p ->
+            val m = googleMap.addMarker(
+                MarkerOptions()
+                    .position(LatLng(p.lat, p.lng))
+                    .title(p.name)
+                    .snippet(p.content)
+            )
+            if (m != null) markerToPin[m] = p
+        }
+
+        // 폴리라인(있을 때만)
+        val path = decodeOverviewPolyline(course.overviewPolyline)
+        if (path.isNotEmpty()) {
+            val outline = googleMap.addPolyline(
+                PolylineOptions()
+                    .addAll(path)
+                    .width(20f)
+                    .color(Color.argb(80, 0, 0, 0))
+                    .zIndex(0f)
+                    .startCap(RoundCap())
+                    .endCap(RoundCap())
+                    .jointType(JointType.ROUND)
+            )
+            val main = googleMap.addPolyline(
+                PolylineOptions()
+                    .addAll(path)
+                    .width(7f)
+                    .color("#2F7CF6".toColorInt())
+                    .zIndex(1f)
+                    .startCap(RoundCap())
+                    .endCap(RoundCap())
+                    .jointType(JointType.ROUND)
+            )
+            main.tag = outline
+            routeMain = main
+            fitCameraToPath(path)
+        } else {
+            fitCameraToPins(course.pins)
+        }
+
+        rendered = true
+    }
+
+    // 유틸들
+    private fun decodeOverviewPolyline(encoded: String?): List<LatLng> {
+        if (encoded.isNullOrBlank()) return emptyList()
+        return try { PolyUtil.decode(encoded) } catch (_: Exception) { emptyList() }
+    }
+
+    private fun fitCameraToPath(path: List<LatLng>) {
+        if (path.isEmpty()) return
+        val b = LatLngBounds.Builder()
+        path.forEach { b.include(it) }
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 80))
+    }
+
+    private fun fitCameraToPins(pins: List<PinItem>) {
+        if (pins.isEmpty()) return
+        val b = LatLngBounds.Builder()
+        pins.forEach { b.include(LatLng(it.lat, it.lng)) }
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 80))
+    }
+
     override fun onStart() {
         binding.mapView.onStart()
         super.onStart()
@@ -172,6 +287,8 @@ class CourseDetailFragment : Fragment() {
     }
     override fun onDestroyView() {
         binding.mapView.onDestroy()
+        routeMain = null
+        markerToPin.clear()
         _binding = null
         super.onDestroyView()
     }
