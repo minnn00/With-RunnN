@@ -1,5 +1,6 @@
 package com.with_runn.ui.onboarding
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ class OnboardingViewmodel : ViewModel(){
     private val _characters = MutableLiveData<List<String>>()
     private val _style = MutableLiveData<List<String>>()
     private val _introduction = MutableLiveData<String>()
+    private val _profileImg = MutableLiveData<Uri>()
 
 
     val townId: LiveData<Int> = _townId
@@ -28,10 +30,12 @@ class OnboardingViewmodel : ViewModel(){
     val characters: LiveData<List<String>> =_characters
     val style: LiveData<List<String>> =_style
     val introduction: LiveData<String> =_introduction
+    val profileImg: LiveData<Uri> =_profileImg
 
     private var isDefaultValuesSet = false
     private var isCharactersValuesSet = false
     private var isWalkingStyleValuesSet = false
+    private var isProfileImgSet = false
 
     fun setDefaultValues(name: String,gender: String,birth: String,breed: String,size: String,introduction: String) {
         _name.value = name
@@ -41,6 +45,11 @@ class OnboardingViewmodel : ViewModel(){
         _size.value = size
         _introduction.value = introduction
         isDefaultValuesSet = true
+    }
+
+    fun setProfileImg(img: Uri){
+        _profileImg.value = img
+        isProfileImgSet = true
     }
 
     fun setCharacters(characters: List<String>) {

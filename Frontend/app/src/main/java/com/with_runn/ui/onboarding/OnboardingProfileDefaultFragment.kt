@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.FileUtils
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
@@ -16,9 +17,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.google.android.datatransport.runtime.scheduling.persistence.EventStoreModule_PackageNameFactory.packageName
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfileDefaultBinding
+import java.io.File
 
 class OnboardingProfileDefaultFragment : Fragment() {
 
@@ -36,6 +37,8 @@ class OnboardingProfileDefaultFragment : Fragment() {
 
     private var name_saveable: Int = 0
     private var breed_savable: Boolean = false
+
+    private var selectedImageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,6 +80,10 @@ class OnboardingProfileDefaultFragment : Fragment() {
             else if (name_saveable == 2) {
 
                 viewModel.setDefaultValues(name, gender, birthday, breed, size, introduction)
+                // 선택된 이미지가 있으면 업로드
+                selectedImageUri?.let { uri ->
+                    viewModel.setProfileImg(uri)
+                }
 
                 findNavController().popBackStack() // 프로필 프래그먼트로 복귀
             }
@@ -172,13 +179,8 @@ class OnboardingProfileDefaultFragment : Fragment() {
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                Glide.with(this)
-                    .load(it)
-                    .circleCrop()
-                    .into(binding.profileImage)
-
-                // 서버 업로드
-//            uploadImageToServer(it)
+                selectedImageUri = it
+                Glide.with(this).load(it).circleCrop().into(binding.profileImage)
             }
         }
 

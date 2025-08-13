@@ -49,9 +49,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        val intent = Intent(this, OnboardingActivity::class.java)
-        startActivity(intent)
-
 
         binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.root);
