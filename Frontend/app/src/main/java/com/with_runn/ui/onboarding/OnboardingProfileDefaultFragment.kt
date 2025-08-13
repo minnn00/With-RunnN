@@ -1,15 +1,18 @@
 package com.with_runn.ui.onboarding
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfileDefaultBinding
 
@@ -134,6 +137,39 @@ class OnboardingProfileDefaultFragment : Fragment() {
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.changeImgBtn.setOnClickListener {
+            requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    // 1️⃣ 권한 요청
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                openGallery()
+            } else {
+                Toast.makeText(requireContext(), "권한이 필요합니다", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+    // 2️⃣ 갤러리에서 이미지 선택
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                // ImageView에 바로 표시
+                Glide.with(this)
+                    .load(it)
+                    .circleCrop()
+                    .into(binding.profileImage)
+
+                // 서버 업로드
+//                uploadImageToServer(it)
+            }
+        }
+
+    private fun openGallery() {
+        pickImageLauncher.launch("image/*")
     }
 
     private fun showNameError(message: String) {

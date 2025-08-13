@@ -59,12 +59,34 @@
             android:paddingLeft="18dp"
             android:paddingRight="18dp">
 
-            <ImageView
-                android:id="@+id/img_profile"
-                android:layout_width="match_parent"
+            <FrameLayout
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:srcCompat="@drawable/img_profile_default" />
+                android:layout_gravity="center_horizontal">
+
+                <!-- 프로필 이미지 -->
+                <ImageView
+                    android:id="@+id/profileImage"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_img_default_icon"
+                    android:background="@drawable/bg_circle"
+                    android:clipToOutline="true" />
+
+                <!-- 아이콘 (오른쪽 아래 겹치기) -->
+                <ImageView
+                    android:id="@+id/changeImg_btn"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="bottom|end"
+                    android:src="@drawable/ic_camera"
+                    android:background="@drawable/bg_circle"
+                    android:backgroundTint="@color/gray_050"
+                    android:padding="2dp"
+                    android:clickable="true"
+                    android:focusable="true"/>
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/a"
