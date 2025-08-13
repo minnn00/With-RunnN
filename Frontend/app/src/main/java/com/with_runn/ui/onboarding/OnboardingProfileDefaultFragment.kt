@@ -1,7 +1,10 @@
 package com.with_runn.ui.onboarding
 
+import android.app.AlertDialog
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.google.android.datatransport.runtime.scheduling.persistence.EventStoreModule_PackageNameFactory.packageName
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfileDefaultBinding
 
@@ -139,17 +143,28 @@ class OnboardingProfileDefaultFragment : Fragment() {
         }
 
         binding.changeImgBtn.setOnClickListener {
-            requestPermissionLauncher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
+            val permission = android.Manifest.permission.READ_MEDIA_IMAGES
+            requestPermissionLauncher.launch(permission)
         }
     }
 
     // 1️⃣ 권한 요청
     private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 openGallery()
             } else {
-                Toast.makeText(requireContext(), "권한이 필요합니다", Toast.LENGTH_SHORT).show()
+                AlertDialog.Builder(requireContext())
+                    .setTitle("권한 필요")
+                    .setMessage("이미지를 업로드하려면 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+                    .setPositiveButton("설정") { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri = Uri.fromParts("package", requireContext().packageName, null)
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
             }
         }
 
@@ -157,20 +172,20 @@ class OnboardingProfileDefaultFragment : Fragment() {
     private val pickImageLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
-                // ImageView에 바로 표시
                 Glide.with(this)
                     .load(it)
                     .circleCrop()
                     .into(binding.profileImage)
 
                 // 서버 업로드
-//                uploadImageToServer(it)
+//            uploadImageToServer(it)
             }
         }
 
     private fun openGallery() {
         pickImageLauncher.launch("image/*")
     }
+
 
     private fun showNameError(message: String) {
         binding.entryName.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_error)
