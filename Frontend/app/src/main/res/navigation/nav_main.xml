@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_mypage_graph_to_mypageOptionFragment2"
             app:destination="@id/mypageOptionFragment2" />
+        <action
+            android:id="@+id/action_mypage_graph_to_noticeFragment3"
+            app:destination="@id/noticeFragment" />
     </fragment>
 
     <!-- 지도 -->
@@ -94,6 +97,10 @@
         android:name="com.with_runn.ui.mypage.MypageOptionFragment"
         android:label="MypageOptionFragment"
         tools:layout="@layout/fragment_mypage_option"/>
+    <fragment
+        android:id="@+id/noticeFragment"
+        android:name="com.with_runn.ui.notice.NoticeFragment"
+        android:label="NoticeFragment" />
 
 
 </navigation>
