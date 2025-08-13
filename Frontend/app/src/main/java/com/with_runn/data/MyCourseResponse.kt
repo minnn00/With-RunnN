@@ -18,5 +18,7 @@ data class MyCourse(
     val time: String,
     val courseImage: String,
     val location: String,
-    val createdAt: String
+    val createdAt: String,
+    val distanceMeters: Int? = null,   // m 단위 숫자
+    val distanceText: String? = null
 )

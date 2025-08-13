@@ -8,7 +8,6 @@ import com.with_runn.data.TokenManager
 import com.with_runn.data.api.MyPageApiService
 import com.with_runn.data.api.CourseApi
 import com.with_runn.data.CourseDetailResponse
-import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 
 class MyPageRepository(
@@ -54,4 +53,5 @@ private val courseApi: CourseApi
             courseId = courseId
         )
     }
+
 }

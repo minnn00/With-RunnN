@@ -1,108 +1,110 @@
 package com.with_runn.data.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import com.with_runn.data.NeighborhoodPreviewResponse
 import com.with_runn.data.RisingPreviewResponse
-import com.with_runn.data.WalkCourse
-import com.with_runn.data.repository.CourseRepository
 import com.with_runn.data.TokenManager
+import com.with_runn.data.repository.CourseRepository
 import kotlinx.coroutines.launch
+
+private const val TAG = "WalkCourseVM"
 
 class WalkCourseViewModel : ViewModel() {
 
     private val repository = CourseRepository()
 
-    private fun getToken(): String {
-        val raw = TokenManager.getAccessToken()
-        Log.d("WalkCourseVM", "rawToken(len=${raw?.length}): ${raw?.take(15)}...")
-        return "Bearer ${raw ?: ""}"
-    }
-
-    private val _neighborhoodCourses = MutableLiveData<List<WalkCourse>>()
-    val neighborhoodCourses: LiveData<List<WalkCourse>> = _neighborhoodCourses
-
-    private val _risingCourses = MutableLiveData<List<WalkCourse>>()
-    val risingCourses: LiveData<List<WalkCourse>> = _risingCourses
-
+    // 원본 미리보기 LiveData (UI에서 observe)
     private val _neighborhoodPreview = MutableLiveData<List<NeighborhoodPreviewResponse>>()
     val neighborhoodPreview: LiveData<List<NeighborhoodPreviewResponse>> = _neighborhoodPreview
 
     private val _risingPreview = MutableLiveData<List<RisingPreviewResponse>>()
     val risingPreview: LiveData<List<RisingPreviewResponse>> = _risingPreview
 
-    fun fetchNeighborhoodPreview(provinceId: Int, cityId: Int? = null, townId: Int? = null) {
+    // 로딩/중복호출 가드
+    private var isLoadingNearby = false
+    private var isLoadingRising = false
+
+    // 같은 파라미터로의 재호출 방지용 키(성공 시 갱신)
+    private var lastNearbyKey: Triple<Int, Int?, Int?>? = null
+
+    private fun getToken(): String {
+        val raw = TokenManager.getAccessToken()
+        Log.d(TAG, "rawToken(len=${raw?.length}): ${raw?.take(12)}...")
+        return "Bearer ${raw ?: ""}"
+    }
+
+    /** 우리동네 미리보기 */
+    fun fetchNeighborhoodPreview(
+        provinceId: Int,
+        cityId: Int? = null,
+        townId: Int? = null
+    ) {
+        if (provinceId <= 0) {
+            Log.w(TAG, "[NEARBY] skip: invalid provinceId=$provinceId")
+            return
+        }
+        if (isLoadingNearby) {
+            Log.d(TAG, "[NEARBY] skip: already loading")
+            return
+        }
+        // 같은 파라미터로 이미 성공하여 보유 중이면 생략
+        val currentKey = Triple(provinceId, cityId, townId)
+        if (lastNearbyKey == currentKey && !_neighborhoodPreview.value.isNullOrEmpty()) {
+            Log.d(TAG, "[NEARBY] skip: same params & already loaded (key=$currentKey)")
+            return
+        }
+
         viewModelScope.launch {
+            isLoadingNearby = true
             try {
                 val token = getToken()
-                Log.d("WalkCourseVM", "[NEARBY] req → p=$provinceId c=$cityId t=$townId")
-                Log.d(
-                    "WalkCourseVM",
-                    "[NEARBY] token(len=${TokenManager.getAccessToken()?.length}) head=${
-                        TokenManager.getAccessToken()?.take(12)
-                    }"
-                )
+                Log.d(TAG, "[NEARBY] req → p=$provinceId c=$cityId t=$townId")
+                val resp = repository.getNeighborhoodPreview(token, provinceId, cityId, townId)
+                Log.d(TAG, "[NEARBY] code=${resp.code()} ok=${resp.isSuccessful}")
 
-                val response = repository.getNeighborhoodPreview(token, provinceId, cityId, townId)
-                Log.d("WalkCourseVM", "[NEARBY] code=${response.code()}")
-
-                if (response.isSuccessful) {
-                    val body = response.body().orEmpty()
-                    Log.d("WalkCourseVM", "[NEARBY] ok, size=${body.size}")
-                    _neighborhoodPreview.value = body
+                if (resp.isSuccessful) {
+                    val body = resp.body().orEmpty()
+                    Log.d(TAG, "[NEARBY] body.size=${body.size} sample=${body.firstOrNull()}")
+                    _neighborhoodPreview.value = body           // ✅ 성공시에만 갱신
+                    lastNearbyKey = currentKey                  // ✅ 성공 시에만 키 갱신
                 } else {
-                    Log.e(
-                        "WalkCourseVM",
-                        "[NEARBY] fail code=${response.code()} err=${
-                            response.errorBody()?.string()
-                        }"
-                    )
-                    _neighborhoodPreview.value = emptyList()
+                    Log.e(TAG, "[NEARBY] fail=${resp.code()} err=${resp.errorBody()?.string()}")
+                    // 실패 시엔 기존 데이터 유지 (사라짐 방지)
                 }
             } catch (e: Exception) {
-                Log.e("WalkCourseVM", "[NEARBY] exception=${e.message}", e)
-                _neighborhoodPreview.value = emptyList()
+                Log.e(TAG, "[NEARBY] exception=${e.message}", e)
+                // 실패 시엔 기존 데이터 유지
+            } finally {
+                isLoadingNearby = false
             }
         }
     }
 
+    /** 떠오르는 코스 미리보기 */
     fun fetchRisingPreview() {
+        if (isLoadingRising) {
+            Log.d(TAG, "[RISING] skip: already loading")
+            return
+        }
         viewModelScope.launch {
+            isLoadingRising = true
             try {
                 val result = repository.getRisingPreview(getToken())
-                Log.d("WalkCourseVM", "떠오르는 코스 미리보기 API 응답: $result")
-                _risingPreview.value = result ?: emptyList()
+                Log.d(TAG, "[RISING] result.size=${result?.size ?: 0} sample=${result?.firstOrNull()}")
+                _risingPreview.value = result ?: emptyList()   // 성공/빈값 모두 반영
             } catch (e: Exception) {
-                Log.e("WalkCourseVM", "떠오르는 코스 미리보기 API 예외: ${e.message}")
-                e.printStackTrace()
-                _risingPreview.value = emptyList()
+                Log.e(TAG, "[RISING] exception=${e.message}", e)
+                // 실패 시엔 기존 데이터 유지
+            } finally {
+                isLoadingRising = false
             }
         }
     }
 
-
-    fun loadDummyCourses() {
-        _neighborhoodCourses.value = listOf(
-            WalkCourse(
-                id = 1,
-                title = "강아지와 한강 산책",
-                tags = listOf("#한강", "#강아지", "#산책"),
-                imageResId = com.with_runn.R.drawable.image,
-                distance = "2.5km",
-                time = "33분",
-                isScrapped = false,
-                isLiked = false,
-                imageUrl = "https://images.unsplash.com/photo-1506744038136-46273834b3fb"
-            )
-            // ... 더 추가 가능!
-        )
+    /** 홈 프리뷰 보장: 내부 LiveData가 비어 있을 때만 호출 */
+    fun ensureHomePreviews(provinceId: Int) {
+        if (_neighborhoodPreview.value.isNullOrEmpty()) fetchNeighborhoodPreview(provinceId)
+        if (_risingPreview.value.isNullOrEmpty()) fetchRisingPreview()
     }
 }
-
-    // (만약 risingCourses, neighborhoodCourses 등 리스트를 실제로 API로 가져오면 아래처럼 추가로 함수 만들어서 token 넣어주세요.)
-    // fun fetchNeighborhoodCourses(...) { ... }
-    // fun fetchRisingCourses(...) { ... }
-

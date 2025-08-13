@@ -11,6 +11,8 @@ import com.with_runn.data.ProfileResult
 import com.with_runn.data.TokenManager
 import com.with_runn.data.WalkCourseResponse
 import com.with_runn.data.repository.MyPageRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
@@ -24,17 +26,88 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
     private val _myCourseList = MutableLiveData<List<MyCourse>>()
     val myCourseList: LiveData<List<MyCourse>> get() = _myCourseList
 
-    private val _profile = MutableLiveData<ProfileResult?>()
-    val profile: LiveData<ProfileResult?> = _profile
+    private val _profile = MutableStateFlow<ProfileResult?>(null)
+    val profile: StateFlow<ProfileResult?> = _profile
 
     private val _navigateToProfileSetup = MutableLiveData<Boolean>()
     val navigateToProfileSetup: LiveData<Boolean> = _navigateToProfileSetup
 
+
     private val gson = Gson()
 
-    // -----------------------------
+    private fun minuteStringFromAny(raw: Any?): String? = when (raw) {
+        null -> null
+        is Int -> if (raw > 0) "${raw}분" else null
+        is String -> {
+            val parts = raw.split(":")
+            val minutes = if (parts.size == 3) {
+                (parts[0].toIntOrNull() ?: 0) * 60 + (parts[1].toIntOrNull() ?: 0)
+            } else raw.filter { it.isDigit() }.toIntOrNull() ?: 0
+            if (minutes > 0) "${minutes}분" else null
+        }
+        else -> null
+    }
+
+    // Int? 미터 / "1500" 같은 문자열 → "x.xkm"
+    private fun kmStringFromAny(raw: Any?): String? {
+        val meters: Int = when (raw) {
+            null -> return null
+            is Int -> raw
+            is String -> raw.filter { it.isDigit() }.toIntOrNull() ?: return null
+            else -> return null
+        }
+        if (meters <= 0) return null
+        return if (meters % 1000 == 0) "${meters / 1000}km"
+        else String.format("%.1fkm", meters / 1000.0)
+    }
+
+    private fun normalizeImageUrl(raw: String?): String? {
+        val v = raw?.trim()
+        if (v.isNullOrEmpty() || v.equals("string", true)) return null
+        return if (v.startsWith("http", true)) v else "http://13.209.75.209:8080/$v"
+    }
+
+    private fun normalizeTitle(name: String?, location: String?): String {
+        val n = name?.trim()
+        return if (!n.isNullOrEmpty() && !n.equals("string", true)) n
+        else location ?: "(제목 없음)"
+    }
+
+    private fun parseMeters(raw: String?): Int {
+        if (raw.isNullOrBlank()) return 0
+        val s = raw.trim().lowercase()
+        return when {
+            s.endsWith("km") -> ((s.removeSuffix("km").trim().replace(",", ""))
+                .toDoubleOrNull() ?: 0.0).times(1000).toInt()
+            s.endsWith("m")  -> (s.removeSuffix("m").trim().replace(",", "")).toIntOrNull() ?: 0
+            else             -> s.replace(",", "").toIntOrNull() ?: 0
+        }.coerceAtLeast(0)
+    }
+
+    // "HH:mm:ss" / "30분" / "30" → minutes(Int)
+    private fun parseMinutes(raw: String?): Int {
+        if (raw.isNullOrBlank()) return 0
+        val t = raw.trim()
+        val parts = t.split(":")
+        return if (parts.size == 3) {
+            val h = parts[0].toIntOrNull() ?: 0
+            val m = parts[1].toIntOrNull() ?: 0
+            (h * 60 + m).coerceAtLeast(0)
+        } else {
+            // "30분", "30" 등
+            (t.filter { it.isDigit() }.toIntOrNull() ?: 0).coerceAtLeast(0)
+        }
+    }
+
+    private fun firstNumberOrNull(o: JsonObject, vararg keys: String): Double? {
+        for (k in keys) {
+            val e = o.get(k) ?: continue
+            if (!e.isJsonNull) return runCatching { e.asDouble }.getOrNull()
+        }
+        return null
+    }
+
     // 스크랩: id 목록 → 상세조회 → 화면모델
-    // -----------------------------
     fun loadScrapCourses() {
         viewModelScope.launch {
             val token = TokenManager.getAccessToken()
@@ -49,7 +122,6 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
                 }
 
                 val items = res.body()?.result?.scrapList ?: emptyList()
-                // courseId만 꺼내기 (타입이 정해져 있지 않아도 동작)
                 val ids: List<Int> = items.mapNotNull { any ->
                     runCatching {
                         val obj = gson.toJsonTree(any).asJsonObject
@@ -76,9 +148,9 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
         }
     }
 
-    // -----------------------------
+
     // 좋아요: id 목록 → 상세조회 → 화면모델
-    // -----------------------------
+
     fun loadLikedCourses() {
         viewModelScope.launch {
             val token = TokenManager.getAccessToken()
@@ -119,28 +191,46 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
         }
     }
 
-    // -----------------------------
-    // 나의 산책코스 (기존 유지)
-    // -----------------------------
+
+    // 나의 산책코스
+
     fun loadMyCourses() {
         viewModelScope.launch {
             try {
+                Log.d("MyPageVM", "loadMyCourses() 호출")
                 val response = repository.getMyCourses()
-                _myCourseList.value = response?.result?.myCourseList ?: emptyList()
+                val list = response?.result?.myCourseList ?: emptyList()
+                Log.d("MyPageVM", "loadMyCourses() 성공 size=${list.size}")
+                _myCourseList.value = list
             } catch (e: Exception) {
-                Log.e("MyPageVM", "API 호출 실패: ${e.message}")
+                Log.e("MyPageVM", "API 호출 실패: ${e.message}", e)
             }
         }
     }
 
-    // -----------------------------
+    // 추가 헬퍼
+    fun reloadMyCourses() {
+        Log.d("MyPageVM", "reloadMyCourses() called")
+        loadMyCourses()
+    }
+
+    fun loadMyCoursesIfEmpty() {
+        if (_myCourseList.value.isNullOrEmpty()) {
+            Log.d("MyPageVM", "loadMyCoursesIfEmpty() -> empty, loading")
+            loadMyCourses()
+        } else {
+            Log.d("MyPageVM", "loadMyCoursesIfEmpty() -> already loaded (${_myCourseList.value?.size})")
+        }
+    }
+
+
     // 프로필 (기존 유지)
-    // -----------------------------
+
     fun loadUserProfile() = viewModelScope.launch {
         try {
             val res = repository.getUserProfile()
             if (res.isSuccessful) {
-                _profile.postValue(res.body()?.result)
+                _profile.value = res.body()?.result
             } else {
                 Log.e("MyPageVM", "프로필 실패: ${res.code()} / ${res.errorBody()?.string()}")
             }
@@ -149,28 +239,46 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
         }
     }
 
-    // =========================================================
+
     // 상세 응답 → 카드모델 (응답 스키마가 달라도 동작하게 유연 매핑)
-    // =========================================================
     private fun detailToWalkCourseFlexible(
         detailBody: Any,
         liked: Boolean
     ): WalkCourseResponse? {
-        // detail 응답에서 실제 코스 노드까지 내려가기: result / data / course 중 존재하는 것 선택
         val root = gson.toJsonTree(detailBody).asJsonObject
         val course = pickCourseNode(root) ?: return null
 
-        val id = firstLong(course, "id", "courseId").toInt()
+        val id    = firstLong(course, "id", "courseId").toInt()
         val title = firstString(course, "title", "courseTitle", "name").ifBlank { "제목 없음" }
         val imageUrl = firstString(course, "thumbnailUrl", "imageUrl", "thumbnail", "image")
-        val tags = firstArrayOfString(course, "tags", "tagList", "labels")
+        val tags  = firstArrayOfString(course, "keyWords", "keywords", "keyword", "tags", "tagList", "labels")
 
-        // 거리/시간(m, min)로 통일
-        val distanceMeters = firstNumber(course, "distanceMeters", "distance_m", "distance")
-            .toLong().coerceAtLeast(0L)
-            .coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-        val durationMinutes = firstNumber(course, "durationMinutes", "duration_min", "duration")
-            .toInt().coerceAtLeast(0)
+        // --- 거리 ---
+        // 숫자형: 서버가 km로 보내기도, m로 보내기도 해서 휴리스틱 적용
+        val num = firstNumberOrNull(
+            course,
+            "distanceMeters", "distance_m", "distance", "length",
+            "distanceKm", "distance_km"
+        )
+        val str = firstString(course, "distance", "distanceStr", "courseDistance", "lengthText", "km")
+
+        val distanceMeters = when {
+            num != null -> when {
+                // 0.1 ~ 50.0 같은 범위면 'km'로 보고 → m로 변환
+                num in 0.1..50.0 -> (num * 1000.0).toInt()
+                // 1000 이상이면 이미 'm'
+                num >= 1000.0 -> num.toInt()
+                // 그 외(정수 몇 m일 수도 있음)
+                else -> num.toInt()
+            }
+            else -> parseMeters(str)
+        }.coerceAtLeast(0).coerceAtMost(Int.MAX_VALUE)
+
+        // --- 시간 ---
+        val durNum = firstNumberOrNull(course, "durationMinutes", "duration_min", "duration")
+        val timeStr = firstString(course, "time", "courseTime", "durationText")
+        val durationMinutes = (durNum?.toInt()?.takeIf { it > 0 } ?: parseMinutes(timeStr))
+            .coerceAtLeast(0)
 
         return WalkCourseResponse(
             id = id,
@@ -191,7 +299,7 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
             cur.get(key)?.let { if (it.isJsonObject) cur = it.asJsonObject }
         }
         cur.get("course")?.let { if (it.isJsonObject) return it.asJsonObject }
-        return cur // 최종적으로 필드가 모두 현재 노드에 있다면 그대로 사용
+        return cur
     }
 
     // ===== Json 헬퍼들 =====
@@ -221,10 +329,19 @@ class MyPageViewModel(private val repository: MyPageRepository) : ViewModel() {
 
     private fun firstArrayOfString(o: JsonObject, vararg keys: String): List<String> {
         for (k in keys) {
-            val e = o.get(k)
-            if (e != null && e.isJsonArray) {
-                val arr: JsonArray = e.asJsonArray
-                return arr.mapNotNull { el -> runCatching { el.asString }.getOrNull() }
+            val e = o.get(k) ?: continue
+            if (e.isJsonArray) {
+                return e.asJsonArray.mapNotNull { el ->
+                    runCatching { el.asString.trim() }.getOrNull()
+                }.filter { it.isNotBlank() }
+            }
+            if (e.isJsonPrimitive) {
+                val raw = runCatching { e.asString }.getOrNull() ?: continue
+                // 쉼표/공백/해시태그 구분자 모두 대응
+                return raw.split(',', '#')
+                    .flatMap { it.split(' ') }
+                    .map { it.trim() }
+                    .filter { it.isNotBlank() }
             }
         }
         return emptyList()

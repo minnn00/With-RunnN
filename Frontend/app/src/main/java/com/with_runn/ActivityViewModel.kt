@@ -6,14 +6,16 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class ActivityViewModel: ViewModel() {
+
+
     private val _isBottomNavVisible = MutableStateFlow(true)
     val isBottomNavVisible : StateFlow<Boolean> = _isBottomNavVisible
 
     private val _accessToken = MutableStateFlow<String?>(null)
     val accessToken: StateFlow<String?> = _accessToken
 
-    private val _selectedProvinceId = MutableStateFlow(11)
-    val selectedProvinceId: StateFlow<Int> = _selectedProvinceId
+    private val _selectedProvinceId = MutableStateFlow<Int?>(null)
+    val selectedProvinceId: StateFlow<Int?> = _selectedProvinceId
 
     private val _selectedCityId = MutableStateFlow(-1)
     val selectedCityId: StateFlow<Int> = _selectedCityId

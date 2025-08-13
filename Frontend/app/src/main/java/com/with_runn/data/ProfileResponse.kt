@@ -21,7 +21,7 @@ data class ProfileResult(
     val birth: String,
     val breed: String,
     val size: String,
-    val profileImage: String,
+    val profileImage: String?,
     val character: String,
     val style: String
 )
