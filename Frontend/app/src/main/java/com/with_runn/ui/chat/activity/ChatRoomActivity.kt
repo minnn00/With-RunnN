@@ -108,7 +108,7 @@ class ChatRoomActivity : AppCompatActivity() {
         webSocketManager.connect(
             onConnected = {
                 Log.d("ChatRoomActivity", "WebSocket 연결 성공")
-                // 채팅방 구독
+                // 채팅방 구독 (중복 방지 처리 포함)
                 webSocketManager.subscribeToChatRoom(chatId) { message ->
                     // 메시지 수신 시 UI 업데이트
                     runOnUiThread {
@@ -129,29 +129,37 @@ class ChatRoomActivity : AppCompatActivity() {
      * 수신된 메시지 처리 (서버 중심)
      */
     private fun handleReceivedMessage(message: Message) {
-        // 내가 보낸 메시지인 경우, 이미 UI에 표시되어 있으므로 중복 처리하지 않음
+        val currentMessages = messageAdapter.currentList.toMutableList()
+
         if (message.isFromMe) {
-            Log.d("ChatRoomActivity", "내가 보낸 메시지이므로 UI 업데이트 생략: ${message.content}")
+            // 내가 방금 보낸 메시지의 서버 타임스탬프 보정 및 로컬 저장 보장
+            val idx = currentMessages.indexOfLast { it.isFromMe && it.content == message.content }
+            if (idx >= 0) {
+                val corrected = currentMessages[idx].copy(timestamp = message.timestamp)
+                currentMessages[idx] = corrected
+                messageAdapter.submitList(currentMessages)
+                messageManager.saveMessages(chatId, currentMessages)
+                Log.d("ChatRoomActivity", "내 메시지 서버 타임스탬프 보정: ${message.content} -> ${message.timestamp}")
+                return
+            }
+            // 리스트에 없다면 추가
+            currentMessages.add(message)
+            messageAdapter.submitList(currentMessages)
+            messageManager.saveMessages(chatId, currentMessages)
+            Log.d("ChatRoomActivity", "내 메시지 반영(추가): ${message.content}")
             return
         }
-        
-        val currentMessages = messageAdapter.currentList
-        val updatedMessages = currentMessages.toMutableList()
-        updatedMessages.add(message)
-        messageAdapter.submitList(updatedMessages)
-        
-        // 수신된 메시지를 로컬에 임시 저장 (캐시용)
+
+        // 상대 메시지 처리
+        currentMessages.add(message)
+        messageAdapter.submitList(currentMessages)
         messageManager.addMessage(chatId, message)
-        
-        // 새 메시지 수신 시 unreadMsgCnt 증가
         unreadMessageManager.incrementUnreadCount(chatId)
         Log.d("ChatRoomActivity", "새 메시지 수신으로 unreadMsgCnt 증가: ${message.content}")
-        
-        // 스크롤을 맨 아래로
+
         messageRecyclerView.post {
-            messageRecyclerView.smoothScrollToPosition(updatedMessages.size - 1)
+            messageRecyclerView.smoothScrollToPosition(currentMessages.size - 1)
         }
-        
         Log.d("ChatRoomActivity", "메시지 수신: ${message.content}")
     }
     
@@ -192,7 +200,13 @@ class ChatRoomActivity : AppCompatActivity() {
         messageRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(-1)) { // 맨 위 도달
+                val lm = recyclerView.layoutManager as? LinearLayoutManager ?: return
+                val firstVisible = lm.findFirstVisibleItemPosition()
+                val visibleCount = lm.childCount
+                val totalCount = lm.itemCount
+                val isScrollable = totalCount > visibleCount
+                val reachedTop = firstVisible == 0 && dy < 0
+                if (isScrollable && reachedTop) {
                     loadMorePreviousMessages()
                 }
             }
@@ -244,6 +258,8 @@ class ChatRoomActivity : AppCompatActivity() {
                     Log.d("ChatRoomActivity", "채팅방 나가기 성공")
                     // 성공 시 Activity 종료
                     runOnUiThread {
+                        // 구독 해제
+                        webSocketManager.unsubscribeFromChatRoom(chatId)
                         finish()
                     }
                 },
@@ -459,9 +475,9 @@ class ChatRoomActivity : AppCompatActivity() {
         if (isLoadingMore) return
         val currentList = messageAdapter.currentList
         if (currentList.isEmpty()) return
-        val oldest = currentList.firstOrNull()
-        // MessageDto.messageId가 toMessage에서 userId로 매핑되는 점을 고려, 서버 messageId 사용 필요
-        val cursorId = messageManager.loadMessages(chatId).minByOrNull { it.messageId }?.messageId ?: return
+        // 현재 목록 중 가장 오래된 서버 messageId 기준 (양수만 사용)
+        val cursorId = currentList.minOfOrNull { it.messageId } ?: return
+        if (cursorId <= 0) return
 
         isLoadingMore = true
         chatRepository.getChatMessagesBefore(chatId, cursorId) { result ->
@@ -623,10 +639,11 @@ class ChatRoomActivity : AppCompatActivity() {
             isFromMe = true
         )
         
-        // 메시지 목록에 추가 (즉시 UI 업데이트)
+        // 메시지 목록에 추가 (즉시 UI 업데이트) + 로컬 캐시에도 저장
         val currentMessages = messageAdapter.currentList.toMutableList()
         currentMessages.add(newMessage)
         messageAdapter.submitList(currentMessages)
+        messageManager.saveMessages(chatId, currentMessages)
         
         // 스크롤을 맨 아래로
         messageRecyclerView.post {

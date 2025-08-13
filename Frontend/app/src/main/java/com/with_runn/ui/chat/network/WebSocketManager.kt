@@ -37,6 +37,7 @@ class WebSocketManager {
     private val isConnected = AtomicBoolean(false)
     private val gson = Gson()
     private val compositeDisposable = CompositeDisposable()
+    private val topicSubscriptions = mutableMapOf<Int, io.reactivex.disposables.Disposable>()
     private var messageListener: ((Message) -> Unit)? = null
     private var currentChatId: Int? = null
     
@@ -111,20 +112,32 @@ class WebSocketManager {
         val topic = "/sub/$chatId/msg"
         Log.d(TAG, "채팅방 구독 시작: $topic")
         
-        compositeDisposable.add(
-            stompClient!!.topic(topic)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { topicMessage ->
-                        Log.d(TAG, "메시지 수신: ${topicMessage.payload}")
-                        handleReceivedMessage(topicMessage.payload)
-                    },
-                    { throwable ->
-                        Log.e(TAG, "채팅방 구독 실패", throwable)
-                    }
-                )
-        )
+        // 이미 구독 중이면 중복 구독 방지 (리스너만 최신으로 교체됨)
+        if (topicSubscriptions.containsKey(chatId)) {
+            Log.d(TAG, "이미 구독 중: $topic (리스너만 갱신)")
+            return
+        }
+
+        val disposable = stompClient!!.topic(topic)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { topicMessage ->
+                    Log.d(TAG, "메시지 수신: ${topicMessage.payload}")
+                    handleReceivedMessage(topicMessage.payload)
+                },
+                { throwable ->
+                    Log.e(TAG, "채팅방 구독 실패", throwable)
+                }
+            )
+
+        topicSubscriptions[chatId] = disposable
+        compositeDisposable.add(disposable)
+    }
+
+    fun unsubscribeFromChatRoom(chatId: Int) {
+        topicSubscriptions.remove(chatId)?.dispose()
+        Log.d(TAG, "채팅방 구독 해제: /sub/$chatId/msg")
     }
     
     /**
@@ -258,6 +271,7 @@ class WebSocketManager {
             isConnected.set(false)
             messageListener = null
             currentChatId = null
+            topicSubscriptions.clear()
             Log.d(TAG, "STOMP WebSocket 연결 해제 완료")
         } catch (e: Exception) {
             Log.e(TAG, "STOMP WebSocket 연결 해제 실패", e)

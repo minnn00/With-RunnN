@@ -32,8 +32,10 @@ object MessageMapper {
         val isSystemMessage = isSystemByPattern
         val isFromMeComputed = if (isSystemMessage) false else userId == currentUserId
 
+        // 서버 messageId 우선 사용, 없으면 안전한 대체 키 생성
+        val idForUi = messageId ?: (userId * 1_000_000 + (createdAt.hashCode() and 0x7fffffff))
         return Message(
-            messageId = userId, // userId를 messageId로 사용 (서버가 고유 ID 제공 시 교체)
+            messageId = idForUi,
             sender = userName,
             content = msg,
             timestamp = formattedTime,
