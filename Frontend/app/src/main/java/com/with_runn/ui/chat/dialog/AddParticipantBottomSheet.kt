@@ -89,7 +89,8 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                         Friend(
                             name = inviteUser.name,
                             imageResId = R.drawable.maru, // 기본 이미지 사용
-                            isSelected = false
+                            isSelected = false,
+                            userId = inviteUser.userId
                         )
                     }
                     
@@ -170,16 +171,7 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
         
         // InviteUser 리스트 생성
         val inviteUserList = selectedFriends.map { friend ->
-            val userId = when (friend.name) {
-                "마루" -> 1
-                "조이" -> 2
-                "위니" -> 3
-                "구리" -> 4
-                "룽지" -> 5
-                "솜이" -> 6
-                else -> 1
-            }
-            com.with_runn.ui.chat.model.dto.InviteUser(friend.name, userId)
+            com.with_runn.ui.chat.model.dto.InviteUser(friend.name, friend.userId)
         }
         
         Log.d("AddParticipant", "API 호출 파라미터: chatId=$chatId, username=$username, inviteUserList=$inviteUserList")

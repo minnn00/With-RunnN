@@ -18,16 +18,34 @@ object MessageMapper {
      */
     fun MessageDto.toMessage(): Message {
         val currentUserId = TokenManager.getCurrentUserId()
+        val formattedTime = formatTimestamp(createdAt)
+
+        // 시스템 메시지 패턴 감지 (초대/시스템 안내 등)
+        val isSystemByPattern = try {
+            val normalized = msg.trim()
+            // 예: "A님이 B님을 초대하였습니다" 형태 감지
+            val invitePattern = ".*님이 .*님을 초대하였습니다.*".toRegex()
+            val createdPattern = ".*채팅방이 생성되었습니다.*".toRegex()
+            normalized.contains("상대방과 나누는 첫 대화입니다") || invitePattern.matches(normalized) || createdPattern.matches(normalized)
+        } catch (_: Exception) { false }
+
+        val isSystemMessage = isSystemByPattern
+        val isFromMeComputed = if (isSystemMessage) false else userId == currentUserId
+
         return Message(
-            messageId = userId, // userId를 messageId로 사용
+            messageId = userId, // userId를 messageId로 사용 (서버가 고유 ID 제공 시 교체)
             sender = userName,
             content = msg,
-            timestamp = formatTimestamp(createdAt),
-            isFromMe = userId == currentUserId, // 현재 사용자 ID와 비교
-            isSystemMessage = false,
+            timestamp = formattedTime,
+            isFromMe = isFromMeComputed,
+            isSystemMessage = isSystemMessage,
             isCourseShare = course,
-            senderProfileResId = R.drawable.img_profile_default, // TODO: userProfileImage 사용
-            messageType = if (course) Message.TYPE_COURSE_SHARE else Message.TYPE_TEXT
+            senderProfileResId = R.drawable.img_profile_default,
+            messageType = when {
+                course -> Message.TYPE_COURSE_SHARE
+                isSystemMessage -> Message.TYPE_SYSTEM
+                else -> Message.TYPE_TEXT
+            }
         )
     }
     

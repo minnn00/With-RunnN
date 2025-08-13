@@ -172,13 +172,38 @@ class WebSocketManager {
      * 수신된 메시지 처리
      */
     private fun handleReceivedMessage(messagePayload: String) {
+        // 일부 서버는 문자열 메시지를 그대로 보내기도 함 (예: "현재사용자님이 X님을 초대하였습니다.")
+        var payload = messagePayload.trim()
+        if (payload.startsWith("\"") && payload.endsWith("\"")) {
+            payload = payload.substring(1, payload.length - 1)
+        }
+
+        // 문자열 시스템 메시지 감지: JSON이 아니거나 특정 문구 포함 시
+        val looksLikeJson = payload.startsWith("{")
+        val isSystemText = payload.contains("초대하였습니다") ||
+                payload.contains("채팅방이 생성되었습니다") ||
+                payload.contains("상대방과 나누는 첫 대화입니다")
+
+        if (!looksLikeJson || isSystemText) {
+            val sanitized = payload.replace("null님", "알 수 없는 사용자님")
+            val systemMessage = Message(
+                messageId = System.currentTimeMillis().toInt(),
+                sender = "시스템",
+                content = sanitized,
+                timestamp = java.text.SimpleDateFormat("a h:mm", java.util.Locale.KOREAN).format(java.util.Date()),
+                isFromMe = false,
+                isSystemMessage = true,
+                isCourseShare = false
+            )
+            messageListener?.invoke(systemMessage)
+            return
+        }
+
         try {
             // 일반 메시지인지 공유 메시지인지 확인
-            val messageResponse = gson.fromJson(messagePayload, ReceiveMessageResponse::class.java)
-            
+            val messageResponse = gson.fromJson(payload, ReceiveMessageResponse::class.java)
             if (messageResponse.isCourse) {
-                // 공유 메시지인 경우
-                val courseMessageResponse = gson.fromJson(messagePayload, ReceiveCourseMessageResponse::class.java)
+                val courseMessageResponse = gson.fromJson(payload, ReceiveCourseMessageResponse::class.java)
                 val message = Message(
                     messageId = System.currentTimeMillis().toInt(),
                     sender = courseMessageResponse.userName,
@@ -192,20 +217,34 @@ class WebSocketManager {
                 )
                 messageListener?.invoke(message)
             } else {
-                // 일반 메시지인 경우
+                val content = (messageResponse.msg ?: "").trim()
+                val isSystem = content.contains("초대하였습니다") ||
+                        content.contains("채팅방이 생성되었습니다") ||
+                        content.contains("상대방과 나누는 첫 대화입니다")
                 val message = Message(
                     messageId = System.currentTimeMillis().toInt(),
-                    sender = messageResponse.userName,
-                    content = messageResponse.msg,
+                    sender = if (isSystem) "시스템" else messageResponse.userName,
+                    content = content,
                     timestamp = formatTimestamp(messageResponse.createdAt),
-                    isFromMe = messageResponse.userId == TokenManager.getCurrentUserId(),
-                    isSystemMessage = false,
+                    isFromMe = if (isSystem) false else messageResponse.userId == TokenManager.getCurrentUserId(),
+                    isSystemMessage = isSystem,
                     isCourseShare = false
                 )
                 messageListener?.invoke(message)
             }
         } catch (e: Exception) {
             Log.e(TAG, "메시지 파싱 실패", e)
+            // 폴백: 전체 payload를 시스템 메시지로 표시
+            val systemMessage = Message(
+                messageId = System.currentTimeMillis().toInt(),
+                sender = "시스템",
+                content = payload,
+                timestamp = java.text.SimpleDateFormat("a h:mm", java.util.Locale.KOREAN).format(java.util.Date()),
+                isFromMe = false,
+                isSystemMessage = true,
+                isCourseShare = false
+            )
+            messageListener?.invoke(systemMessage)
         }
     }
     
