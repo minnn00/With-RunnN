@@ -24,13 +24,13 @@
             android:scaleType="centerCrop"/>
 
         <TextView
-            android:id="@+id/name_text"
+            android:id="@+id/notice_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:fontFamily="@font/pretendard_medium"
             android:text="notice_follow_text"
-            android:textSize="16sp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/user_img"
             app:layout_constraintTop_toTopOf="parent" />

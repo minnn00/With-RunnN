@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +15,7 @@ import com.with_runn.data.model.Notice
 import com.with_runn.data.network.ApiClient
 import com.with_runn.data.network.ApiService
 import com.with_runn.data.repository.NoticeRepository
+import com.with_runn.data.viewmodel.MypageFollowerViewmodel
 import com.with_runn.data.viewmodel.NoticeViewModel
 import com.with_runn.data.viewmodel.NoticeViewModelFactory
 import kotlinx.coroutines.launch
@@ -22,6 +24,7 @@ class NoticeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: NoticeViewModel
+    private val userViewModel: MypageFollowerViewmodel by viewModels()
     private lateinit var noticeAdapter: NoticeAdapter
     private val noticeList = mutableListOf<Notice>()
 
@@ -36,7 +39,7 @@ class NoticeFragment : Fragment() {
 
         recyclerView = view.findViewById(R.id.notice_item_recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        noticeAdapter = NoticeAdapter(noticeList)
+        noticeAdapter = NoticeAdapter(noticeList, childFragmentManager,userViewModel)
         recyclerView.adapter = noticeAdapter
         loadNotices(api)
         return view
