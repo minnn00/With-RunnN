@@ -56,6 +56,7 @@ class MypageUserProfileDialogFragment : DialogFragment() {
             binding.dogIntro.text = detail.introduction
             Glide.with(requireContext())
                 .load(detail.profileImage ?: R.drawable.default_profile)
+                .circleCrop()
                 .into(binding.profileImage)
 
             isFollowing = false // 서버 응답 필드에 맞게 수정
