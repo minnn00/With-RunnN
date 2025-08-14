@@ -17,8 +17,8 @@ class LocalCourseAdapter(
 
     inner class LocalCourseViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageCourse: ImageView = itemView.findViewById(R.id.image_course)
-        val tagText: TextView = itemView.findViewById(R.id.tag_text)
-        val titleText: TextView = itemView.findViewById(R.id.title_text)
+        val tagText: TextView      = itemView.findViewById(R.id.tag_text)
+        val titleText: TextView    = itemView.findViewById(R.id.title_text)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LocalCourseViewHolder {
@@ -29,22 +29,28 @@ class LocalCourseAdapter(
 
     override fun onBindViewHolder(holder: LocalCourseViewHolder, position: Int) {
         val course = courseList[position]
-        holder.tagText.text = course.tag
+
+        // 제목
         holder.titleText.text = course.title
 
-        // Glide로 서버 이미지 로드 (imageUrl 있으면)
-        if (course.imageUrl != null && course.imageUrl.isNotEmpty()) {
-            Glide.with(holder.itemView.context)
+        // 태그(없으면 감추기)
+        holder.tagText.text = course.tag
+        holder.tagText.visibility = if (course.tag.isBlank()) View.GONE else View.VISIBLE
+
+        // 이미지: url 있으면 로드, 없으면 기본 이미지
+        val ctx = holder.itemView.context
+        if (!course.imageUrl.isNullOrBlank()) {
+            Glide.with(ctx)
                 .load(course.imageUrl)
-                .placeholder(R.drawable.image) // 기본 이미지
+                .centerCrop()
+                .placeholder(R.drawable.image)
+                .error(R.drawable.image)
                 .into(holder.imageCourse)
         } else {
             holder.imageCourse.setImageResource(course.imageRes)
         }
 
-        holder.itemView.setOnClickListener {
-            onItemClick(course)
-        }
+        holder.itemView.setOnClickListener { onItemClick(course) }
     }
 
     override fun getItemCount(): Int = courseList.size

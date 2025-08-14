@@ -1,13 +1,16 @@
 package com.with_runn.data.course
 
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object CourseService {
     private const val BASE_URL = "http://13.209.75.209:8080/"
 
-    private val client = OkHttpClient.Builder().build()
+    private val client = OkHttpClient.Builder()
+        .addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+        .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -16,4 +19,5 @@ object CourseService {
         .build()
 
     val api : CourseApi = retrofit.create(CourseApi::class.java)
+    val actionApi : CourseActionService = retrofit.create(CourseActionService::class.java)
 }
