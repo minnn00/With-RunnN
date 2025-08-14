@@ -7,169 +7,186 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.with_runn.data.LocalCourse
-import com.with_runn.data.HotCourse
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.with_runn.ActivityViewModel
-import com.with_runn.data.WalkCourse
-import com.with_runn.databinding.FragmentWalkCourseBinding
-import com.with_runn.data.viewmodel.WalkCourseViewModel
 import com.with_runn.R
+import com.with_runn.data.HotCourse
+import com.with_runn.data.LocalCourse
+import com.with_runn.data.viewmodel.WalkCourseViewModel
+import com.with_runn.databinding.FragmentWalkCourseBinding
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 
 class WalkCourseFragment : Fragment() {
+
+    // ✅ 액티비티 스코프 ViewModel만 사용 (중복 생성 방지)
+    private val viewModel: WalkCourseViewModel by activityViewModels()
+    private val activityVM: ActivityViewModel by activityViewModels()
 
     private var _binding: FragmentWalkCourseBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var viewModel: WalkCourseViewModel
     private lateinit var localPreviewAdapter: LocalCourseAdapter
     private lateinit var risingPreviewAdapter: HotCourseAdapter
-    private val activityVM : ActivityViewModel by activityViewModels()
 
-    private lateinit var localAdapter: LocalCourseAdapter
-    private lateinit var hotAdapter: HotCourseAdapter
+    private companion object {
+        const val TAG = "WalkCourseFragment"
+    }
+
+    // ----- helpers -----
+    private fun previewTitleFrom(name: String?): String {
+        val n = name?.trim()
+        return if (!n.isNullOrEmpty() && !n.equals("string", true)) n else "(제목 없음)"
+    }
+
+    private fun normalizeImageUrl(raw: String?): String? {
+        val v = raw?.trim()
+        if (v.isNullOrEmpty() || v.equals("string", true)) return null
+        return if (v.startsWith("http", true)) v else "http://13.209.75.209:8080/$v"
+    }
+
+    private fun kmStringFromAny(meters: Int?, text: String?): String =
+        when {
+            meters != null -> {
+                if (meters <= 0) "– km"
+                else if (meters % 1000 == 0) "${meters / 1000}km"
+                else String.format("%.1fkm", meters / 1000.0)
+            }
+            !text.isNullOrBlank() -> text
+            else -> "– km"
+        }
+
+    private fun minuteStringFromAny(raw: Any?): String? = when (raw) {
+        null -> null
+        is Int -> if (raw > 0) "${raw}분" else null
+        is String -> {
+            val p = raw.split(":")
+            val m = if (p.size == 3)
+                (p[0].toIntOrNull() ?: 0) * 60 + (p[1].toIntOrNull() ?: 0)
+            else
+                raw.filter { it.isDigit() }.toIntOrNull() ?: 0
+            if (m > 0) "${m}분" else null
+        }
+        else -> null
+    }
+    // --------------------
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        activityVM.setBottomNavVisibility(true)
-
         _binding = FragmentWalkCourseBinding.inflate(inflater, container, false)
+        activityVM.setBottomNavVisibility(true)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[WalkCourseViewModel::class.java]
-
-        // 미리보기 어댑터만 연결
+        // === 우리동네 미리보기 (가로) ===
         localPreviewAdapter = LocalCourseAdapter(mutableListOf()) { course ->
             val bundle = Bundle().apply { putInt("courseId", course.id) }
-        }
-        // Local Course Adapter 초기화
-        val localAdapter = LocalCourseAdapter(emptyList<LocalCourse>().toMutableList()) { course ->
-            val walkCourse = WalkCourse(
-                id = 1,
-                title = course.title,
-                tags = listOf(course.tag),
-                imageResId = course.imageRes,
-                distance = "2.0km",  // 임시값
-                time = "30분"        // 임시값
-            )
-//            val bundle = Bundle().apply {
-//                putParcelable("course", walkCourse)
-//            }
-//            findNavController().navigate(R.id.courseManageFragment, bundle)
-            val bundle = Bundle().apply {
-                putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
-            }
             findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
         binding.recyclerLocalCourse.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(
+                requireContext(), LinearLayoutManager.HORIZONTAL, false
+            )
             adapter = localPreviewAdapter
-            adapter = localAdapter
         }
 
-        // Hot Course Adapter 초기화
-        hotAdapter = HotCourseAdapter(emptyList()) { course ->
-            val walkCourse = WalkCourse(
-                id = 1,
-                title = course.title,
-                tags = course.tags,
-                imageResId = course.imageRes,
-                distance = course.distance,
-                time = course.time
-            )
-//            val bundle = Bundle().apply {
-//                putParcelable("course", walkCourse)
-//            }
-//            findNavController().navigate(R.id.courseManageFragment, bundle)
-            val bundle = Bundle().apply {
-                putInt("courseId", 1) // TODO: CourseItem의 Id를 전달
-            }
-            //val bundle = Bundle().apply {
-            //    putInt("courseId", course.id)
-            //}
-            findNavController().navigate(R.id.courseDetailFragment, bundle)
-        }
-
-        //  미리보기 데이터만 관찰
-        viewModel.neighborhoodPreview.observe(viewLifecycleOwner) { previewList ->
-            Log.d("WalkCourseFragment", "우리동네 미리보기 데이터: ${previewList.size}개")
-            localPreviewAdapter.updateData(
-                previewList.map {
-                    LocalCourse(
-                        id = it.courseId,
-                        title = it.name,
-                        tag = it.keyword.firstOrNull() ?: "#산책",
-                        imageRes = R.drawable.image,
-                        imageUrl = it.courseImage
-                    )
-                }.toMutableList()
-            )
-        }
-
-        // 더보기 버튼 → 전체 리스트 Fragment로 이동
-        binding.textLocalMore.setOnClickListener {
-            findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
-        }
-
-        binding.textRisingMore.setOnClickListener {
-            Log.d("WalkCourseFragment", "떠오르는 더보기 클릭됨!")
-            findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
-        }
-
+        // === 떠오르는 미리보기 (세로) ===
         risingPreviewAdapter = HotCourseAdapter(mutableListOf()) { course ->
             val bundle = Bundle().apply { putInt("courseId", course.id) }
             findNavController().navigate(R.id.courseDetailFragment, bundle)
         }
         binding.recyclerRisingCourse.apply {
-            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            adapter = risingPreviewAdapter
-        }
-
-        viewModel.risingPreview.observe(viewLifecycleOwner) { previewList ->
-            Log.d("WalkCourseFragment", "떠오르는 미리보기 데이터 size: ${previewList.size} / 내용: $previewList")
-            risingPreviewAdapter.updateData(
-                previewList.map {
-                    HotCourse(
-                        id = it.courseId,
-                        title = it.name,
-                        tags = it.keyword,
-                        distance = "",
-                        time = it.time,
-                        imageRes = R.drawable.image,
-                        imageUrl = it.courseImage
-                    )
-                }
+            layoutManager = LinearLayoutManager(
+                requireContext(), LinearLayoutManager.VERTICAL, false
             )
+            adapter = risingPreviewAdapter
+            isNestedScrollingEnabled = false
         }
 
-        // (떠오르는 코스, 전체 코스 등은 이 Fragment에서는 **아예 X**)
-        // API 호출
-        Log.d("WalkCourseFragment", "미리보기 API 호출 provinceId=11")
-        viewModel.loadDummyCourses()
-        //viewModel.fetchNeighborhoodPreview(provinceId = 11)
-        viewModel.neighborhoodCourses.observe(viewLifecycleOwner) { courses ->
-            Log.d("WalkCourseFragment", "더미 데이터 관찰! ${courses.size}개")
-            localPreviewAdapter.updateData(
-                courses.map {
-                    LocalCourse(
-                        id = it.id,
-                        title = it.title,
-                        tag = it.tags.firstOrNull() ?: "#산책",
-                        imageRes = it.imageResId,
-                        imageUrl = it.imageUrl
+        // === Observe: 우리동네 미리보기(태그/제목만) ===
+        viewModel.neighborhoodPreview.observe(viewLifecycleOwner) { previewList ->
+            Log.d(TAG, "우리동네 미리보기 size=${previewList.size} sample=${previewList.firstOrNull()}")
+            val mapped = previewList.map { r ->
+                val tagsFromArray = r.keyword?.filter { it.isNotBlank() }?.map { it.trim() } ?: emptyList()
+                val tagsFromText = r.keywordText
+                    ?.split(',', '#', ' ')
+                    ?.map { it.trim() }
+                    ?.filter { it.isNotBlank() }
+                    ?: emptyList()
+                val tagText = (tagsFromArray + tagsFromText)
+                    .distinct()
+                    .take(2)
+                    .joinToString(" ") { "#$it" }
+
+                LocalCourse(
+                    id = r.courseId,
+                    title = previewTitleFrom(r.name),
+                    tag = tagText,
+                    imageRes = R.drawable.image,
+                    imageUrl = normalizeImageUrl(r.courseImage)
+                )
+            }
+            localPreviewAdapter.updateData(mapped.toMutableList())
+        }
+
+        // === Observe: 떠오르는 코스 미리보기 ===
+        viewModel.risingPreview.observe(viewLifecycleOwner) { previewList ->
+            risingPreviewAdapter.updateData(
+                previewList.map { r ->
+                    val distanceStr = kmStringFromAny(r.distanceMeters, r.distance)
+                    val timeStr = when {
+                        !r.time.isNullOrBlank() && r.time!!.contains("분") -> r.time!!
+                        r.durationMinutes != null -> "${r.durationMinutes}분"
+                        else -> minuteStringFromAny(r.time) ?: ""
+                    }
+                    HotCourse(
+                        id = r.courseId,
+                        title = r.name,
+                        tags = r.keyword ?: emptyList(),
+                        imageUrl = r.courseImage,
+                        distance = distanceStr,
+                        time = timeStr
                     )
                 }.toMutableList()
             )
         }
-        viewModel.fetchRisingPreview()
+
+        // === 초기 로딩: 데이터가 비어 있을 때만 호출 ===
+        if (viewModel.risingPreview.value.isNullOrEmpty()) {
+            Log.d(TAG, "초기 risingPreview 비어있음 → fetchRisingPreview()")
+            viewModel.fetchRisingPreview()
+        }
+        activityVM.selectedProvinceId.value?.let { pid ->
+            Log.d(TAG, "초기 provinceId=$pid → ensureHomePreviews(pid)")
+            viewModel.ensureHomePreviews(pid)
+        } ?: Log.d(TAG, "초기 provinceId 없음 → 우리동네 호출 보류")
+
+        // === pID 변경 감지되면 그때만 재호출 ===
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            activityVM.selectedProvinceId
+                .filterNotNull()
+                .distinctUntilChanged()
+                .collectLatest { id ->
+                    Log.d(TAG, "province changed → $id")
+                    viewModel.fetchNeighborhoodPreview(id)
+                }
+        }
+
+        // === 더보기 버튼 ===
+        binding.textLocalMore.setOnClickListener {
+            findNavController().navigate(R.id.action_walkCourse_to_localMoreFragment)
+        }
+        binding.textRisingMore.setOnClickListener {
+            findNavController().navigate(R.id.action_walkCourse_to_hotMoreFragment)
+        }
     }
 
     override fun onDestroyView() {

@@ -18,15 +18,15 @@ import retrofit2.Response
 class CourseRepository {
     private val api = RetrofitInstance.courseApi
 
-    suspend fun getNeighborhoodPreview(provinceId: Int, cityId: Int? = null, townId: Int? = null): Response<List<NeighborhoodPreviewResponse>> {
+    suspend fun getNeighborhoodPreview(token: String, provinceId: Int, cityId: Int? = null, townId: Int? = null): Response<List<NeighborhoodPreviewResponse>> {
         Log.d("API_CALL", "getNeighborhoodPreview() provinceId=$provinceId, cityId=$cityId, townId=$townId")
-        return api.getNeighborhoodPreview(provinceId, cityId, townId)
+        Log.d("API_CALL", "Auth header len=${token.length} head=${token.take(20)}...")
+        return api.getNeighborhoodPreview(token, provinceId, cityId, townId)
     }
 
-
-    suspend fun getRisingPreview(): List<RisingPreviewResponse>? {
+    suspend fun getRisingPreview(token: String): List<RisingPreviewResponse>? {
         return try {
-            val response = api.getRisingPreview()
+            val response = api.getRisingPreview(token)
             Log.d("CourseRepository", "서버 응답코드: ${response.code()}, body: ${response.body()}")
             if (response.isSuccessful) response.body() else null
         } catch (e: Exception) {
@@ -35,22 +35,17 @@ class CourseRepository {
         }
     }
 
-    suspend fun getNearbyCourses(
-        provinceId: Int,
-        cityId: Int? = null,
-        townId: Int? = null
-    ): Response<List<NeighborhoodPreviewResponse>> {
-        return api.getNearbyCourses(provinceId, cityId, townId)
+    suspend fun getNearbyCourses(token: String, provinceId: Int, cityId: Int? = null, townId: Int? = null): Response<List<NeighborhoodPreviewResponse>> {
+        return api.getNearbyCourses(token, provinceId, cityId, townId)
     }
 
-    suspend fun getRisingCourses(): Response<List<NeighborhoodPreviewResponse>> {
-        return api.getRisingCourses()
+    suspend fun getRisingCourses(token: String): Response<List<NeighborhoodPreviewResponse>> {
+        return api.getRisingCourses(token)
     }
 
-
-    suspend fun getCourseDetail(courseId: Int): CourseDetailResponse? {
+    suspend fun getCourseDetail(token: String, courseId: Int): CourseDetailResponse? {
         return try {
-            val response = api.getCourseDetail(courseId)
+            val response = api.getCourseDetail(token, courseId)
             Log.d("CourseRepository", "Retrofit 응답 코드: ${response.code()}, 에러: ${response.errorBody()?.string()}")
             if (response.isSuccessful) {
                 response.body()
@@ -63,26 +58,24 @@ class CourseRepository {
         }
     }
 
+    suspend fun postLike(token: String, courseId: Int) = api.postLike(token, courseId)
 
-    suspend fun postLike(courseId: Int) = api.postLike(courseId)
+    suspend fun postScrap(token: String, courseId: Int) = api.postScrap(token, courseId)
 
-    suspend fun postScrap(courseId: Int) = api.postScrap(courseId)
+    suspend fun postShareCourse(token: String, request: ShareRequest) = api.postShareCourse(token, request)
 
-    suspend fun postShareCourse(request: ShareRequest) = api.postShareCourse(request)
-
-
-    suspend fun deleteScrap(courseId: Int) = api.deleteScrap(courseId)
+    suspend fun deleteScrap(token: String, courseId: Int) = api.deleteScrap(token, courseId)
 
     suspend fun searchNearbyCourses(
+        token: String,
         provinceId: Int,
         cityId: Int? = null,
         townId: Int? = null,
         keyword: String
     ): Response<List<NeighborhoodPreviewResponse>> {
-        return api.searchNearbyCourses(provinceId, cityId, townId, keyword)
+        return api.searchNearbyCourses(token, provinceId, cityId, townId, keyword)
     }
 
-    suspend fun searchRisingCourses(keyword: String) =
-        api.searchRisingCourses(keyword)
-
+    suspend fun searchRisingCourses(token: String, keyword: String) =
+        api.searchRisingCourses(token, keyword)
 }
