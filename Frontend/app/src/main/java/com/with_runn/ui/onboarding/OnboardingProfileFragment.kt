@@ -154,6 +154,9 @@ class OnboardingProfileFragment : Fragment() {
                         Log.e("Login", "오류 발생: ${t.message}")
                     }
                 })
+                //MainActivity로 이동
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
 
                 if (viewModel.hasProfileImgBeenSet()) {
                     val imguri = viewModel.profileImg.value!!

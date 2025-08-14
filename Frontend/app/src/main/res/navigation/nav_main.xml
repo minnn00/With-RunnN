@@ -15,12 +15,21 @@
             android:id="@+id/action_mypage_graph_to_mypageFollowerFollowFragment"
             app:destination="@id/mypageFollowerFollowFragment" />
         <action
-            android:id="@+id/action_mypage_graph_to_mypageOptionFragment2"
-            app:destination="@id/mypageOptionFragment2" />
-        <action
-            android:id="@+id/action_mypage_graph_to_noticeFragment3"
-            app:destination="@id/noticeFragment" />
+            android:id="@+id/action_mypage_graph_to_mypageOptionFragment"
+            app:destination="@id/mypageOptionFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/editMyCoursesFragment"
+        android:name="com.with_runn.ui.mypage.EditMyCoursesFragment"
+        android:label="편집">
+        <!-- 필요하면 인자 추가 -->
+
+    </fragment>
+
+    <action
+        android:id="@+id/action_myPageFragment_to_editMyCoursesFragment"
+        app:destination="@id/editMyCoursesFragment" />
 
     <!-- 지도 -->
     <fragment
@@ -93,14 +102,13 @@
         tools:layout="@layout/fragment_mypage_follower_follow">
     </fragment>
     <fragment
-        android:id="@+id/mypageOptionFragment2"
-        android:name="com.with_runn.ui.mypage.MypageOptionFragment"
-        android:label="MypageOptionFragment"
-        tools:layout="@layout/fragment_mypage_option"/>
+        android:id="@+id/locationSetFragment"
+        android:name="com.with_runn.LocationSetFragment"
+        android:label="LocationSetFragment" />
     <fragment
-        android:id="@+id/noticeFragment"
-        android:name="com.with_runn.ui.notice.NoticeFragment"
-        android:label="NoticeFragment" />
+        android:id="@+id/mypageOptionFragment"
+        android:name="com.with_runn.ui.mypage.MypageOptionFragment"
+        android:label="MypageOptionFragment" />
 
 
 </navigation>

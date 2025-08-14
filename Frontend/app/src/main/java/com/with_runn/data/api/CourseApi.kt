@@ -18,59 +18,69 @@ import com.with_runn.data.ScrapResponse
 import com.with_runn.data.ShareResponse
 import com.with_runn.data.WalkCourseResponse
 import retrofit2.http.DELETE
+import retrofit2.http.Header
 
 interface CourseApi {
-    @GET("api/courses/nearby/preview")
+
+    @GET("api/course/nearby/preview")
     suspend fun getNeighborhoodPreview(
+        @Header("Authorization") token: String,
         @Query("provinceId") provinceId: Int,
         @Query("cityId") cityId: Int? = null,
         @Query("townId") townId: Int? = null
     ): Response<List<NeighborhoodPreviewResponse>>
 
     @GET("api/course/rising/preview")
-    suspend fun getRisingPreview(): Response<List<RisingPreviewResponse>>
-
+    suspend fun getRisingPreview(
+        @Header("Authorization") token: String
+    ): Response<List<RisingPreviewResponse>>
 
     @GET("api/course/nearby")
     suspend fun getNearbyCourses(
+        @Header("Authorization") token: String,
         @Query("provinceId") provinceId: Int,
         @Query("cityId") cityId: Int? = null,
         @Query("townId") townId: Int? = null
     ): Response<List<NeighborhoodPreviewResponse>>
 
-
     @GET("api/course/rising")
-    suspend fun getRisingCourses(): Response<List<NeighborhoodPreviewResponse>>
-
+    suspend fun getRisingCourses(
+        @Header("Authorization") token: String
+    ): Response<List<NeighborhoodPreviewResponse>>
 
     @GET("api/course/detail")
     suspend fun getCourseDetail(
+        @Header("Authorization") token: String,
         @Query("courseId") courseId: Int
     ): Response<CourseDetailResponse>
 
     @POST("api/course/like")
     suspend fun postLike(
+        @Header("Authorization") token: String,
         @Query("courseId") courseId: Int
     ): Response<LikeResponse>
 
-
     @POST("api/course/scrap")
     suspend fun postScrap(
+        @Header("Authorization") token: String,
         @Query("courseId") courseId: Int
     ): Response<ScrapResponse>
 
-
     @DELETE("api/course/scrap")
     suspend fun deleteScrap(
+        @Header("Authorization") token: String,
         @Query("courseId") courseId: Int
     ): Response<DeleteScrapResponse>
 
-
     @POST("api/chat/share")
-    suspend fun postShareCourse(@Body body: ShareRequest): Response<ShareResponse>
+    suspend fun postShareCourse(
+        @Header("Authorization") token: String,
+        @Body body: ShareRequest
+    ): Response<ShareResponse>
 
     @GET("api/course/nearby/search")
     suspend fun searchNearbyCourses(
+        @Header("Authorization") token: String,
         @Query("provinceId") provinceId: Int,
         @Query("cityId") cityId: Int?,
         @Query("townId") townId: Int?,
@@ -79,7 +89,7 @@ interface CourseApi {
 
     @GET("api/course/rising/search")
     suspend fun searchRisingCourses(
+        @Header("Authorization") token: String,
         @Query("keyword") keyword: String
     ): Response<List<RisingCourseResponse>>
-
 }

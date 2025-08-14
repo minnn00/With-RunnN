@@ -8,19 +8,24 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.with_runn.R
 import com.with_runn.databinding.DialogCourseEditBinding
+import com.with_runn.formatMinutesToHM
 import kotlinx.parcelize.Parcelize
+import androidx.core.net.toUri
 
 @Parcelize
 data class CourseData(
     var title : String,
     var info : String?,
     var keyword: String?,
-    var time: Int
+    var time: Int,
+    var imageUrl: String? = null
 ) : Parcelable
 
 class CourseEditDialogFragment : DialogFragment(){
@@ -33,6 +38,17 @@ class CourseEditDialogFragment : DialogFragment(){
                     putParcelable(ARG_COURSE, data)
                 }
             }
+        }
+    }
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            // 미리보기 적용
+            binding.courseImage.setImageURI(uri)
+            // URL 문자열로 보관
+            course.imageUrl = uri.toString()
         }
     }
 
@@ -59,14 +75,18 @@ class CourseEditDialogFragment : DialogFragment(){
         binding.apply{
             courseName.setText(course.title)
             courseInfo.setText(course.info)
+            courseTime.text = formatMinutesToHM(course.time)
 
-            binding.apply {
-                val enabled = course.title != ""
-                btnConfirm.isEnabled = enabled
-                btnConfirm.setBackgroundResource(
-                    if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
-                )
+            course.imageUrl?.let { url ->
+                binding.courseImage.setImageURI(url.toUri())
             }
+
+
+            val enabled = course.title != ""
+            btnConfirm.isEnabled = enabled
+            btnConfirm.setBackgroundResource(
+                if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
+            )
         }
 
         setListeners()
@@ -87,6 +107,12 @@ class CourseEditDialogFragment : DialogFragment(){
 
     private fun setListeners(){
         binding.apply{
+            courseImage.setOnClickListener {
+                pickImageLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+
             courseName.addTextChangedListener(
                 object : TextWatcher {
                     override fun afterTextChanged(s: Editable?) {
@@ -125,6 +151,7 @@ class CourseEditDialogFragment : DialogFragment(){
             btnConfirm.setOnClickListener {
                 course.title = binding.courseName.text.toString()
                 course.info = binding.courseInfo.text.toString()
+                course.keyword = binding.courseKeyword.text.toString()
 
                 val result = Bundle().apply{
                     putParcelable("course_data", course)
@@ -133,6 +160,8 @@ class CourseEditDialogFragment : DialogFragment(){
                 parentFragmentManager.setFragmentResult("course_edit_result", result)
                 dismiss()
             }
+
+
         }
     }
 

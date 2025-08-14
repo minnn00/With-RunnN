@@ -98,7 +98,8 @@ class BlockUserDialogFragment : DialogFragment() {
                 // 에러 메시지를 더 명확하게 처리
                 val message = when {
                     it.contains("이미 차단된 사용자") -> {
-                        "이미 차단된 사용자입니다."
+                        // 이미 차단된 경우: 오류가 아니라 안내 메시지로 처리하고 다이얼로그 닫기
+                        "이미 차단된 대상입니다."
                     }
                     it.contains("차단할 수 없는 상태") -> {
                         "현재 차단할 수 없는 상태입니다."
@@ -112,13 +113,18 @@ class BlockUserDialogFragment : DialogFragment() {
                 }
                 
                 android.widget.Toast.makeText(requireContext(), message, android.widget.Toast.LENGTH_LONG).show()
-                viewModel.clearError()
-                
-                // 차단 버튼을 다시 활성화
-                val blockButton = view?.findViewById<TextView>(R.id.block_button)
-                blockButton?.let { button ->
-                    button.text = "차단하기"
-                    button.isEnabled = true
+                // 이미 차단된 경우에는 다이얼로그를 닫고, 그 외에는 버튼을 복구
+                if (message == "이미 차단된 대상입니다.") {
+                    viewModel.clearError()
+                    dismiss()
+                } else {
+                    viewModel.clearError()
+                    // 차단 버튼을 다시 활성화
+                    val blockButton = view?.findViewById<TextView>(R.id.block_button)
+                    blockButton?.let { button ->
+                        button.text = "차단하기"
+                        button.isEnabled = true
+                    }
                 }
             }
         }

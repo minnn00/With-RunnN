@@ -30,4 +30,9 @@
     <string name="estimated_time">소요 시간</string>
     <string name="create_course">경로 생성</string>
     <string name="save_course">경로 저장</string>
+
+    <!-- Google OAuth Web Client ID -->
+    <string name="server_client_id">
+        454627148187-mlrare2413hsb4784r6n4lbteo21h635.apps.googleusercontent.com
+    </string>
 </resources>

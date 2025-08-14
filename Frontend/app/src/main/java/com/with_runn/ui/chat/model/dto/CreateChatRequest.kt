@@ -7,5 +7,7 @@ import com.google.gson.annotations.SerializedName
  */
 data class CreateChatRequest(
     @SerializedName("userId")
-    val userId: Int
+    val userId: Int,
+    @SerializedName("targetUserId")
+    val targetUserId: Int
 ) 

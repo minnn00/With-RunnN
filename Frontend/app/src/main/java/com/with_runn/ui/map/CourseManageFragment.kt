@@ -2,7 +2,9 @@ package com.with_runn.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -13,7 +15,10 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -43,6 +48,11 @@ import com.with_runn.ui.course_edit.PinEditDialogFragment.Companion.Mode
 import com.with_runn.ui.course_edit.PinItem
 import com.with_runn.ui.course_edit.PinListAdapter
 import kotlinx.coroutines.launch
+import androidx.core.graphics.toColorInt
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import kotlin.math.min
+import kotlin.math.roundToInt
 
 class CourseManageFragment : Fragment() {
 
@@ -105,7 +115,9 @@ class CourseManageFragment : Fragment() {
                                 MarkerOptions()
                                     .position(poi.latLng)
                                     .title(poi.name)
+                                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
                             )
+
                             courseEditViewModel.setTempMarker(marker)
                             marker?.showInfoWindow()
                         }
@@ -122,6 +134,7 @@ class CourseManageFragment : Fragment() {
                                 MarkerOptions()
                                     .position(latLng)
                                     .title(latLng.toString())
+                                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
                             )
                             courseEditViewModel.setTempMarker(marker)
                             marker?.showInfoWindow()
@@ -161,9 +174,6 @@ class CourseManageFragment : Fragment() {
                 }
 
                 setCoroutines()
-                courseEditViewModel.setSampleData()
-
-                courseEditViewModel.askDirections()
             }
         }
 
@@ -230,6 +240,7 @@ class CourseManageFragment : Fragment() {
                         val markerOption = MarkerOptions()
                             .position(LatLng(pin.lat, pin.lng))
                             .title(pin.name)
+                            .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
 
                         if(pin.content != ""){
                             markerOption.snippet(pin.content)
@@ -286,29 +297,61 @@ class CourseManageFragment : Fragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                courseEditViewModel.polyLineData.collect{ directions ->
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                courseEditViewModel.polyLineData.collect { directions ->
+                    // 1) 이전 라인 제거 (메인 + 외곽)
+                    courseEditViewModel.polyLine.value?.let { prevMain ->
+                        (prevMain.tag as? com.google.android.gms.maps.model.Polyline)?.remove() // outline
+                        prevMain.remove() // main
+                    }
                     courseEditViewModel.removePolyline()
 
-                    val polyline = googleMap.addPolyline(
+                    if (directions.isEmpty()) {
+                        binding.btnSave.isEnabled = false
+                        binding.btnSave.setBackgroundResource(R.drawable.bg_btn_filled_inactive)
+                        return@collect
+                    }
+
+                    // 2) 외곽선(underlay)
+                    val outline = googleMap.addPolyline(
                         PolylineOptions()
                             .addAll(directions)
-                            .color(Color.BLUE)
-                            .width(10f)
+                            .width(20f)
+                            .color(Color.argb(80, 0, 0, 0)) // 반투명 짙은 회색
+                            .zIndex(0f)
+                            .startCap(com.google.android.gms.maps.model.RoundCap())
+                            .endCap(com.google.android.gms.maps.model.RoundCap())
+                            .jointType(com.google.android.gms.maps.model.JointType.ROUND)
                     )
 
-                    courseEditViewModel.setPolyline(polyline)
+                    // 3) 본선(overlay)
+                    val main = googleMap.addPolyline(
+                        PolylineOptions()
+                            .addAll(directions)
+                            .width(7f)
+                            .color("#2F7CF6".toColorInt()) // 메인 컬러
+                            .zIndex(1f)
+                            .startCap(com.google.android.gms.maps.model.RoundCap())
+                            .endCap(com.google.android.gms.maps.model.RoundCap())
+                            .jointType(com.google.android.gms.maps.model.JointType.ROUND)
+                    )
 
-                    val enabled = !directions.isEmpty()
-                        binding.apply{
-                            btnSave.isEnabled = enabled
-                            btnSave.setBackgroundResource(
-                                if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
-                            )
-                        }
+                    // 4) ViewModel에는 "메인"만 저장하고, 외곽은 tag로 함께 보관 → 다음 업데이트 때 같이 제거
+                    main.tag = outline
+                    courseEditViewModel.setPolyline(main)
+
+                    // 5) 버튼 상태
+                    val enabled = directions.isNotEmpty()
+                    binding.apply {
+                        btnSave.isEnabled = enabled
+                        btnSave.setBackgroundResource(
+                            if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
+                        )
+                    }
                 }
             }
         }
+
     }
 
 
@@ -423,8 +466,36 @@ class CourseManageFragment : Fragment() {
         parentFragmentManager.setFragmentResultListener("course_edit_result", viewLifecycleOwner) { key, bundle ->
             val course = bundle.getParcelable<CourseData>("course_data", CourseData::class.java) ?: error("CourseData argument required")
 
-            // TODO: Course Post
-            // TODO: 상세보기로 이동 (백스택 남기지 않고)ㄹ
+            // 저장 버튼 잠금
+            binding.btnSave.isEnabled = false
+
+            // ViewModel의 필드/ActivityVM에서 파라미터 모으기
+            val accessToken = activityVM.accessToken.value.toString()// raw or "Bearer ..."
+            val townId = activityVM.thirdRegion.value?.id
+            val provinceId = activityVM.firstRegion.value?.id
+            val cityId = activityVM.secondRegion.value?.id
+
+            val keywords = course.keyword?.takeIf { it.isNotBlank() }?.let { listOf(it) } ?: emptyList()
+            Log.e("KEYWORDS", "$keywords")
+
+            // ViewModel 통해 호출
+            courseEditViewModel.postCourse(
+                accessToken = accessToken,
+                keywords = keywords,
+                townId = townId ?: 9,
+                provinceId = provinceId ?: 9,
+                cityId = cityId ?: 9
+            ) { success, createdId ->
+                if (success && createdId != null) {
+                    val bundle = Bundle().apply {
+                        putInt("courseId", createdId)
+                    }
+                    findNavController().navigate(R.id.courseDetailFragment, bundle)
+                } else {
+                    (activity as? MainActivity)?.showSnackbar("코스 생성 실패 또는 ID 누락")
+                    binding.btnSave.isEnabled = true
+                }
+            }
         }
     }
 
@@ -477,5 +548,26 @@ class CourseManageFragment : Fragment() {
             }
         }
         override fun isLongPressDragEnabled() = false
+    }
+
+    fun resToMarkerIcon(resId: Int, maxSizeDp: Float? = null): BitmapDescriptor {
+        val drawable = ContextCompat.getDrawable(requireContext(), resId) ?: error("Resource not found")
+        val dm = requireContext().resources.displayMetrics
+        val density = dm.density
+
+        val intrinsicW = drawable.intrinsicWidth.takeIf { it > 0 } ?: (24 * density).toInt()
+        val intrinsicH = drawable.intrinsicHeight.takeIf { it > 0 } ?: (24 * density).toInt()
+
+        val (outW, outH) = if (maxSizeDp == null) {
+            intrinsicW to intrinsicH
+        } else {
+            val maxPx = (maxSizeDp * density).toInt().coerceAtLeast(1)
+            val ratio = min(maxPx / intrinsicW.toFloat(), maxPx / intrinsicH.toFloat())
+            (intrinsicW * ratio).roundToInt().coerceAtLeast(1) to
+                    (intrinsicH * ratio).roundToInt().coerceAtLeast(1)
+        }
+
+        val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
     }
 }
