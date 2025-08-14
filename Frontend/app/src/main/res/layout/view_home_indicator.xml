@@ -5,7 +5,6 @@
     android:id="@+id/bottom_sheet_behaviour"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="120dp"
     android:background="@drawable/bg_home_indicator"
     android:orientation="vertical"
     android:elevation="8dp"

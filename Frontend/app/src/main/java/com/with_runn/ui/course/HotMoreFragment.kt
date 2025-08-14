@@ -5,26 +5,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.with_runn.ActivityViewModel
 import com.with_runn.R
 import com.with_runn.databinding.FragmentHotMoreBinding
 import com.with_runn.data.viewmodel.HotMoreViewModel
 import com.with_runn.data.WalkCourse
+import kotlin.getValue
 
 class HotMoreFragment : Fragment() {
 
     private var _binding: FragmentHotMoreBinding? = null
     private val binding get() = _binding!!
 
+    private val activityVM: ActivityViewModel by activityViewModels()
     private val viewModel: HotMoreViewModel by viewModels()
     private lateinit var adapter: WalkCourseAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        activityVM.setBottomNavVisibility(false)
+        activityVM.setUpperToolbarVisibility(false)
         _binding = FragmentHotMoreBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -33,8 +40,8 @@ class HotMoreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = WalkCourseAdapter(emptyList()) { item ->
-            val bundle = Bundle().apply { putParcelable("course", item) }
-            findNavController().navigate(R.id.courseManageFragment, bundle)
+            val b = Bundle().apply { putInt("courseId", item.id) }
+            findNavController().navigate(R.id.courseDetailFragment, b)
         }
 
         binding.recyclerHotMore.layoutManager = LinearLayoutManager(requireContext())
@@ -62,7 +69,7 @@ class HotMoreFragment : Fragment() {
         }
 
         binding.btnBack.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            findNavController().popBackStack()
         }
     }
 

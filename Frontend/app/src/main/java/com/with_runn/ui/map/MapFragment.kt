@@ -423,17 +423,21 @@ class MapFragment : Fragment() {
                         googleMap.clear()
                         binding.chipGroup.clearCheck()
                         mapViewModel.setCurrentChipType("")
+
+                        activityVM.setBottomNavVisibility(true)
                         binding.speedDial.visibility = View.VISIBLE
                         binding.fabToggleMylocation.visibility = View.VISIBLE
                         binding.fabToggleMylocationExpanded.visibility = View.GONE
                     }
 
                     BottomSheetBehavior.STATE_COLLAPSED -> {
+                        activityVM.setBottomNavVisibility(false)
                         binding.speedDial.visibility = View.VISIBLE
                         binding.fabToggleMylocation.visibility = View.VISIBLE
                         binding.fabToggleMylocationExpanded.visibility = View.GONE
                     }
                     BottomSheetBehavior.STATE_HALF_EXPANDED -> {
+                        activityVM.setBottomNavVisibility(false)
                         binding.speedDial.visibility = View.GONE
                         binding.fabToggleMylocation.visibility = View.GONE
                         binding.fabToggleMylocationExpanded.visibility = View.VISIBLE

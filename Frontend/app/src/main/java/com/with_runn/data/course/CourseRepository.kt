@@ -14,9 +14,7 @@ class CourseRepository(
         course: CourseData,
         pins: List<PinItem>,
         keywords: List<String>,
-        regions: List<String>,
-        regionsData: List<RegionDataPayload>,
-        userId: Int,
+        regionsTownId: Int,
         regionProvinceId: Int,
         regionsCityId: Int,
         path: List<LatLng>,
@@ -41,15 +39,13 @@ class CourseRepository(
         // 3) 요청 바디
         val body = CreateCourseRequest(
             name = course.title,
-            description = course.info,
-            time = course.time,                 // 이미 분 단위
+            description = course.info ?: "",
+            time = course.time, // 이미 분 단위
             keywords = keywords,
-            regions = regions,
             pins = pinPayloads,
-            regionsData = regionsData,
-            userId = userId,
             regionProvinceId = regionProvinceId,
             regionsCityId = regionsCityId,
+            regionsTownId = regionsTownId,
             overviewPolyline = encoded
         )
 

@@ -39,6 +39,8 @@ class LocalMoreFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentLocalMoreBinding.inflate(inflater, container, false)
+        activityVM.setBottomNavVisibility(false)
+        activityVM.setUpperToolbarVisibility(false)
         return binding.root
     }
 
@@ -48,8 +50,8 @@ class LocalMoreFragment : Fragment() {
 
         adapter = WalkCourseAdapter(mutableListOf()) { item ->
             Log.d(TAG, "itemClick id=${item.id} title=${item.title}")
-            val b = Bundle().apply { putParcelable("course", item) }
-            findNavController().navigate(R.id.courseManageFragment, b)
+            val b = Bundle().apply { putInt("courseId", item.id) }
+            findNavController().navigate(R.id.courseDetailFragment, b)
         }
         binding.recyclerLocalMore.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerLocalMore.adapter = adapter
@@ -105,7 +107,7 @@ class LocalMoreFragment : Fragment() {
 
         binding.btnBack.setOnClickListener {
             Log.d(TAG, "back pressed")
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            findNavController().popBackStack()
         }
     }
 

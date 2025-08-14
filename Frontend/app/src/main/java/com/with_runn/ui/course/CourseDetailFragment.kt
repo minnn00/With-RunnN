@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -166,13 +167,13 @@ class CourseDetailFragment : Fragment() {
 
 
                     binding.apply {
-                        courseName.text = course.name
-                        courseInfo.text = course.description
-                        estimatedTime.text = course.time.toHM()
-                        setTags(course.keywords)
+                        courseName.text = course?.name
+                        courseInfo.text = course?.description
+                        estimatedTime.text = course?.time?.toHM()
+                        setTags(course?.keywords ?: emptyList())
 
                         Glide.with(requireContext())
-                            .load(course.imageUrl)
+                            .load(course?.imageUrl)
                             .error(R.drawable.img_app_logo)
                             .into(courseImage)
                     }
@@ -257,7 +258,8 @@ class CourseDetailFragment : Fragment() {
                 }
             }
             btnShare.setOnClickListener {
-                val courseId = courseDetailsVM.courseData.value.id
+                val courseId = courseDetailsVM.courseData.value?.id ?: -1
+                if(courseId == -1) return@setOnClickListener
                 ShareBottomSheetDialogFragment
                     .newInstance(courseId)
                     .show(parentFragmentManager, "ShareSheet")
@@ -266,7 +268,9 @@ class CourseDetailFragment : Fragment() {
     }
 
 
-    private fun renderCourseOnMap(course: CourseDetailResponse) {
+    private fun renderCourseOnMap(course: CourseDetailResponse?) {
+        if(course == null) return
+
         // 안전 제거
         googleMap.clear()
         routeMain?.let { main ->
@@ -289,7 +293,9 @@ class CourseDetailFragment : Fragment() {
         }
 
         // 폴리라인(있을 때만)
+        Log.e("POLYLINE", "ENCODED: ${course.overviewPolyline}")
         val path = decodeOverviewPolyline(course.overviewPolyline)
+        Log.e("POLYLINE", "DECODED: ${path}")
         if (path.isNotEmpty()) {
             val outline = googleMap.addPolyline(
                 PolylineOptions()

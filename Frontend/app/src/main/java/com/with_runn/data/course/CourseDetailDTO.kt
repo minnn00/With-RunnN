@@ -10,5 +10,7 @@ data class CourseDetailResponse(
     val description: String,
     val time: Int,
     val pins: List<PinItem>,
-    val overviewPolyline: String? = null
+    val overviewPolyline: String? = null,
+    val isLiked : Boolean = false,
+    val isScrapped: Boolean = false
 )

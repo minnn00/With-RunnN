@@ -174,7 +174,6 @@ class CourseManageFragment : Fragment() {
                 }
 
                 setCoroutines()
-                courseEditViewModel.setSampleData()
             }
         }
 
@@ -472,27 +471,18 @@ class CourseManageFragment : Fragment() {
 
             // ViewModel의 필드/ActivityVM에서 파라미터 모으기
             val accessToken = activityVM.accessToken.value.toString()// raw or "Bearer ..."
-            val userId = 1
+            val townId = activityVM.thirdRegion.value?.id
             val provinceId = activityVM.firstRegion.value?.id
             val cityId = activityVM.secondRegion.value?.id
 
             val keywords = course.keyword?.takeIf { it.isNotBlank() }?.let { listOf(it) } ?: emptyList()
             Log.e("KEYWORDS", "$keywords")
-            val regions = listOfNotNull(activityVM.firstRegion.value?.name, activityVM.secondRegion.value?.name)
-            val regionsData = listOf(
-                com.with_runn.data.course.RegionDataPayload(
-                    id = cityId ?: 1,
-                    name = activityVM.secondRegion.value?.name.toString()
-                )
-            )
 
             // ViewModel 통해 호출
             courseEditViewModel.postCourse(
                 accessToken = accessToken,
                 keywords = keywords,
-                regions = regions,
-                regionsData = regionsData,
-                userId = userId,
+                townId = townId ?: 9,
                 provinceId = provinceId ?: 9,
                 cityId = cityId ?: 9
             ) { success, createdId ->

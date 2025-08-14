@@ -113,16 +113,6 @@ class CourseEditViewModel : ViewModel() {
         _pinList.value = updatedList
     }
 
-    fun setSampleData() {
-        _pinList.value = listOf(
-            PinItem(1, "경복궁", "경복궁", 37.579617, 126.977041),
-            PinItem(2, "광화문광장", "광화문광장", 37.572441, 126.976814),
-            PinItem(3, "서울시청", "서울시청", 37.566345, 126.977893),
-            PinItem(4, "덕수궁", "덕수궁", 37.565804, 126.975145),
-            PinItem(5, "서울역", "서울역", 37.553736, 126.969634)
-        )
-    }
-
     fun removePolylineData(){
         _polyLineData.value = emptyList()
     }
@@ -163,9 +153,7 @@ class CourseEditViewModel : ViewModel() {
     fun postCourse(
         accessToken: String,
         keywords: List<String>,
-        regions: List<String>,
-        regionsData: List<RegionDataPayload>,
-        userId: Int,
+        townId: Int,
         provinceId: Int,
         cityId: Int,
         onComplete: (Boolean, Int?) -> Unit
@@ -184,9 +172,7 @@ class CourseEditViewModel : ViewModel() {
                     course = courseData.value,    // time은 이미 분 단위로 세팅됨
                     pins = pins,
                     keywords = keywords,
-                    regions = regions,
-                    regionsData = regionsData,
-                    userId = userId,
+                    regionsTownId = townId,
                     regionProvinceId = provinceId,
                     regionsCityId = cityId,
                     path = path,
