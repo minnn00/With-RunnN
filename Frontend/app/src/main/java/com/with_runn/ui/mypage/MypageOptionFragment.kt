@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.with_runn.ActivityViewModel
 import com.with_runn.databinding.DialogAskBinding
 import com.with_runn.databinding.DialogInfoBinding
 import com.with_runn.databinding.FragmentMypageOptionBinding
@@ -15,11 +17,14 @@ class MypageOptionFragment : Fragment(){
     private var _binding: FragmentMypageOptionBinding? = null
     private val binding get() = _binding!!
 
+    private val activityVM : ActivityViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMypageOptionBinding.inflate(inflater, container, false)
+        activityVM.setUpperToolbarVisibility(false)
+        activityVM.setBottomNavVisibility(false)
         return binding.root
     }
 

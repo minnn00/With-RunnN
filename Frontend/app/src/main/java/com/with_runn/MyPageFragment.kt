@@ -234,6 +234,9 @@ class MyPageFragment : Fragment() {
         setupTabs()
         setupEditToggleButtons()
 
+        binding.optionBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageOptionFragment)
+        }
         binding.layoutFollower.setOnClickListener {
             val bundle = Bundle().apply { putInt("initialTab", 0) }
             findNavController().navigate(
