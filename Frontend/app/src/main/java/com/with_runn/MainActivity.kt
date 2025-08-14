@@ -19,11 +19,14 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.libraries.places.api.Places
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.flow.combine
 import com.google.android.material.snackbar.Snackbar
 import com.with_runn.ui.onboarding.OnboardingActivity
 import com.with_runn.data.TokenManager
+import com.with_runn.ui.chat.activity.ChatActivity
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -49,34 +52,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.root);
 
-        val navHost = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment;
-        val navController = navHost.navController;
-
-        binding.bottomNavigationView.setupWithNavController(navController)
-
-        lifecycleScope.launch {
-            activityVM.isBottomNavVisible.collect { isBottomNavVisible ->
-                if(isBottomNavVisible){
-                    //binding.bottomNavigationView.visibility = View.VISIBLE
-                    binding.bottomNavigationView.slideUp()
-                }else{
-                    //binding.bottomNavigationView.visibility = View.GONE
-                    binding.bottomNavigationView.slideDown()
-                }
-
-            }
-                }
-
-        // 1회만 실행: 마스터 토큰 설정
-        TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
-
-        // ViewModel에 로드
-        activityVM.loadToken()
-
-        checkAndRequestLocationPermission()
-
-//        val intent = Intent(this, OnboardingActivity::class.java)
-//        startActivity(intent)
+        routeIfUnauthenticated()
     }
 
     private fun checkAndRequestLocationPermission() {
@@ -87,6 +63,66 @@ class MainActivity : AppCompatActivity() {
         if (!isGranted) {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    private fun routeIfUnauthenticated() {
+        lifecycleScope.launch {
+            val token = TokenManager.getAccessToken()
+            val memberId = TokenManager.getCurrentUserId()
+
+            val isInvalid = token.isNullOrBlank() || memberId == -1
+            if (isInvalid) {
+                startActivity(Intent(this@MainActivity, OnboardingActivity::class.java))
+                finish()
+                return@launch
+            }
+
+            activityVM.loadToken()
+            // 토큰 있으면 정상 UI 세팅
+            setupUi()
+        }
+    }
+
+    private fun setupUi() {
+        val navHost = supportFragmentManager
+            .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHost.navController
+
+        binding.bottomNavigationView.setupWithNavController(navController)
+
+        lifecycleScope.launch {
+            activityVM.isBottomNavVisible.collect { isVisible ->
+                if (isVisible) binding.bottomNavigationView.slideUp()
+                else binding.bottomNavigationView.slideDown()
+            }
+        }
+        lifecycleScope.launch {
+            activityVM.isToolBarVisible.collect { isVisible ->
+                binding.upperToolBar.visibility = if (isVisible) View.VISIBLE else View.GONE
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                combine(
+                    activityVM.firstRegion, activityVM.secondRegion, activityVM.thirdRegion
+                ) { f, s, t ->
+                    listOfNotNull(f?.name, s?.name, t?.name)
+                        .joinToString(" ").ifEmpty { "지역 미설정" }
+                }.collect { text -> binding.regionText.text = text }
+            }
+        }
+
+        binding.apply {
+            setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment) }
+            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment) } // TODO: 알람 화면
+            chatBtn.setOnClickListener {
+                startActivity(Intent(this@MainActivity, ChatActivity::class.java))
+            }
+        }
+
+        activityVM.loadToken()
+
+        checkAndRequestLocationPermission()
     }
 
     fun showSnackbar(

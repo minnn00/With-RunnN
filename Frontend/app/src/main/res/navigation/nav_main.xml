@@ -97,6 +97,10 @@
         android:label="MypageFollowerFollowFragment"
         tools:layout="@layout/fragment_mypage_follower_follow">
     </fragment>
+    <fragment
+        android:id="@+id/locationSetFragment"
+        android:name="com.with_runn.LocationSetFragment"
+        android:label="LocationSetFragment" />
 
 
 </navigation>

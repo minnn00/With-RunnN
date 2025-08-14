@@ -6,80 +6,18 @@
     android:background="#FEFEFE"
     android:fitsSystemWindows="true">
 
-    <!-- 상단바 -->
-    <LinearLayout
-        android:id="@+id/top_bar"
-        android:layout_width="match_parent"
-        android:layout_height="66dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:background="#FFFFFF"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <!-- 위치 아이콘 -->
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="18dp"
-            android:src="@drawable/ic_location_pin"
-            android:contentDescription="위치" />
-
-        <!-- 서울 마포구 텍스트 -->
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="16dp"
-            android:text="서울 마포구"
-            android:textColor="#121212"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="start" />
-
-        <!-- 알림 아이콘 -->
-        <FrameLayout
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="8dp">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_bell"
-                android:contentDescription="알림" />
-
-            <!-- 알림 표시점 -->
-            <View
-                android:layout_width="7dp"
-                android:layout_height="7dp"
-                android:layout_gravity="top|end"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="2dp"
-                android:background="@drawable/circle_background_red" />
-        </FrameLayout>
-
-        <!-- 채팅 아이콘 -->
-        <ImageView
-            android:id="@+id/chat_button"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_chat"
-            android:contentDescription="채팅" />
-
-    </LinearLayout>
-
     <!-- TabLayout -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
         android:background="@color/gray_050"
         app:tabIndicatorColor="@color/green_700"
         app:tabTextColor="@color/gray_400"
         app:tabSelectedTextColor="@color/black"
         app:tabIndicatorFullWidth="false"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

@@ -89,7 +89,8 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                         Friend(
                             name = inviteUser.name,
                             imageResId = R.drawable.maru, // 기본 이미지 사용
-                            isSelected = false
+                            isSelected = false,
+                            userId = inviteUser.userId
                         )
                     }
                     
@@ -98,12 +99,26 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
                     }
                 },
                 onFailure = { exception ->
-                    Log.e("AddParticipant", "❌ 초대 목록 조회 실패", exception)
+                    Log.e("AddParticipant", "❌ 초대 목록 조회 실패: ${exception.message}", exception)
                     
-                    // 실패 시 샘플 데이터 로드
                     activity?.runOnUiThread {
-                        loadSampleData()
-                        Toast.makeText(context, "초대 목록을 불러오는데 실패했습니다", Toast.LENGTH_SHORT).show()
+                        // 채팅방이 꽉 찬 경우 특별 처리
+                        if (exception.message?.contains("꽉 찼습니다") == true || 
+                            exception.message?.contains("CHAT4004") == true ||
+                            exception.message?.contains("채탕방은 꽉 찼습니다") == true) {
+                            
+                            val errorMessage = "채팅방이 가득 찼습니다. 더 이상 초대할 수 없어요! 😅"
+                            Log.d("AddParticipant", "채팅방이 꽉 찬 경우 처리: $errorMessage")
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                            
+                            // 다이얼로그 닫기
+                            dismiss()
+                        } else {
+                            // 기타 에러의 경우 샘플 데이터 로드
+                            Log.d("AddParticipant", "기타 에러로 인한 샘플 데이터 로드")
+                            loadSampleData()
+                            Toast.makeText(context, "초대 목록을 불러오는데 실패했습니다: ${exception.message}", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             )
@@ -156,16 +171,7 @@ class AddParticipantBottomSheet : BottomSheetDialogFragment() {
         
         // InviteUser 리스트 생성
         val inviteUserList = selectedFriends.map { friend ->
-            val userId = when (friend.name) {
-                "마루" -> 1
-                "조이" -> 2
-                "위니" -> 3
-                "구리" -> 4
-                "룽지" -> 5
-                "솜이" -> 6
-                else -> 1
-            }
-            com.with_runn.ui.chat.model.dto.InviteUser(friend.name, userId)
+            com.with_runn.ui.chat.model.dto.InviteUser(friend.name, friend.userId)
         }
         
         Log.d("AddParticipant", "API 호출 파라미터: chatId=$chatId, username=$username, inviteUserList=$inviteUserList")

@@ -13,6 +13,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.with_runn.R
 import com.with_runn.databinding.DialogCourseEditBinding
+import com.with_runn.formatMinutesToHM
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -59,6 +60,7 @@ class CourseEditDialogFragment : DialogFragment(){
         binding.apply{
             courseName.setText(course.title)
             courseInfo.setText(course.info)
+            courseTime.text = formatMinutesToHM(course.time)
 
             binding.apply {
                 val enabled = course.title != ""
@@ -125,6 +127,7 @@ class CourseEditDialogFragment : DialogFragment(){
             btnConfirm.setOnClickListener {
                 course.title = binding.courseName.text.toString()
                 course.info = binding.courseInfo.text.toString()
+                course.keyword = binding.courseKeyword.text.toString()
 
                 val result = Bundle().apply{
                     putParcelable("course_data", course)

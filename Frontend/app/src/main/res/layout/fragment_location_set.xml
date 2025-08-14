@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gray_050"
+    android:orientation="vertical"
+    android:paddingVertical="40dp"
+    android:paddingHorizontal="18dp">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="20dp"
+        android:gravity="center_vertical">
+        <ImageButton
+            android:id="@+id/back_btn"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/left_arrow"/>
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+
+            style="@style/Text_Pretendard_SemiBold_18"
+            android:text="지역 설정"
+            android:textColor="@color/gray_950"
+            android:textSize="16sp"/>
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="1"
+        android:layout_marginBottom="20dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+
+                style="@style/Text_Pretendard_Medium_14"
+                android:text="시, 도"
+                android:textSize="12sp"
+                android:textColor="@color/gray_950"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_200"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_region_01"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/gray_200"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+
+                style="@style/Text_Pretendard_Medium_14"
+                android:text="시, 군, 구"
+                android:textSize="12sp"
+                android:textColor="@color/gray_950"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_200"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_region_02"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/gray_200"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+
+                style="@style/Text_Pretendard_Medium_14"
+                android:text="동, 읍, 면"
+                android:textSize="12sp"
+                android:textColor="@color/gray_950"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_200"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv_region_03"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/text_region"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:gravity="center_vertical"
+            android:padding="8dp"
+
+            style="@style/Text_Pretendard_Medium_14"
+            android:text="서울특별시 성동구 옥수동"
+            android:textSize="14sp"
+            android:textColor="@color/green_700" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <LinearLayout
+                android:id="@+id/btn_reset"
+                android:layout_width="0dp"
+                android:layout_height="47dp"
+                android:layout_weight="1"
+                android:gravity="center"
+
+                android:clickable="true"
+                android:focusable="true"
+
+                android:paddingVertical="15dp"
+
+                android:background="@drawable/bg_outlined_btn">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    style="@style/Text_Pretendard_Medium_14"
+                    android:text="초기화"
+                    android:textColor="@color/green_700"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="12dp"
+                android:layout_height="match_parent"/>
+            <LinearLayout
+                android:id="@+id/btn_save"
+                android:layout_width="0dp"
+                android:layout_height="47dp"
+                android:layout_weight="1"
+                android:gravity="center"
+
+
+                android:clickable="true"
+                android:focusable="true"
+
+                android:paddingVertical="15dp"
+
+                android:background="@drawable/bg_btn_filled_inactive">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    style="@style/Text_Pretendard_Medium_14"
+                    android:text="저장하기"
+                    android:textColor="@color/green_050"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    
+</LinearLayout>

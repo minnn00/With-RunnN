@@ -21,6 +21,10 @@ import com.with_runn.ui.chat.repository.ChatRepository
 import com.with_runn.ui.chat.dialog.AddParticipantBottomSheet
 import com.with_runn.ui.chat.dialog.ChatRoomNameSettingDialogFragment
 import com.with_runn.ui.chat.data.ChatReadTimeManager
+import com.with_runn.ui.chat.data.ChatMessageManager
+import com.with_runn.ui.chat.data.ChatRoomNameManager
+import com.with_runn.ui.chat.network.WebSocketManager
+import com.with_runn.ui.chat.data.UnreadMessageManager
 
 class ChatRoomActivity : AppCompatActivity() {
     
@@ -36,7 +40,12 @@ class ChatRoomActivity : AppCompatActivity() {
     private var originalFriendName = ""
     private val chatRepository = ChatRepository()
     private lateinit var readTimeManager: ChatReadTimeManager
+    private lateinit var messageManager: ChatMessageManager
+    private lateinit var unreadMessageManager: UnreadMessageManager
     private var chatId = -1 // Intent에서 받아올 예정
+    
+    // WebSocket 관련
+    private val webSocketManager = WebSocketManager.getInstance()
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +68,18 @@ class ChatRoomActivity : AppCompatActivity() {
         
         // 읽은 시간 관리자 초기화
         readTimeManager = ChatReadTimeManager.getInstance(this)
+        messageManager = ChatMessageManager.getInstance(this)
+        unreadMessageManager = UnreadMessageManager.getInstance(this)
         
         setupViews()
         setupClickListeners()
         
-        // 채팅방 입장 시 마지막 읽은 시간 업데이트
+        // 채팅방 입장 시 마지막 읽은 시간 업데이트 및 unreadMsgCnt 리셋
         updateLastReadTime()
+        resetUnreadCount()
+        
+        // WebSocket 연결 및 채팅방 구독
+        setupWebSocket()
         
         // 새로 생성된 채팅방인지 확인
         val isNewChat = intent.getBooleanExtra("is_new_chat", false)
@@ -72,9 +87,80 @@ class ChatRoomActivity : AppCompatActivity() {
             Log.d("ChatRoomActivity", "새로 생성된 채팅방이므로 메시지를 로드하지 않습니다")
         } else {
             // 기존 채팅방인 경우에만 메시지 로드
-            loadChatMessagesFromApi()
+            loadChatMessages()
         }
         Log.d("ChatRoomActivity", "onCreate 완료")
+    }
+
+    override fun onBackPressed() {
+        // 뒤로가기 시에도 떠나기 PATCH 보장
+        leaveChatRoomAndFinish()
+    }
+    
+    /**
+     * WebSocket 설정
+     */
+    private fun setupWebSocket() {
+        // 채팅방 입장은 메시지 조회 API에서 자동으로 처리됨
+        // 별도의 채팅방 입장 API 호출 제거
+        
+        // WebSocket 연결 시도
+        webSocketManager.connect(
+            onConnected = {
+                Log.d("ChatRoomActivity", "WebSocket 연결 성공")
+                // 채팅방 구독 (중복 방지 처리 포함)
+                webSocketManager.subscribeToChatRoom(chatId) { message ->
+                    // 메시지 수신 시 UI 업데이트
+                    runOnUiThread {
+                        handleReceivedMessage(message)
+                    }
+                }
+            },
+            onError = { error ->
+                Log.e("ChatRoomActivity", "WebSocket 연결 실패: $error")
+                runOnUiThread {
+                    Toast.makeText(this, "실시간 채팅 연결에 실패했습니다", Toast.LENGTH_SHORT).show()
+                }
+            }
+        )
+    }
+    
+    /**
+     * 수신된 메시지 처리 (서버 중심)
+     */
+    private fun handleReceivedMessage(message: Message) {
+        val currentMessages = messageAdapter.currentList.toMutableList()
+
+        if (message.isFromMe) {
+            // 내가 방금 보낸 메시지의 서버 타임스탬프 보정 및 로컬 저장 보장
+            val idx = currentMessages.indexOfLast { it.isFromMe && it.content == message.content }
+            if (idx >= 0) {
+                val corrected = currentMessages[idx].copy(timestamp = message.timestamp)
+                currentMessages[idx] = corrected
+                messageAdapter.submitList(currentMessages)
+                messageManager.saveMessages(chatId, currentMessages)
+                Log.d("ChatRoomActivity", "내 메시지 서버 타임스탬프 보정: ${message.content} -> ${message.timestamp}")
+                return
+            }
+            // 리스트에 없다면 추가
+            currentMessages.add(message)
+            messageAdapter.submitList(currentMessages)
+            messageManager.saveMessages(chatId, currentMessages)
+            Log.d("ChatRoomActivity", "내 메시지 반영(추가): ${message.content}")
+            return
+        }
+
+        // 상대 메시지 처리
+        currentMessages.add(message)
+        messageAdapter.submitList(currentMessages)
+        messageManager.addMessage(chatId, message)
+        unreadMessageManager.incrementUnreadCount(chatId)
+        Log.d("ChatRoomActivity", "새 메시지 수신으로 unreadMsgCnt 증가: ${message.content}")
+
+        messageRecyclerView.post {
+            messageRecyclerView.smoothScrollToPosition(currentMessages.size - 1)
+        }
+        Log.d("ChatRoomActivity", "메시지 수신: ${message.content}")
     }
     
     private fun setupViews() {
@@ -90,16 +176,41 @@ class ChatRoomActivity : AppCompatActivity() {
         originalFriendName = intent.getStringExtra("friend_name") ?: "조니"
         Log.d("ChatRoomActivity", "친구 이름: $originalFriendName")
         currentParticipants.add(originalFriendName)
-        chatTitle.text = originalFriendName
         
-        messageRecyclerView.layoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true
+        // 로컬에 저장된 채팅방 이름이 있으면 우선 사용
+        val chatRoomNameManager = ChatRoomNameManager.getInstance(this)
+        val localRoomName = chatRoomNameManager.getChatRoomName(chatId)
+        if (localRoomName != null) {
+            Log.d("ChatRoomActivity", "로컬에 저장된 채팅방 이름 사용: $localRoomName")
+            chatTitle.text = localRoomName
+        } else {
+            Log.d("ChatRoomActivity", "기본 친구 이름 사용: $originalFriendName")
+            chatTitle.text = originalFriendName
         }
+        
+        val linearLayoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
+        messageRecyclerView.layoutManager = linearLayoutManager
         messageAdapter = ChatMessageAdapter()
         messageAdapter.setOnProfileImageClickListener { sender ->
             showFriendProfileDialog(sender)
         }
         messageRecyclerView.adapter = messageAdapter
+
+        // 무한 스크롤(이전 메시지 로드)
+        messageRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val lm = recyclerView.layoutManager as? LinearLayoutManager ?: return
+                val firstVisible = lm.findFirstVisibleItemPosition()
+                val visibleCount = lm.childCount
+                val totalCount = lm.itemCount
+                val isScrollable = totalCount > visibleCount
+                val reachedTop = firstVisible == 0 && dy < 0
+                if (isScrollable && reachedTop) {
+                    loadMorePreviousMessages()
+                }
+            }
+        })
         
         // 새로 생성된 채팅방인지 확인 (messageAdapter 초기화 후)
         val isNewChat = intent.getBooleanExtra("is_new_chat", false)
@@ -113,7 +224,8 @@ class ChatRoomActivity : AppCompatActivity() {
     
     private fun setupClickListeners() {
         backButton.setOnClickListener {
-            finish()
+            // 채팅방 나가기 API 호출 후 결과에 따라 처리
+            leaveChatRoomAndFinish()
         }
         
         menuButton.setOnClickListener {
@@ -133,6 +245,79 @@ class ChatRoomActivity : AppCompatActivity() {
             } else {
                 false
             }
+        }
+    }
+    
+    /**
+     * 채팅방 나가기 후 Activity 종료
+     */
+    private fun leaveChatRoomAndFinish() {
+        chatRepository.leaveChatRoom(chatId) { result ->
+            result.fold(
+                onSuccess = {
+                    Log.d("ChatRoomActivity", "채팅방 나가기 성공")
+                    // 성공 시 Activity 종료
+                    runOnUiThread {
+                        // 구독 해제
+                        webSocketManager.unsubscribeFromChatRoom(chatId)
+                        finish()
+                    }
+                },
+                onFailure = { exception ->
+                    Log.e("ChatRoomActivity", "채팅방 나가기 실패", exception)
+                    
+                    // 사용자에게 에러 메시지 표시 (Activity는 종료하지 않음)
+                    runOnUiThread {
+                        val errorMessage = when {
+                            exception.message?.contains("서버 오류") == true -> {
+                                exception.message ?: "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+                            }
+                            exception.message?.contains("네트워크") == true -> {
+                                "네트워크 연결을 확인해주세요."
+                            }
+                            else -> {
+                                "채팅방을 나가는데 실패했습니다. 잠시 후 다시 시도해주세요."
+                            }
+                        }
+                        
+                        Toast.makeText(this@ChatRoomActivity, errorMessage, Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
+        }
+    }
+    
+    /**
+     * 채팅방 나가기 (기존 메서드 - 다른 곳에서 호출할 때 사용)
+     */
+    private fun leaveChatRoom() {
+        chatRepository.leaveChatRoom(chatId) { result ->
+            result.fold(
+                onSuccess = {
+                    Log.d("ChatRoomActivity", "채팅방 나가기 성공")
+                    // 성공 시 별도 처리 없이 Activity 종료
+                },
+                onFailure = { exception ->
+                    Log.e("ChatRoomActivity", "채팅방 나가기 실패", exception)
+                    
+                    // 사용자에게 에러 메시지 표시
+                    runOnUiThread {
+                        val errorMessage = when {
+                            exception.message?.contains("서버 오류") == true -> {
+                                exception.message ?: "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+                            }
+                            exception.message?.contains("네트워크") == true -> {
+                                "네트워크 연결을 확인해주세요."
+                            }
+                            else -> {
+                                "채팅방을 나가는데 실패했습니다. 잠시 후 다시 시도해주세요."
+                            }
+                        }
+                        
+                        Toast.makeText(this@ChatRoomActivity, errorMessage, Toast.LENGTH_LONG).show()
+                    }
+                }
+            )
         }
     }
     
@@ -158,8 +343,6 @@ class ChatRoomActivity : AppCompatActivity() {
             showChatRoomNameSettingDialog()
             popupWindow.dismiss()
         }
-        
-
     }
 
     private fun showAddParticipantBottomSheet() {
@@ -174,25 +357,6 @@ class ChatRoomActivity : AppCompatActivity() {
     private fun addParticipantToChat(newParticipant: String) {
         if (!currentParticipants.contains(newParticipant)) {
             currentParticipants.add(newParticipant)
-            
-            // 시스템 메시지 추가
-            val systemMessage = Message(
-                messageId = System.currentTimeMillis().toInt(),
-                sender = "시스템",
-                content = "${originalFriendName}님이 ${newParticipant}님을 초대했습니다",
-                timestamp = "방금 전",
-                isFromMe = false,
-                isSystemMessage = true
-            )
-            
-            val currentMessages = messageAdapter.currentList.toMutableList()
-            currentMessages.add(systemMessage)
-            messageAdapter.submitList(currentMessages)
-            
-            // 스크롤을 맨 아래로
-            messageRecyclerView.post {
-                messageRecyclerView.smoothScrollToPosition(currentMessages.size - 1)
-            }
         }
     }
     
@@ -203,6 +367,11 @@ class ChatRoomActivity : AppCompatActivity() {
             // 채팅방 이름 설정 처리 (null 체크 추가)
             if (roomName != null) {
                 chatTitle.text = roomName
+                
+                // 로컬에 채팅방 이름 저장
+                val chatRoomNameManager = ChatRoomNameManager.getInstance(this@ChatRoomActivity)
+                chatRoomNameManager.saveChatRoomName(chatId, roomName)
+                Log.d("ChatRoomActivity", "채팅방 이름 로컬 저장: $roomName")
             }
         }
         dialog.show(supportFragmentManager, "ChatRoomNameSettingDialog")
@@ -213,41 +382,122 @@ class ChatRoomActivity : AppCompatActivity() {
             friendName = friendName,
             personalityTag = "활발한",
             personalityTags = arrayListOf("활발한", "친근한", "사교적인"),
-            imageResId = R.drawable.jonny
+            imageResId = R.drawable.jonny,
+            userId = 0
         )
         dialog.show(supportFragmentManager, "FriendProfileDialog")
     }
     
     /**
-     * API를 통해 채팅 메시지를 로드
+     * 채팅 메시지를 로드 (서버 우선, 로컬은 임시 캐시로만 사용)
      */
-    private fun loadChatMessagesFromApi() {
-        Log.d("ChatRoomActivity", "API로 메시지 로드 시작")
+    private fun loadChatMessages() {
+        Log.d("ChatRoomActivity", "메시지 로드 시작")
         
-        // chatId는 클래스 변수로 이미 정의됨
+        // 1. 먼저 로컬에 저장된 메시지 로드 (임시 표시용)
+        val localMessages = messageManager.loadMessages(chatId)
+        if (localMessages.isNotEmpty()) {
+            Log.d("ChatRoomActivity", "임시 로컬 메시지 로드: ${localMessages.size}개")
+            messageAdapter.submitList(localMessages)
+            if (localMessages.isNotEmpty()) {
+                messageRecyclerView.post {
+                    messageRecyclerView.smoothScrollToPosition(localMessages.size - 1)
+                }
+            }
+        }
         
+        // 2. API에서 메시지 로드 (서버 데이터 우선)
         chatRepository.getChatMessages(chatId) { result ->
-            result.onSuccess { messages ->
-                Log.d("ChatRoomActivity", "메시지 로드 성공: ${messages.size}개")
-                
-                // UI 업데이트
-                runOnUiThread {
-                    messageAdapter.submitList(messages)
+            result.fold(
+                onSuccess = { apiMessages ->
+                    Log.d("ChatRoomActivity", "✅ API 메시지 로드 성공: ${apiMessages.size}개")
                     
-                    // 메시지가 있을 때만 스크롤을 맨 아래로
-                    if (messages.isNotEmpty()) {
-                        messageRecyclerView.post {
-                            messageRecyclerView.smoothScrollToPosition(messages.size - 1)
+                    // API 메시지가 있으면 서버 데이터로 교체
+                    if (apiMessages.isNotEmpty()) {
+                        runOnUiThread {
+                            messageAdapter.submitList(apiMessages)
+                            messageRecyclerView.post {
+                                messageRecyclerView.smoothScrollToPosition(apiMessages.size - 1)
+                            }
+                            Log.d("ChatRoomActivity", "서버 메시지로 UI 업데이트 완료")
+                        }
+                        
+                        // 로컬 메시지 초기화 (서버 데이터로 교체)
+                        messageManager.clearMessages(chatId)
+                        // 서버 메시지를 로컬에 저장 (임시 캐시용)
+                        apiMessages.forEach { message -> messageManager.addMessage(chatId, message) }
+                    } else {
+                        Log.d("ChatRoomActivity", "서버에 메시지가 없음")
+                        // 서버에 메시지가 없고 로컬에도 없으면 샘플 데이터 로드
+                        if (localMessages.isEmpty()) {
+                            runOnUiThread {
+                                loadSampleMessages()
+                            }
+                        }
+                    }
+                },
+                onFailure = { exception ->
+                    Log.e("ChatRoomActivity", "❌ API 메시지 로드 실패", exception)
+                    
+                    // 사용자에게 에러 메시지 표시 (선택적)
+                    runOnUiThread {
+                        val errorMessage = when {
+                            exception.message?.contains("서버 오류") == true -> {
+                                "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+                            }
+                            exception.message?.contains("서버 연결이 끊어졌습니다") == true -> {
+                                "서버 연결이 끊어졌습니다. 잠시 후 다시 시도해주세요."
+                            }
+                            exception.message?.contains("네트워크") == true -> {
+                                "네트워크 연결을 확인해주세요."
+                            }
+                            else -> {
+                                "메시지를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요."
+                            }
+                        }
+                        
+                        Toast.makeText(this@ChatRoomActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                    
+                    // API 실패 시 로컬 메시지가 있으면 그대로 사용, 없으면 샘플 데이터 로드
+                    if (localMessages.isEmpty()) {
+                        runOnUiThread {
+                            loadSampleMessages()
                         }
                     }
                 }
-            }.onFailure { exception ->
-                Log.e("ChatRoomActivity", "메시지 로드 실패", exception)
-                
-                // API 실패 시 샘플 데이터 로드
-                runOnUiThread {
-                    loadSampleMessages()
-                }
+            )
+        }
+    }
+
+    private var isLoadingMore = false
+    private fun loadMorePreviousMessages() {
+        if (isLoadingMore) return
+        val currentList = messageAdapter.currentList
+        if (currentList.isEmpty()) return
+        // 현재 목록 중 가장 오래된 서버 messageId 기준 (양수만 사용)
+        val cursorId = currentList.minOfOrNull { it.messageId } ?: return
+        if (cursorId <= 0) return
+
+        isLoadingMore = true
+        chatRepository.getChatMessagesBefore(chatId, cursorId) { result ->
+            runOnUiThread {
+                result.fold(
+                    onSuccess = { moreMessages ->
+                        if (moreMessages.isNotEmpty()) {
+                            val merged = (moreMessages + messageAdapter.currentList).distinctBy { it.messageId }
+                            messageAdapter.submitList(merged)
+                            // 유지 스크롤 위치 보정
+                            messageRecyclerView.post { messageRecyclerView.scrollToPosition(moreMessages.size) }
+                        } else {
+                            // 더 없음
+                        }
+                        isLoadingMore = false
+                    },
+                    onFailure = {
+                        isLoadingMore = false
+                    }
+                )
             }
         }
     }
@@ -350,14 +600,24 @@ class ChatRoomActivity : AppCompatActivity() {
         Log.d("ChatRoomActivity", "채팅방 $chatId 마지막 읽은 시간 업데이트")
     }
     
+    /**
+     * unreadMsgCnt 리셋
+     */
+    private fun resetUnreadCount() {
+        unreadMessageManager.resetUnreadCount(chatId)
+        Log.d("ChatRoomActivity", "채팅방 $chatId unreadMsgCnt 리셋")
+    }
+    
     override fun onResume() {
         super.onResume()
         // 채팅방으로 돌아올 때마다 마지막 읽은 시간 업데이트
         updateLastReadTime()
     }
+    
+    
 
     /**
-     * 메시지 전송
+     * 메시지 전송 (서버 중심)
      */
     private fun sendMessage() {
         val messageText = messageInput.text.toString().trim()
@@ -368,70 +628,47 @@ class ChatRoomActivity : AppCompatActivity() {
         // 입력 필드 초기화
         messageInput.text.clear()
         
-        // 새 메시지 생성
+        // 새 메시지 생성 (임시 ID 사용) - 즉시 현재 시간 포맷으로 표시
+        val nowFormatted = java.text.SimpleDateFormat("a h:mm", java.util.Locale.KOREAN)
+            .format(java.util.Date())
         val newMessage = Message(
             messageId = System.currentTimeMillis().toInt(),
             sender = "나",
             content = messageText,
-            timestamp = "방금 전",
+            timestamp = nowFormatted,
             isFromMe = true
         )
         
-        // 메시지 목록에 추가
+        // 메시지 목록에 추가 (즉시 UI 업데이트) + 로컬 캐시에도 저장
         val currentMessages = messageAdapter.currentList.toMutableList()
         currentMessages.add(newMessage)
         messageAdapter.submitList(currentMessages)
+        messageManager.saveMessages(chatId, currentMessages)
         
         // 스크롤을 맨 아래로
         messageRecyclerView.post {
             messageRecyclerView.smoothScrollToPosition(currentMessages.size - 1)
         }
         
-        // TODO: 실제 서버로 메시지 전송 API 호출
-        Log.d("ChatRoomActivity", "메시지 전송: $messageText")
-        
-        // 임시로 상대방 응답 메시지 추가 (실제로는 서버에서 받아와야 함)
-        addMockResponse(messageText)
-    }
-    
-    /**
-     * 임시 상대방 응답 메시지 추가 (실제로는 서버에서 받아와야 함)
-     */
-    private fun addMockResponse(userMessage: String) {
-        // 1초 후에 상대방 응답 추가
-        messageRecyclerView.postDelayed({
-            val responses = listOf(
-                "네, 알겠습니다!",
-                "좋은 아이디어네요!",
-                "그럼 그렇게 하시죠!",
-                "오늘 날씨가 정말 좋네요",
-                "산책하기 좋은 날씨예요",
-                "강아지랑 산책하러 가실래요?",
-                "저도 같이 가고 싶어요!",
-                "어디서 만나실 건가요?",
-                "시간은 언제가 좋으신가요?",
-                "그럼 그 시간에 뵙겠습니다!"
-            )
+        // WebSocket으로 메시지 전송 (서버 중심)
+        if (webSocketManager.isConnected()) {
+            webSocketManager.sendMessage(chatId, messageText)
+            Log.d("ChatRoomActivity", "✅ WebSocket을 통해 메시지 전송: $messageText")
             
-            val randomResponse = responses.random()
-            val responseMessage = Message(
-                messageId = System.currentTimeMillis().toInt(),
-                sender = originalFriendName,
-                content = randomResponse,
-                timestamp = "방금 전",
-                isFromMe = false
-            )
-            
-            val currentMessages = messageAdapter.currentList.toMutableList()
-            currentMessages.add(responseMessage)
-            messageAdapter.submitList(currentMessages)
-            
-            // 스크롤을 맨 아래로
-            messageRecyclerView.post {
-                messageRecyclerView.smoothScrollToPosition(currentMessages.size - 1)
+            // 메시지 전송 시에는 로컬 저장하지 않음 (WebSocket 수신 시에 저장됨)
+            // messageManager.addMessage(chatId, newMessage)
+        } else {
+            Log.w("ChatRoomActivity", "⚠️ WebSocket이 연결되지 않아 메시지를 전송할 수 없습니다")
+            runOnUiThread {
+                Toast.makeText(this, "실시간 연결이 끊어져 메시지를 전송할 수 없습니다", Toast.LENGTH_SHORT).show()
             }
-        }, 1000)
+            
+            // 전송 실패 시 UI에서 메시지 제거
+            val updatedMessages = currentMessages.toMutableList()
+            updatedMessages.removeAt(updatedMessages.size - 1)
+            messageAdapter.submitList(updatedMessages)
+        }
+        
+        Log.d("ChatRoomActivity", "메시지 전송 완료: $messageText")
     }
-}
-
-// 기존 ChatMessage는 새로운 Message로 대체됨 
+} 

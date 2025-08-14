@@ -5,19 +5,51 @@
     android:layout_height="match_parent"
     android:background="#FEFEFE">
 
-    <!-- 강아지 카드 뷰페이저 -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/cardViewpager"
+    <!-- 추천 친구 목록 (가로 스와이프) -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recommendedFriendsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="56dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/indicator_container" />
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    <!-- 페이지 인디케이터 -->
+    <!-- 빈 상태 메시지 -->
+    <TextView
+        android:id="@+id/emptyStateTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:gravity="center"
+        android:text="현재 추천할 친구가 없습니다.\n다른 지역을 선택하거나 나중에 다시 시도해보세요."
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 로딩 상태 메시지 -->
+    <TextView
+        android:id="@+id/loadingTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:gravity="center"
+        android:text="추천 친구를 불러오는 중..."
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 하단 인디케이터 -->
     <LinearLayout
-        android:id="@+id/indicator_container"
+        android:id="@+id/indicatorLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -25,35 +57,6 @@
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageView
-            android:id="@+id/indicator_0"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_indicator_active" />
-
-        <ImageView
-            android:id="@+id/indicator_1"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_indicator_inactive" />
-
-        <ImageView
-            android:id="@+id/indicator_2"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_indicator_inactive" />
-
-        <ImageView
-            android:id="@+id/indicator_3"
-            android:layout_width="8dp"
-            android:layout_height="8dp"
-            android:src="@drawable/ic_indicator_inactive" />
-
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout> 

@@ -38,6 +38,10 @@
     <color name="gray_100">#F3F3F3</color>
     <color name="gray_050">#FEFEFE</color>
 
+    <!-- Additional Colors for Recommended Friends -->
+    <color name="primary">#15AB6C</color>
+    <color name="gray">#808080</color>
+
     <color name="pin_red">#FF7D76</color>
     <color name="pin_orange">#FFD876</color>
     <color name="pin_yellow">#FFF676</color>
