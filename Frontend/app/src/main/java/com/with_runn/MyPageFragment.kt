@@ -33,8 +33,6 @@ import com.with_runn.ui.onboarding.UriToMultipart
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.with_runn.databinding.FragmentMypageBinding
-import com.with_runn.ui.course.TabType
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.GregorianCalendar
@@ -250,7 +248,7 @@ class MyPageFragment : Fragment() {
         setupTabs()
         setupEditToggleButtons()
 
-        binding.optionBtn.setOnClickListener {
+        binding.settingBtn.setOnClickListener {
             findNavController().navigate(R.id.action_mypage_graph_to_mypageOptionFragment)
         }
         binding.layoutFollower.setOnClickListener {
@@ -323,7 +321,7 @@ class MyPageFragment : Fragment() {
             else -> listOf(s.trim().trim('"', '“', '”', '\''))
         }
         binding.settingBtn.setOnClickListener {
-            findNavController().navigate(R.id.action_mypage_graph_to_mypageOptionFragment2)
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageOptionFragment)
         }
         binding.btnEditProfile.setOnClickListener {
             val permission = android.Manifest.permission.READ_MEDIA_IMAGES

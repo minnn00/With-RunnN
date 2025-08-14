@@ -5,11 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.with_runn.ActivityViewModel
 import com.with_runn.R
 import com.with_runn.data.model.Notice
 import com.with_runn.data.network.ApiClient
@@ -28,10 +30,15 @@ class NoticeFragment : Fragment() {
     private lateinit var noticeAdapter: NoticeAdapter
     private val noticeList = mutableListOf<Notice>()
 
+    private val activityVM: ActivityViewModel by activityViewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activityVM.setBottomNavVisibility(false)
+        activityVM.setUpperToolbarVisibility(false)
+
         val view = inflater.inflate(R.layout.fragment_notice, container, false)
         val api = ApiClient.instance
         val repository = NoticeRepository(api)

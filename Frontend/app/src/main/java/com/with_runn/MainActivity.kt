@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.apply {
             setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment) }
-            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment) } // TODO: 알람 화면
+            alarmBtn.setOnClickListener { navController.navigate(R.id.noticeFragment) } // TODO: 알람 화면
             chatBtn.setOnClickListener {
                 startActivity(Intent(this@MainActivity, ChatActivity::class.java))
             }

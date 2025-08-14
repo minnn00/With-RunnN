@@ -109,6 +109,10 @@
         android:id="@+id/mypageOptionFragment"
         android:name="com.with_runn.ui.mypage.MypageOptionFragment"
         android:label="MypageOptionFragment" />
+    <fragment
+        android:id="@+id/noticeFragment"
+        android:name="com.with_runn.ui.notice.NoticeFragment"
+        android:label="NoticeFragment" />
 
 
 </navigation>
