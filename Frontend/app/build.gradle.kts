@@ -30,6 +30,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        buildConfigField("String", "TMAP_API_KEY", "\"${localProperties.getProperty("TMAP_API_KEY") ?: ""}\"")
+        manifestPlaceholders["tmapApiKey"] = localProperties.getProperty("TMAP_API_KEY") ?: ""
+
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${localProperties.getProperty("NAVER_CLIENT_ID") ?: ""}\"")
+        manifestPlaceholders["naverClientId"] = localProperties.getProperty("NAVER_CLIENT_ID") ?: ""
+
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${localProperties.getProperty("NAVER_CLIENT_SECRET") ?: ""}\"")
+        manifestPlaceholders["naverClientSecret"] = localProperties.getProperty("NAVER_CLIENT_SECRET") ?: ""
+
         buildConfigField("String", "GOOGLE_MAP_API_KEY", "\"${localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""}\"")
         manifestPlaceholders["googleMapApiKey"] = localProperties.getProperty("GOOGLE_MAP_API_KEY") ?: ""
 
@@ -63,6 +72,7 @@ android {
     }
 
 }
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -92,6 +102,9 @@ dependencies {
     implementation(libs.maps.utils)
     implementation(libs.security.crypto)
     implementation(libs.glide)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
     kapt(libs.glide.compiler)
 
     // WebSocket 관련 의존성 (안정적인 버전으로 교체)
@@ -108,6 +121,10 @@ dependencies {
     // Glide for image loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+
+    // T MAP 로컬 의존성
+    implementation(files("libs/vsm-tmap-sdk-v2-android-1.7.45.aar"))
+    implementation(files("libs/tmap-sdk-3.0.aar"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

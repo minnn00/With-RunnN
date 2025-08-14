@@ -52,68 +52,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.root);
 
-        val navHost = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment;
-        val navController = navHost.navController;
-
-        binding.bottomNavigationView.setupWithNavController(navController)
-
-        lifecycleScope.launch {
-            activityVM.isBottomNavVisible.collect { isBottomNavVisible ->
-                if(isBottomNavVisible){
-                    //binding.bottomNavigationView.visibility = View.VISIBLE
-                    binding.bottomNavigationView.slideUp()
-                }else{
-                    //binding.bottomNavigationView.visibility = View.GONE
-                    binding.bottomNavigationView.slideDown()
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            activityVM.isToolBarVisible.collect { isVisible ->
-                if(isVisible){
-                    binding.upperToolBar.visibility = View.VISIBLE
-                }else{
-                    binding.upperToolBar.visibility = View.GONE
-                }
-            }
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                combine(
-                    activityVM.firstRegion,
-                    activityVM.secondRegion,
-                    activityVM.thirdRegion
-                ) { f, s, t ->
-                    listOfNotNull(f?.name, s?.name, t?.name)
-                        .joinToString(" ")
-                        .ifEmpty { "지역 미설정" }
-                }.collect { text ->
-                    binding.regionText.text = text
-                }
-            }
-        }
-
-        binding.apply {
-            setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)}
-            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment)} /* TODO: 알람 화면으로 연결되도록*/
-            chatBtn.setOnClickListener {
-                val intent = Intent(this@MainActivity, ChatActivity :: class.java)
-                startActivity(intent)
-            }
-        }
-
-        // 1회만 실행: 마스터 토큰 설정
-        TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
-
-        // ViewModel에 로드
-        activityVM.loadToken()
-
-        checkAndRequestLocationPermission()
-
-//        val intent = Intent(this, OnboardingActivity::class.java)
-//        startActivity(intent)
+        routeIfUnauthenticated()
     }
 
     private fun checkAndRequestLocationPermission() {
@@ -124,6 +63,66 @@ class MainActivity : AppCompatActivity() {
         if (!isGranted) {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
+    }
+
+    private fun routeIfUnauthenticated() {
+        lifecycleScope.launch {
+            val token = TokenManager.getAccessToken()
+            val memberId = TokenManager.getCurrentUserId()
+
+            val isInvalid = token.isNullOrBlank() || memberId == -1
+            if (isInvalid) {
+                startActivity(Intent(this@MainActivity, OnboardingActivity::class.java))
+                finish()
+                return@launch
+            }
+
+            activityVM.loadToken()
+            // 토큰 있으면 정상 UI 세팅
+            setupUi()
+        }
+    }
+
+    private fun setupUi() {
+        val navHost = supportFragmentManager
+            .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
+        val navController = navHost.navController
+
+        binding.bottomNavigationView.setupWithNavController(navController)
+
+        lifecycleScope.launch {
+            activityVM.isBottomNavVisible.collect { isVisible ->
+                if (isVisible) binding.bottomNavigationView.slideUp()
+                else binding.bottomNavigationView.slideDown()
+            }
+        }
+        lifecycleScope.launch {
+            activityVM.isToolBarVisible.collect { isVisible ->
+                binding.upperToolBar.visibility = if (isVisible) View.VISIBLE else View.GONE
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                combine(
+                    activityVM.firstRegion, activityVM.secondRegion, activityVM.thirdRegion
+                ) { f, s, t ->
+                    listOfNotNull(f?.name, s?.name, t?.name)
+                        .joinToString(" ").ifEmpty { "지역 미설정" }
+                }.collect { text -> binding.regionText.text = text }
+            }
+        }
+
+        binding.apply {
+            setLocationBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment) }
+            alarmBtn.setOnClickListener { navController.navigate(R.id.locationSetFragment) } // TODO: 알람 화면
+            chatBtn.setOnClickListener {
+                startActivity(Intent(this@MainActivity, ChatActivity::class.java))
+            }
+        }
+
+        activityVM.loadToken()
+
+        checkAndRequestLocationPermission()
     }
 
     fun showSnackbar(
