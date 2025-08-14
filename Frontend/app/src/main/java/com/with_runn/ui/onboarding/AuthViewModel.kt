@@ -1,4 +1,5 @@
 package com.with_runn.ui.onboarding
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.with_runn.data.TokenManager
@@ -18,6 +19,7 @@ class AuthViewModel(
     fun loginWithGoogle(email: String, id: String, idToken: String?) {
         viewModelScope.launch {
             val res = authRepo.login(email, id, idToken)
+            Log.d("AuthViewModel", "Login result: $res")
             if (res != null) {
                 // 세션 저장
                 TokenManager.setAccessToken(res.accessToken)

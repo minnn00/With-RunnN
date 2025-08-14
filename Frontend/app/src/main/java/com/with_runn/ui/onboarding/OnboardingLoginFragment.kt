@@ -49,7 +49,7 @@ class OnboardingLoginFragment : Fragment() {
                     val (email, id) = parseEmailAndId(googleCred.idToken)
                     authViewModel.loginWithGoogle(email, id, googleCred.idToken)
                 } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "구글 로그인에 실패했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -63,8 +63,9 @@ class OnboardingLoginFragment : Fragment() {
                             R.id.action_onboardingLoginFragment_to_onboardingProfileFragment
                         )
                     } else {
-                        // 로그인 실패
+                        //Toast.makeText(requireContext(), "계정 등록에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }
+
                 }
             }
         }
