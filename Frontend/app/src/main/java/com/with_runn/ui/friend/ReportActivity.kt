@@ -9,11 +9,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.ViewModelProvider
 import com.with_runn.R
 import com.with_runn.databinding.ActivityReportBinding
+import com.with_runn.ui.friend.viewmodel.RecommendedFriendViewModel
 
 class ReportActivity : AppCompatActivity() {
     private lateinit var binding: ActivityReportBinding
+    private lateinit var viewModel: RecommendedFriendViewModel
+    private var reportedUserId: Int = 0
+
+    companion object {
+        const val EXTRA_REPORTED_USER_ID = "reported_user_id"
+        const val EXTRA_REPORTED_USER_NAME = "reported_user_name"
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,8 +33,21 @@ class ReportActivity : AppCompatActivity() {
         binding = ActivityReportBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // ViewModel 초기화
+        viewModel = ViewModelProvider(this)[RecommendedFriendViewModel::class.java]
+
+        // 신고 대상 정보 수신
+        reportedUserId = intent.getIntExtra(EXTRA_REPORTED_USER_ID, 0)
+        val reportedUserName = intent.getStringExtra(EXTRA_REPORTED_USER_NAME) ?: ""
+
+        // 상단 타이틀 등에 대상 표시 (있다면)
+        if (reportedUserName.isNotEmpty()) {
+            // 필요 시 타이틀 텍스트 업데이트 등
+        }
+
         setupViews()
         setupTextWatcher()
+        setupObservers()
     }
 
     private fun setupSystemUI() {
@@ -43,9 +65,18 @@ class ReportActivity : AppCompatActivity() {
 
         // 제출하기 버튼 (초기에는 비활성화)
         binding.submitButton.setOnClickListener {
-            // 신고 제출 로직 구현
-            // TODO: 실제 신고 제출 로직 구현
-            finish()
+            val reason = binding.reportEditText.text?.toString()?.trim() ?: ""
+            if (reportedUserId <= 0) {
+                android.widget.Toast.makeText(this, "신고 대상을 확인할 수 없습니다.", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            if (reason.isEmpty()) {
+                android.widget.Toast.makeText(this, "신고 사유를 입력해주세요.", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // 신고 API 호출
+            viewModel.reportFriend(reportedUserId, reason)
         }
     }
 
@@ -78,5 +109,26 @@ class ReportActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun setupObservers() {
+        viewModel.isLoading.observe(this) { isLoading ->
+            binding.submitButton.isEnabled = !isLoading && (binding.reportEditText.text?.isNotEmpty() == true)
+        }
+
+        viewModel.reportResult.observe(this) { result ->
+            result?.let {
+                android.widget.Toast.makeText(this, it, android.widget.Toast.LENGTH_SHORT).show()
+                viewModel.clearReportResult()
+                finish()
+            }
+        }
+
+        viewModel.error.observe(this) { error ->
+            error?.let {
+                android.widget.Toast.makeText(this, it, android.widget.Toast.LENGTH_LONG).show()
+                viewModel.clearError()
+            }
+        }
     }
 } 

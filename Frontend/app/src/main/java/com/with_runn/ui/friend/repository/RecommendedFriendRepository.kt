@@ -4,6 +4,7 @@ import android.util.Log
 import com.with_runn.ui.friend.model.dto.RecommendedFriendResponse
 import com.with_runn.ui.friend.model.dto.FriendDetailResponse
 import com.with_runn.ui.friend.model.dto.BlockUserResponse
+import com.with_runn.ui.friend.model.dto.ReportRequest
 import com.with_runn.ui.friend.network.FriendRetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -228,6 +229,36 @@ class RecommendedFriendRepository {
                 else -> {
                     Result.failure(Exception("차단 중 오류가 발생했습니다: ${e.message}"))
                 }
+            }
+        }
+    }
+
+    suspend fun reportFriend(reportedId: Int, reason: String): Result<String> = withContext(Dispatchers.IO) {
+        try {
+            Log.d("RecommendedFriendRepository", "사용자 신고 API 호출 시작: reportedId=$reportedId")
+
+            val response = apiService.reportFriend(reportedId, ReportRequest(reason))
+
+            Log.d("RecommendedFriendRepository", "사용자 신고 API 응답 코드: ${response.code()}")
+
+            when (response.code()) {
+                200 -> {
+                    val result = response.body() ?: "신고가 접수되었습니다."
+                    Log.d("RecommendedFriendRepository", "사용자 신고 성공: $result")
+                    Result.success(result)
+                }
+                else -> {
+                    Log.e("RecommendedFriendRepository", "사용자 신고 API 호출 실패: ${response.code()}")
+                    Result.failure(Exception("신고에 실패했습니다. (오류 코드: ${response.code()})"))
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("RecommendedFriendRepository", "사용자 신고 API 호출 중 예외 발생", e)
+            when (e) {
+                is java.io.EOFException -> Result.failure(Exception("서버 응답을 읽을 수 없습니다. 잠시 후 다시 시도해주세요."))
+                is java.net.SocketTimeoutException -> Result.failure(Exception("네트워크 연결이 지연되고 있습니다. 잠시 후 다시 시도해주세요."))
+                is java.net.UnknownHostException -> Result.failure(Exception("서버에 연결할 수 없습니다. 네트워크 연결을 확인해주세요."))
+                else -> Result.failure(Exception("신고 중 오류가 발생했습니다: ${e.message}"))
             }
         }
     }

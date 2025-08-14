@@ -2,10 +2,12 @@ package com.with_runn.ui.friend.network
 
 import com.with_runn.ui.friend.model.dto.RecommendedFriendResponse
 import com.with_runn.ui.friend.model.dto.FriendDetailResponse
+import com.with_runn.ui.friend.model.dto.ReportRequest
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
+import retrofit2.http.Body
 
 interface FriendApiService {
     @GET("/api/friends/recommendation")
@@ -43,5 +45,11 @@ interface FriendApiService {
     @POST("/api/friends/block")
     suspend fun blockUser(
         @Query("userId") userId: Int
+    ): Response<String>
+
+    @POST("/api/friends/report")
+    suspend fun reportFriend(
+        @Query("reportedId") reportedId: Int,
+        @Body request: ReportRequest
     ): Response<String>
 } 

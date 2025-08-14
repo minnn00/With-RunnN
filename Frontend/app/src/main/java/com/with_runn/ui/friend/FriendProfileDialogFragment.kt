@@ -391,6 +391,8 @@ class FriendProfileDialogFragment : DialogFragment() {
             // 신고하기 Activity 실행
             popupWindow.dismiss()
             val intent = Intent(requireContext(), ReportActivity::class.java)
+            intent.putExtra(ReportActivity.EXTRA_REPORTED_USER_ID, userId)
+            intent.putExtra(ReportActivity.EXTRA_REPORTED_USER_NAME, friendName)
             startActivity(intent)
         }
     }

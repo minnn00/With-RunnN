@@ -30,6 +30,9 @@ class RecommendedFriendViewModel : ViewModel() {
     private val _blockResult = MutableLiveData<String>()
     val blockResult: LiveData<String> = _blockResult
 
+    private val _reportResult = MutableLiveData<String>()
+    val reportResult: LiveData<String> = _reportResult
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
     
@@ -157,5 +160,26 @@ class RecommendedFriendViewModel : ViewModel() {
     
     fun clearError() {
         _error.value = null
+    }
+
+    fun reportFriend(reportedId: Int, reason: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _error.value = null
+
+            repository.reportFriend(reportedId, reason)
+                .onSuccess { result ->
+                    _reportResult.value = result
+                    _isLoading.value = false
+                }
+                .onFailure { exception ->
+                    _error.value = exception.message ?: "신고에 실패했습니다."
+                    _isLoading.value = false
+                }
+        }
+    }
+
+    fun clearReportResult() {
+        _reportResult.value = null
     }
 } 
