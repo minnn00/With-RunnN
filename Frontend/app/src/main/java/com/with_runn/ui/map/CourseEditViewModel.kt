@@ -28,10 +28,10 @@ class CourseEditViewModel : ViewModel() {
 
     private val _courseData = MutableStateFlow<CourseData>(
         CourseData(
-            "샘플 데이터",
-            "샘플 데이터",
-            "샘플 키워드",
-            90
+            "",
+            null,
+            null,
+            0
         )
     )
     val courseData : StateFlow<CourseData> = _courseData

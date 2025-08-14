@@ -166,6 +166,7 @@ fun BottomNavigationView.slideDown(){
         .translationY(height.toFloat())
         .setDuration(500)
         .start()
+
 }
 
 fun BottomNavigationView.slideUp(){
