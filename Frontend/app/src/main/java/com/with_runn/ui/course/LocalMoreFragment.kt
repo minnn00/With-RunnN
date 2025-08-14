@@ -56,10 +56,9 @@ class LocalMoreFragment : Fragment() {
 
         // 선택된 provinceId가 바뀔 때만 호출 (하드코딩 제거)
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            activityVM.selectedProvinceId
-                .collectLatest { pidNullable ->
+            activityVM.firstRegion.collect { province ->
                     // selectedProvinceId 가 Int 라면 다음 줄은 그냥: val pid = pidNullable
-                    val pid = pidNullable ?: 0      // Int? 가능성 대비
+                    val pid = province?.id ?: 0      // Int? 가능성 대비
                     Log.d(TAG, "selectedProvinceId → $pid")
                     currentProvinceId = pid
                     if (pid > 0) {

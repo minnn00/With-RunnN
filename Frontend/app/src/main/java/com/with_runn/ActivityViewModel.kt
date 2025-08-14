@@ -62,11 +62,11 @@ class ActivityViewModel: ViewModel() {
         _memberId.value = TokenManager.getCurrentUserId()
     }
 
-    fun setLocation(provinceId: Int, cityId: Int, townId: Int) {
-        _selectedProvinceId.value = provinceId
-        _selectedCityId.value = cityId
-        _selectedTownId.value = townId
-    }
+//    fun setLocation(provinceId: Int, cityId: Int, townId: Int) {
+//        _selectedProvinceId.value = provinceId
+//        _selectedCityId.value = cityId
+//        _selectedTownId.value = townId
+//    }
 
     /*fun clearToken() {
         _accessToken.value = null

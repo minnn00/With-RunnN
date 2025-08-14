@@ -80,6 +80,7 @@ class WalkCourseFragment : Fragment() {
     ): View {
         _binding = FragmentWalkCourseBinding.inflate(inflater, container, false)
         activityVM.setBottomNavVisibility(true)
+        activityVM.setUpperToolbarVisibility(true)
         return binding.root
     }
 
@@ -164,20 +165,20 @@ class WalkCourseFragment : Fragment() {
             Log.d(TAG, "초기 risingPreview 비어있음 → fetchRisingPreview()")
             viewModel.fetchRisingPreview()
         }
-        activityVM.selectedProvinceId.value?.let { pid ->
+        activityVM.firstRegion.value?.let { province ->
+            val pid = province.id
             Log.d(TAG, "초기 provinceId=$pid → ensureHomePreviews(pid)")
             viewModel.ensureHomePreviews(pid)
         } ?: Log.d(TAG, "초기 provinceId 없음 → 우리동네 호출 보류")
 
         // === pID 변경 감지되면 그때만 재호출 ===
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            activityVM.selectedProvinceId
-                .filterNotNull()
-                .distinctUntilChanged()
-                .collectLatest { id ->
-                    Log.d(TAG, "province changed → $id")
-                    viewModel.fetchNeighborhoodPreview(id)
-                }
+            activityVM.firstRegion.collect{ province ->
+                val pid = province?.id ?: 0
+                Log.d(TAG, "province changed → $id")
+                viewModel.fetchNeighborhoodPreview(id)
+
+            }
         }
 
         // === 더보기 버튼 ===

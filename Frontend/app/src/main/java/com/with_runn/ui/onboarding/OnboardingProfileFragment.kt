@@ -152,9 +152,9 @@ class OnboardingProfileFragment : Fragment() {
                         Log.e("Login", "오류 발생: ${t.message}")
                     }
                 })
-                // MainActivity로 이동
-//                val intent = Intent(requireContext(), MainActivity::class.java)
-//                startActivity(intent)
+                //MainActivity로 이동
+                val intent = Intent(requireContext(), MainActivity::class.java)
+                startActivity(intent)
 
                 // 온보딩 액티비티 종료
                 requireActivity().finish()

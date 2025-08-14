@@ -34,16 +34,20 @@
             android:name="com.skt.TmapApiKey"
             android:value="${tmapApiKey}"/>
 
+        <!-- 런처는 온보딩 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.onboarding.OnboardingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <!-- 메인은 일반 액티비티 -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
 
 
 
@@ -55,8 +59,6 @@
         <activity
             android:name=".ui.chat.activity.ChatRoomActivity"
             android:exported="false" />
-
-        <activity android:name=".ui.onboarding.OnboardingActivity" />
         <activity android:name=".ui.mypage.MypageFollowerFollowFragment" />
         <activity android:name=".ui.friend.DogCardMainActivity" />
         <activity android:name=".ui.friend.ReportActivity" />

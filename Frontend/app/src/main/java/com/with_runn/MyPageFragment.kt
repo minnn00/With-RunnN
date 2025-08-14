@@ -124,6 +124,7 @@ class MyPageFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         activityVM.setBottomNavVisibility(true)
+        activityVM.setUpperToolbarVisibility(false)
         binding = FragmentMypageBinding.inflate(inflater, container, false)
         return binding.root
     }

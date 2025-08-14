@@ -52,7 +52,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.root);
 
-        routeIfUnauthenticated()
+        activityVM.loadToken()
+        // 토큰 있으면 정상 UI 세팅
+        setupUi()
     }
 
     private fun checkAndRequestLocationPermission() {
@@ -62,24 +64,6 @@ class MainActivity : AppCompatActivity() {
 
         if (!isGranted) {
             locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-    }
-
-    private fun routeIfUnauthenticated() {
-        lifecycleScope.launch {
-            val token = TokenManager.getAccessToken()
-            val memberId = TokenManager.getCurrentUserId()
-
-            val isInvalid = token.isNullOrBlank() || memberId == -1
-            if (isInvalid) {
-                startActivity(Intent(this@MainActivity, OnboardingActivity::class.java))
-                finish()
-                return@launch
-            }
-
-            activityVM.loadToken()
-            // 토큰 있으면 정상 UI 세팅
-            setupUi()
         }
     }
 
@@ -119,8 +103,6 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent(this@MainActivity, ChatActivity::class.java))
             }
         }
-
-        activityVM.loadToken()
 
         checkAndRequestLocationPermission()
     }

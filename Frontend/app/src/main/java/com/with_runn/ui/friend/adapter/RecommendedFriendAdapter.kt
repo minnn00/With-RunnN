@@ -55,8 +55,9 @@ class RecommendedFriendAdapter(
                 holder.dogImage?.let {
                     Glide.with(it.context)
                         .load(profileImageUrl)
-                        .placeholder(R.drawable.default_profile)
-                        .error(R.drawable.default_profile)
+                        .placeholder(R.drawable.ic_fallback)
+                        .fallback(R.drawable.ic_fallback)
+                        .error(R.drawable.ic_fallback)
                         .centerCrop()
                         .into(it)
                 }
