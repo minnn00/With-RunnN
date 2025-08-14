@@ -261,9 +261,9 @@ class MapFragment : Fragment() {
             val dong = activityVM.thirdRegion.value?.name
 
             mapViewModel.loadFacilities(
-                sido = sido,
-                gugun = gugun,
-                dong = dong,
+                sido = null,
+                gugun = null,
+                dong = null,
                 category = category
             ){ success ->
                 if (success){

@@ -1,14 +1,16 @@
 package com.with_runn.login
 
+import com.google.gson.annotations.SerializedName
+
 // LoginReq.kt
 data class LoginReq(
     val email: String,
-    val naverId: String
+    @SerializedName("loginId") val naverId: String
 )
 
 // LoginRes.kt
 data class LoginRes(
-    val memberId: Int,
+    @SerializedName("userId") val memberId: Int,
     val accessToken: String
 )
 
