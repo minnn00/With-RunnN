@@ -71,4 +71,7 @@ class OnboardingViewmodel : ViewModel(){
     fun hasStyleBeenSet(): Boolean {
         return isWalkingStyleValuesSet
     }
+    fun hasProfileImgBeenSet(): Boolean{
+        return isProfileImgSet
+    }
 }
