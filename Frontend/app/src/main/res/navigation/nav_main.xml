@@ -24,6 +24,7 @@
         android:name="com.with_runn.ui.mypage.EditMyCoursesFragment"
         android:label="편집">
         <!-- 필요하면 인자 추가 -->
+
     </fragment>
 
     <action

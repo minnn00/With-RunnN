@@ -1,17 +1,25 @@
 package com.with_runn.ui.onboarding
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.FileUtils
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.with_runn.R
 import com.with_runn.databinding.FragmentOnboardingProfileDefaultBinding
+import java.io.File
 
 class OnboardingProfileDefaultFragment : Fragment() {
 
@@ -29,6 +37,8 @@ class OnboardingProfileDefaultFragment : Fragment() {
 
     private var name_saveable: Int = 0
     private var breed_savable: Boolean = false
+
+    private var selectedImageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,6 +80,10 @@ class OnboardingProfileDefaultFragment : Fragment() {
             else if (name_saveable == 2) {
 
                 viewModel.setDefaultValues(name, gender, birthday, breed, size, introduction)
+                // 선택된 이미지가 있으면 업로드
+                selectedImageUri?.let { uri ->
+                    viewModel.setProfileImg(uri)
+                }
 
                 findNavController().popBackStack() // 프로필 프래그먼트로 복귀
             }
@@ -134,7 +148,46 @@ class OnboardingProfileDefaultFragment : Fragment() {
         binding.backButton.setOnClickListener {
             findNavController().popBackStack()
         }
+
+        binding.changeImgBtn.setOnClickListener {
+            val permission = android.Manifest.permission.READ_MEDIA_IMAGES
+            requestPermissionLauncher.launch(permission)
+        }
     }
+
+    // 1️⃣ 권한 요청
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openGallery()
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("권한 필요")
+                    .setMessage("이미지를 업로드하려면 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+                    .setPositiveButton("설정") { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri = Uri.fromParts("package", requireContext().packageName, null)
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
+            }
+        }
+
+    // 2️⃣ 갤러리에서 이미지 선택
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                selectedImageUri = it
+                Glide.with(this).load(it).circleCrop().into(binding.profileImage)
+            }
+        }
+
+    private fun openGallery() {
+        pickImageLauncher.launch("image/*")
+    }
+
 
     private fun showNameError(message: String) {
         binding.entryName.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_error)

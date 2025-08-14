@@ -49,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+
         binding = ActivityMainBinding.inflate(layoutInflater);
         setContentView(binding.root);
 

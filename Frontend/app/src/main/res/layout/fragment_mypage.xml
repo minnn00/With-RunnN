@@ -7,7 +7,8 @@
     android:background="@color/white">
 
     <!-- 마이페이지 타이틀 -->
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/title_layout"
         android:layout_width="match_parent"
         android:layout_height="66dp"
         android:orientation="horizontal"
@@ -19,24 +20,29 @@
             android:id="@+id/text_title_mypage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
+            android:layout_marginStart="18dp"
+            android:fontFamily="@font/pretendard_semibold"
             android:text="마이페이지"
+            android:textColor="#121212"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#121212"
-            android:fontFamily="@font/pretendard_semibold" />
-        <View
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_weight="1"/>
-        <ImageButton
-            android:id="@+id/option_btn"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
-            android:scaleType="centerCrop"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_setting"/>
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/setting_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_setting"
+            android:clickable="true"
+            android:focusable="true"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- 상단 프로필 정보 -->
     <LinearLayout

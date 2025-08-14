@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.with_runn.MainActivity
 import com.with_runn.R
+import com.with_runn.data.model.setProfileImgResponse
 import com.with_runn.data.model.setProfileResponse
 import com.with_runn.data.model.setProfileRequest
 import com.with_runn.data.network.ApiClient
@@ -135,6 +136,7 @@ class OnboardingProfileFragment : Fragment() {
                     style = styles,
                     introduction = viewModel.introduction.value!!
                 )
+
                 ApiClient.instance.setProfile(request).enqueue(object : Callback<setProfileResponse> {
                     override fun onResponse(
                         call: Call<setProfileResponse>,
@@ -156,7 +158,30 @@ class OnboardingProfileFragment : Fragment() {
                 val intent = Intent(requireContext(), MainActivity::class.java)
                 startActivity(intent)
 
-                // 온보딩 액티비티 종료
+                if (viewModel.hasProfileImgBeenSet()) {
+                    val imguri = viewModel.profileImg.value!!
+                    val img = UriToMultipart.create(requireContext(), imguri)
+                    ApiClient.instance.uploadProfileImage(img)
+                        .enqueue(object : Callback<setProfileImgResponse> {
+                            override fun onResponse(
+                                call: Call<setProfileImgResponse>,
+                                response: Response<setProfileImgResponse>
+                            ) {
+                                if (response.isSuccessful && response.body()?.success == true) {
+                                    Log.d("Upload", "이미지 업로드 성공: ${response.body()?.result}")
+                                } else {
+                                    Log.e("Upload", "이미지 업로드 실패: ${response.errorBody()?.string()}")
+                                }
+                            }
+
+                            override fun onFailure(
+                                call: Call<setProfileImgResponse>,
+                                t: Throwable
+                            ) {
+                                Log.e("Login", "오류 발생: ${t.message}")
+                            }
+                        })
+                }
                 requireActivity().finish()
             }
         }

@@ -1,10 +1,15 @@
 package com.with_runn
 
+import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -13,12 +18,21 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.with_runn.databinding.FragmentMypageBinding
+import com.with_runn.ui.course.TabType
 import com.with_runn.data.WalkCourse
+import com.with_runn.data.model.setProfileImgResponse
+import com.with_runn.data.network.ApiClient
 import com.with_runn.data.remote.RetrofitInstance
 import com.with_runn.data.repository.MyPageRepository
 import com.with_runn.data.toWalkCourse
 import com.with_runn.data.viewmodel.MyPageViewModel
 import com.with_runn.data.viewmodel.MyPageViewModelFactory
+import com.with_runn.data.toWalkCourse
+import com.with_runn.ui.onboarding.UriToMultipart
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import com.with_runn.databinding.FragmentMypageBinding
 import com.with_runn.ui.course.TabType
 import kotlinx.coroutines.launch
@@ -119,6 +133,8 @@ class MyPageFragment : Fragment() {
         isScrapped = false,
         isLiked    = false
     )
+
+    private var selectedImageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -306,6 +322,72 @@ class MyPageFragment : Fragment() {
             // 단일 태그
             else -> listOf(s.trim().trim('"', '“', '”', '\''))
         }
+        binding.settingBtn.setOnClickListener {
+            findNavController().navigate(R.id.action_mypage_graph_to_mypageOptionFragment2)
+        }
+        binding.btnEditProfile.setOnClickListener {
+            val permission = android.Manifest.permission.READ_MEDIA_IMAGES
+            requestPermissionLauncher.launch(permission)
+        }
+
+
+    }
+
+    // 1️⃣ 권한 요청
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openGallery()
+            } else {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("권한 필요")
+                    .setMessage("이미지를 업로드하려면 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
+                    .setPositiveButton("설정") { _, _ ->
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        val uri = Uri.fromParts("package", requireContext().packageName, null)
+                        intent.data = uri
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("취소", null)
+                    .show()
+            }
+        }
+
+    // 2️⃣ 갤러리에서 이미지 선택
+    private val pickImageLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            uri?.let {
+                selectedImageUri = it
+                Glide.with(this).load(it).circleCrop().into(binding.imageProfile)
+                Log.d("Upload", (selectedImageUri != null).toString())
+                if (selectedImageUri != null) {
+                    val img = UriToMultipart.create(requireContext(), selectedImageUri!!)
+                    ApiClient.instance.uploadProfileImage(img)
+                        .enqueue(object : Callback<setProfileImgResponse> {
+                            override fun onResponse(
+                                call: Call<setProfileImgResponse>,
+                                response: Response<setProfileImgResponse>
+                            ) {
+                                if (response.isSuccessful && response.body()?.success == true) {
+                                    Log.d("Upload", "이미지 업로드 성공: ${response.body()?.result}")
+                                } else {
+                                    Log.e("Upload", "이미지 업로드 실패: ${response.errorBody()?.string()}")
+                                }
+                            }
+
+                            override fun onFailure(
+                                call: Call<setProfileImgResponse>,
+                                t: Throwable
+                            ) {
+                                Log.e("Login", "오류 발생: ${t.message}")
+                            }
+                        })
+                }
+            }
+        }
+
+    private fun openGallery() {
+        pickImageLauncher.launch("image/*")
     }
 
 

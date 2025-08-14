@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/profile_layout"
         android:layout_width="match_parent"
@@ -26,13 +24,13 @@
             android:scaleType="centerCrop"/>
 
         <TextView
-            android:id="@+id/name_text"
+            android:id="@+id/notice_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:fontFamily="@font/pretendard_medium"
-            android:text="조니"
-            android:textSize="16sp"
+            android:text="notice_follow_text"
+            android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/user_img"
             app:layout_constraintTop_toTopOf="parent" />
@@ -42,17 +40,17 @@
         android:id="@+id/follow_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_button_inactive"
+        android:background="@drawable/bg_button_main"
         android:minWidth="0dp"
         android:minHeight="0dp"
         android:paddingHorizontal="24dp"
         android:paddingVertical="8dp"
-        android:text="팔로잉"
+        android:text="팔로우"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:fontFamily="@font/pretendard_regular"
         android:textSize="12sp"
-        android:textColor="@color/gray_700"
+        android:textColor="@color/gray_050"
         android:stateListAnimator="@null"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

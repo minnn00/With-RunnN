@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.fragment.app.activityViewModels
 import com.with_runn.ActivityViewModel
 import com.with_runn.databinding.DialogAskBinding
@@ -36,6 +37,9 @@ class MypageOptionFragment : Fragment(){
         binding.btnDrop.setOnClickListener {
             val onPositiveClick = {showInfoDialog(requireContext(), "탈퇴하였습니다.", "닫기")}
             showAskDialog(requireContext(), "회원탈퇴 하시겠습니까?", "탈퇴하기", "취소",onPositiveClick)
+        }
+        binding.backButton.setOnClickListener {
+            findNavController().popBackStack()
         }
     }
 
