@@ -26,8 +26,8 @@ class OnboardingActivity : AppCompatActivity() {
             val token = TokenManager.getAccessToken()
             val memberId = TokenManager.getCurrentUserId()
 
-            TokenManager.clearAll()
-
+            TokenManager.setAccessToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJmcm9udEBleGFtcGxlLmNvbSIsInJvbGUiOiJST0xFX1VTRVIiLCJpYXQiOjE3NTM4Nzg5NzR9.3pFLt3E32IqDcdfCYMFb95I1WLoFmd4pYkpTgMgV5vs")
+            TokenManager.setUserId(1)
             val isInvalid = token.isNullOrBlank() || memberId == -1
             if (!isInvalid) {
                 startActivity(Intent(this@OnboardingActivity, MainActivity::class.java).apply {
