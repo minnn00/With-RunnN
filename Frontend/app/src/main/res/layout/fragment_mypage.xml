@@ -41,7 +41,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
     <!-- 상단 프로필 정보 -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -85,7 +84,7 @@
             android:layout_marginStart="16dp">
 
             <TextView
-                android:id="@+id/text_nickname"
+                android:id="@+id/textName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="보리"
@@ -165,7 +164,7 @@
                 android:orientation="vertical"
                 android:layout_marginTop="4dp">
 
-                <!-- 🟢 첫 줄 : 정보 + 도형 구분 -->
+                <!-- 첫 줄 : 정보 + 도형 구분 -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -173,6 +172,7 @@
                     android:gravity="center_vertical">
 
                     <TextView
+                        android:id="@+id/tvMetaAge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="1년 3개월"
@@ -187,6 +187,7 @@
                         android:background="@drawable/rectangle" />
 
                     <TextView
+                        android:id="@+id/tvMetaBreed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="래브라도 리트리버"
@@ -201,6 +202,7 @@
                         android:background="@drawable/rectangle" />
 
                     <TextView
+                        android:id="@+id/tvMetaSize"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="대형견"
@@ -209,7 +211,7 @@
                         android:textColor="@color/gray_500" />
                 </LinearLayout>
 
-                <!-- 🟢 두 번째 줄 : 성격 -->
+                <!--  두 번째 줄 : 성격 -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -230,6 +232,7 @@
                         android:layout_marginEnd="10dp" />
 
                     <TextView
+                        android:id="@+id/tvCharMain"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="에너지 폭발"
@@ -239,6 +242,7 @@
                         android:layout_marginEnd="4dp" />
 
                     <TextView
+                        android:id="@+id/tvCharMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="외 2개"
@@ -247,7 +251,7 @@
                         android:textSize="12sp" />
                 </LinearLayout>
 
-                <!-- 🟢 세 번째 줄 : 산책 스타일 -->
+                <!-- 세 번째 줄 : 산책 스타일 -->
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -268,6 +272,7 @@
                         android:layout_marginEnd="10dp" />
 
                     <TextView
+                        android:id="@+id/tvStyleMain"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="속도 균형"
@@ -277,6 +282,7 @@
                         android:layout_marginEnd="4dp" />
 
                     <TextView
+                        android:id="@+id/tvStyleMore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="외 2개"
@@ -391,40 +397,67 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- ✅ 리스트 영역 -->
+    <!--  리스트 영역 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_mypage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:paddingHorizontal="20dp"
         android:clipToPadding="false" />
 
-    <!-- ✅ 삭제 모드 / 완료 버튼 영역 -->
+
     <LinearLayout
+        android:id="@+id/editBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="end"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:layout_marginBottom="120dp"
+        android:elevation="12dp">
 
-        <Button
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnDeleteMode"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="삭제 모드"
+            android:layout_height="36dp"
             android:visibility="gone"
-            android:backgroundTint="@color/gray_300"
-            android:textColor="@android:color/black" />
+            android:text="편집"
+            android:fontFamily="@font/pretendard_regular"
+            android:textSize="14sp"
+            android:textColor="@color/gray_600"
+            app:icon="@drawable/pen"
+            app:iconTint="@color/gray_600"
+            app:iconSize="14dp"
+            app:iconPadding="4dp"
+            app:iconGravity="textStart"
+            app:cornerRadius="18dp"
+            app:backgroundTint="@color/white"
+            app:strokeColor="@color/gray_300"
+            app:strokeWidth="1dp"
+            android:paddingHorizontal="8dp" />
 
-        <Button
-            android:id="@+id/btnDone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="완료"
-            android:visibility="gone"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="@color/green_700"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDone"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:visibility="gone"
+        android:text="완료"
+        android:fontFamily="@font/pretendard_regular"
+        android:textSize="14sp"
+        android:textColor="@color/gray_600"
+        app:icon="@drawable/check"
+        app:iconTint="@color/gray_600"
+        app:iconSize="14dp"
+        app:iconPadding="4dp"
+        app:iconGravity="textStart"
+        app:cornerRadius="18dp"
+        app:backgroundTint="@color/white"
+        app:strokeColor="@color/gray_300"
+        app:strokeWidth="1dp"
+        android:paddingHorizontal="8dp" />
 </LinearLayout>
+
+    </LinearLayout>

@@ -9,16 +9,21 @@ import android.widget.ImageView
 import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.with_runn.R
 import com.with_runn.ui.friend.viewmodel.RecommendedFriendViewModel
+import com.with_runn.data.repository.MypageFollowerRepository
+import kotlinx.coroutines.launch
 
 class FriendProfileDialogFragment : DialogFragment() {
     private var friendName: String = ""
     private var userId: Int = 0
     private var onMessageButtonClickListener: (() -> Unit)? = null
     private lateinit var viewModel: RecommendedFriendViewModel
+    private val mypageFollowerRepository = MypageFollowerRepository()
+    private var isFollowingCurrent: Boolean = false
 
     companion object {
         private const val ARG_FRIEND_NAME = "friend_name"
@@ -82,6 +87,8 @@ class FriendProfileDialogFragment : DialogFragment() {
         // 세부 프로필 정보 로드
         if (userId > 0) {
             loadFriendDetail()
+            // 마이페이지 팔로잉 목록으로 초기 팔로우 상태 판별 (임시)
+            checkInitialFollowingState(userId)
         }
 
         // Observer 설정
@@ -160,6 +167,7 @@ class FriendProfileDialogFragment : DialogFragment() {
         viewModel.followResult.observe(viewLifecycleOwner) { result ->
             result?.let {
                 // 팔로우 성공 시 UI 업데이트
+                isFollowingCurrent = true
                 updateFollowButtonState(true)
                 // 성공 메시지 표시
                 showFollowSuccessMessage("팔로우 완료 (userId=$userId)")
@@ -211,9 +219,8 @@ class FriendProfileDialogFragment : DialogFragment() {
                 updateFollowButtonLoadingState()
             } else {
                 // 로딩 완료 시 현재 팔로우 상태로 복원
-                // 이미 팔로우된 상태라면 팔로잉으로, 아니면 팔로우로
-                val isCurrentlyFollowing = viewModel.followResult.value != null
-                updateFollowButtonState(isCurrentlyFollowing)
+                // 로컬에 추적한 현재 상태 사용
+                updateFollowButtonState(isFollowingCurrent)
             }
         }
     }
@@ -252,7 +259,8 @@ class FriendProfileDialogFragment : DialogFragment() {
         val followButton = view?.findViewById<TextView>(R.id.follow_button)
         followButton?.let {
             if (isFollowing) {
-                it.text = "팔로잉"
+                // 임시 정책: 팔로우 중이면 버튼 문구를 "이미 팔로우 상태"로 표시
+                it.text = "이미 팔로우 상태"
                 it.setBackgroundResource(R.drawable.bg_btn_filled_inactive)
                 it.setTextColor(resources.getColor(R.color.gray, null))
                 it.isEnabled = false
@@ -265,6 +273,23 @@ class FriendProfileDialogFragment : DialogFragment() {
                 it.isEnabled = true
                 // 팔로우 가능 상태임을 명확히 표시
                 it.contentDescription = "팔로우할 수 있는 사용자입니다"
+            }
+        }
+    }
+
+    /**
+     * 마이페이지 팔로잉 목록을 조회하여 해당 사용자를 팔로우 중인지 초기 상태를 판별한다 (임시 구현)
+     */
+    private fun checkInitialFollowingState(targetUserId: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val followings = mypageFollowerRepository.fetchFollowings()
+                val isFollowing = followings?.any { it.targetUserId == targetUserId } == true
+                if (isFollowing) {
+                    updateFollowButtonState(true)
+                }
+            } catch (_: Exception) {
+                // 실패 시 무시하고 기본 상태(팔로우 가능) 유지
             }
         }
     }

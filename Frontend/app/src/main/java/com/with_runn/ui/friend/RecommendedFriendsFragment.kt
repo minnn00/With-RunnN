@@ -11,14 +11,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.PagerSnapHelper
+import android.widget.LinearLayout
+import android.widget.ImageView
 import com.with_runn.R
-import com.with_runn.ui.friend.adapter.RecommendedFriendAdapter
+import com.with_runn.ui.adapter.DogCard
+import com.with_runn.ui.adapter.DogCardAdapter
 import com.with_runn.ui.friend.viewmodel.RecommendedFriendViewModel
 import com.with_runn.ui.chat.activity.ChatRoomActivity
 import com.with_runn.ui.chat.repository.ChatRepository
 
 class RecommendedFriendsFragment : Fragment() {
-    private lateinit var recommendedFriendAdapter: RecommendedFriendAdapter
+    private lateinit var dogCardAdapter: DogCardAdapter
     private lateinit var viewModel: RecommendedFriendViewModel
     private val chatRepository = ChatRepository()
 
@@ -37,7 +42,7 @@ class RecommendedFriendsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         
-        // 기본값으로 추천 친구 조회 (provinceId = 1, 서울)
+        // 기본값으로 추천 친구 조회 (백엔드 요청: provinceId = 9)
         loadRecommendedFriends()
     }
 
@@ -47,14 +52,28 @@ class RecommendedFriendsFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.recommendedFriendsRecyclerView)
-        recommendedFriendAdapter = RecommendedFriendAdapter { friend ->
-            // 친구 클릭 시 처리
-            showFriendProfileDialog(friend)
-        }
-        
+        val indicatorLayout = view?.findViewById<LinearLayout>(R.id.indicatorLayout)
+        dogCardAdapter = DogCardAdapter(emptyList())
         recyclerView?.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = recommendedFriendAdapter
+            // 가로 스와이프 레이아웃
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = dogCardAdapter
+            // 페이지 스냅
+            PagerSnapHelper().attachToRecyclerView(this)
+            // 인디케이터 초기화
+            post { updateIndicators(indicatorLayout, dogCardAdapter.itemCount, 0) }
+            // 스크롤 리스너로 인디케이터 갱신
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                        val firstVisible = layoutManager.findFirstCompletelyVisibleItemPosition()
+                        val position = if (firstVisible != RecyclerView.NO_POSITION) firstVisible else layoutManager.findFirstVisibleItemPosition()
+                        updateIndicators(indicatorLayout, dogCardAdapter.itemCount, position)
+                    }
+                }
+            })
         }
     }
 
@@ -64,7 +83,26 @@ class RecommendedFriendsFragment : Fragment() {
                 showEmptyState()
             } else {
                 hideEmptyState()
-                recommendedFriendAdapter.updateFriends(friends)
+                val cards = friends.map { f ->
+                    DogCard(
+                        name = f.userName ?: "",
+                        tag = (f.style?.firstOrNull() ?: "#"),
+                        imageResId = R.drawable.jonny,
+                        tags = ((f.style ?: emptyList()) + (f.characters ?: emptyList())).take(2)
+                    )
+                }
+                dogCardAdapter.updateData(cards)
+                // 인디케이터 갱신
+                val indicatorLayout = view?.findViewById<LinearLayout>(R.id.indicatorLayout)
+                updateIndicators(indicatorLayout, cards.size, 0)
+
+                // 카드 클릭 시 상세(프로필) 다이얼로그 표시
+                dogCardAdapter.setOnItemClickListener { position ->
+                    val friend = friends.getOrNull(position)
+                    if (friend != null) {
+                        showFriendProfileDialog(friend)
+                    }
+                }
             }
         }
         
@@ -81,6 +119,29 @@ class RecommendedFriendsFragment : Fragment() {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show()
                 viewModel.clearError()
             }
+        }
+    }
+
+    private fun updateIndicators(indicatorLayout: LinearLayout?, count: Int, selected: Int) {
+        indicatorLayout ?: return
+        indicatorLayout.removeAllViews()
+        if (count <= 1) {
+            indicatorLayout.visibility = View.GONE
+            return
+        } else {
+            indicatorLayout.visibility = View.VISIBLE
+        }
+        val context = indicatorLayout.context
+        repeat(count) { index ->
+            val dot = ImageView(context).apply {
+                val size = (8 * resources.displayMetrics.density).toInt()
+                layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                    val margin = (6 * resources.displayMetrics.density).toInt()
+                    setMargins(margin, 0, margin, 0)
+                }
+                setImageResource(if (index == selected) R.drawable.ic_dot_active else R.drawable.indicator_dot)
+            }
+            indicatorLayout.addView(dot)
         }
     }
 
@@ -114,7 +175,7 @@ class RecommendedFriendsFragment : Fragment() {
         loadingTextView?.visibility = View.GONE
     }
 
-    private fun loadRecommendedFriends(provinceId: Int = 1, cityId: Int? = null, townId: Int? = null) {
+    private fun loadRecommendedFriends(provinceId: Int = 9, cityId: Int? = null, townId: Int? = null) {
         viewModel.loadRecommendedFriends(provinceId, cityId, townId)
     }
 

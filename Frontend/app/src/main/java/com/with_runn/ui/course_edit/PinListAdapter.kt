@@ -6,16 +6,17 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.annotations.SerializedName
 import com.with_runn.databinding.ItemPinListBinding
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PinItem(
-    var index: Int,
-    var name: String = "",
-    var content: String = "",
-    val lat: Double,
-    val lng: Double
+    @SerializedName("id")     var index: Int,
+    @SerializedName("name")   var name: String = "",
+    @SerializedName("detail") var content: String = "",
+    @SerializedName("latitude") val lat: Double,
+    @SerializedName("longitude") val lng: Double
 ) : Parcelable
 
 class PinListAdapter(
