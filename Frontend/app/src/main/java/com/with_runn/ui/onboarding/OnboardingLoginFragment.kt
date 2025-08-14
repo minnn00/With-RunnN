@@ -1,5 +1,6 @@
 package com.with_runn.ui.onboarding
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import android.util.Base64
 import android.widget.Toast
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.with_runn.MainActivity
 import org.json.JSONObject
 
 class OnboardingLoginFragment : Fragment() {
@@ -58,10 +60,19 @@ class OnboardingLoginFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 authViewModel.loginState.collect { result ->
                     if (result != null) {
-                        // 로그인 성공
-                        findNavController().navigate(
-                            R.id.action_onboardingLoginFragment_to_onboardingProfileFragment
-                        )
+                        if(result.newUser){
+                            findNavController().navigate(
+                                R.id.action_onboardingLoginFragment_to_onboardingProfileFragment
+                            )
+                        }else{
+                            //MainActivity로 이동
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+
+                            // 온보딩 액티비티 종료
+                            requireActivity().finish()
+                        }
+
                     } else {
                         //Toast.makeText(requireContext(), "계정 등록에 실패했습니다.", Toast.LENGTH_SHORT).show()
                     }

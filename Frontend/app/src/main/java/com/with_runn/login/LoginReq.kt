@@ -11,7 +11,8 @@ data class LoginReq(
 // LoginRes.kt
 data class LoginRes(
     @SerializedName("userId") val memberId: Int,
-    val accessToken: String
+    val accessToken: String,
+    val newUser : Boolean
 )
 
 data class ApiResponse<T>(
