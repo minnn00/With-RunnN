@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
 import com.with_runn.BuildConfig
 import com.with_runn.mapData.PetFacilityRepository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,9 +35,6 @@ class MapViewModel : ViewModel(){
     private val _markers = MutableStateFlow<List<CustomMarker>>(emptyList())
     val markers : StateFlow<List<CustomMarker>> = _markers
 
-    private val _tempMarker = MutableStateFlow<Marker?>(null)
-    val tempMarker: StateFlow<Marker?> = _tempMarker
-
     fun addMarker(marker: CustomMarker){
         _markers.value = _markers.value + marker
     }
@@ -61,15 +57,6 @@ class MapViewModel : ViewModel(){
 
     fun setLocationPermission(permission : Boolean){
         _locationPermissionGranted.value = permission
-    }
-
-    fun setTempMarker(marker: Marker?){
-        _tempMarker.value?.remove()
-        _tempMarker.value = marker
-    }
-
-    fun removeTempMarker(){
-        _tempMarker.value?.remove()
     }
 
     fun loadFacilities(

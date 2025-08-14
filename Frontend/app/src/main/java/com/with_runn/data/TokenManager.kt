@@ -35,20 +35,13 @@ object TokenManager {
     }
 
     fun getCurrentUserId(): Int =
-        prefs.getInt("memberId", -1) // 기본값 -1
+        prefs.getInt("currentUserId", 10) // 기본값 10
 
-    fun setUserId(memberId: Int) {
-        prefs.edit { putInt("memberId", memberId) }
+    fun setCurrentUserId(userId: Int) {
+        prefs.edit() { putInt("currentUserId", userId) }
     }
 
-    fun clearUserId() {
-        prefs.edit { remove("memberId") }
-    }
-
-    fun clearAll() {
-        prefs.edit {
-            remove("accessToken")
-            remove("memberId")
-        }
+    fun clearCurrentUserId() {
+        prefs.edit() { remove("currentUserId") }
     }
 }

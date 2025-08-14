@@ -67,9 +67,7 @@ class ChatAdapter : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
     override fun getItemCount(): Int = chatRooms.size
     
     override fun getItemViewType(position: Int): Int {
-        val room = chatRooms[position]
-        // 참여자 수 기반으로 그룹/싱글 판단 (신규 방도 즉시 반영)
-        return if (room.participants > 1 || room.hasSecondImage) {
+        return if (chatRooms[position].hasSecondImage) {
             VIEW_TYPE_GROUP_CHAT
         } else {
             VIEW_TYPE_SINGLE_CHAT

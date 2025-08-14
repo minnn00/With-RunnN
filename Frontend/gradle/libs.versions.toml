@@ -24,8 +24,6 @@ play_services_location = "21.3.0"
 maps_util = "2.2.5"
 security-crypto = "1.1.0-alpha06"
 glide = "4.16.0"
-credentials = "1.6.0-alpha04"
-googleid = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,10 +53,6 @@ maps-utils = { module = "com.google.maps.android:android-maps-utils", version.re
 security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "security-crypto" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide_compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
-androidx-credentials = { group = "androidx.credentials", name = "credentials", version.ref = "credentials" }
-androidx-credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
-googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
-
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

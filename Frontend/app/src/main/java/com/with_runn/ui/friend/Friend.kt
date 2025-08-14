@@ -5,6 +5,5 @@ data class Friend(
     val personalityTag: String = "",
     val personalityTags: List<String> = emptyList(),
     val imageResId: Int,
-    val isSelected: Boolean = false,
-    val userId: Int = 0
+    val isSelected: Boolean = false
 ) 

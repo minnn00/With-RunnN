@@ -26,8 +26,5 @@ data class MessageDto(
     val createdAt: String,
     
     @SerializedName("course")
-    val course: Boolean,
-
-    @SerializedName("messageId")
-    val messageId: Int?
+    val course: Boolean
 ) 

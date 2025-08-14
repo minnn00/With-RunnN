@@ -22,17 +22,6 @@
             app:destination="@id/noticeFragment" />
     </fragment>
 
-    <fragment
-        android:id="@+id/editMyCoursesFragment"
-        android:name="com.with_runn.ui.mypage.EditMyCoursesFragment"
-        android:label="편집">
-        <!-- 필요하면 인자 추가 -->
-    </fragment>
-
-    <action
-        android:id="@+id/action_myPageFragment_to_editMyCoursesFragment"
-        app:destination="@id/editMyCoursesFragment" />
-
     <!-- 지도 -->
     <fragment
         android:id="@+id/map_graph"

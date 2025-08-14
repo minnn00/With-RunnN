@@ -6,8 +6,5 @@ data class RisingCourseResponse(
     val keyword: List<String>,
     val time: String,
     val courseImage: String,
-    val location: String,
-
-    val distanceMeters: Int? = null,
-    val distance: String? = null
+    val location: String
 )

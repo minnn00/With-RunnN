@@ -15,7 +15,7 @@ data class DogCard(
     val tags: List<String>
 )
 
-class DogCardAdapter(private var dogCards: List<DogCard>) : 
+class DogCardAdapter(private val dogCards: List<DogCard>) : 
     RecyclerView.Adapter<DogCardAdapter.DogCardViewHolder>() {
 
     private var onItemClickListener: ((Int) -> Unit)? = null
@@ -60,9 +60,4 @@ class DogCardAdapter(private var dogCards: List<DogCard>) :
     }
 
     override fun getItemCount(): Int = dogCards.size
-
-    fun updateData(newCards: List<DogCard>) {
-        dogCards = newCards
-        notifyDataSetChanged()
-    }
 } 

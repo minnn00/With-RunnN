@@ -30,9 +30,7 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
     inner class FriendViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val profileImage: ImageView = itemView.findViewById(R.id.friend_profile_image)
         private val nameText: TextView = itemView.findViewById(R.id.friend_name)
-        private val borderOverlay: View = itemView.findViewById(R.id.friend_profile_border)
         private val checkbox: CheckBox = itemView.findViewById(R.id.friend_checkbox)
-        private val checkIcon: ImageView = itemView.findViewById(R.id.friend_check_icon)
 
         fun bind(friend: Friend) {
             nameText.text = friend.name
@@ -72,14 +70,10 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
             
             // 선택 상태에 따라 체크박스 표시/숨김 및 테두리 변경
             if (isSelected) {
-                checkbox.visibility = View.GONE
-                checkIcon.visibility = View.VISIBLE
-                borderOverlay.visibility = View.VISIBLE
-                profileImage.background = itemView.context.getDrawable(R.drawable.circular_image_background)
+                checkbox.visibility = View.VISIBLE
+                profileImage.background = itemView.context.getDrawable(R.drawable.circular_image_background_selected)
             } else {
                 checkbox.visibility = View.GONE
-                checkIcon.visibility = View.GONE
-                borderOverlay.visibility = View.GONE
                 profileImage.background = itemView.context.getDrawable(R.drawable.circular_image_background)
             }
         }
@@ -87,7 +81,7 @@ class FriendAddAdapter : ListAdapter<Friend, FriendAddAdapter.FriendViewHolder>(
 
     private class FriendDiffCallback : DiffUtil.ItemCallback<Friend>() {
         override fun areItemsTheSame(oldItem: Friend, newItem: Friend): Boolean {
-            return oldItem.userId == newItem.userId
+            return oldItem.name == newItem.name
         }
 
         override fun areContentsTheSame(oldItem: Friend, newItem: Friend): Boolean {

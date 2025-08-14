@@ -8,9 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.with_runn.R
 import com.with_runn.databinding.FragmentHotMoreBinding
 import com.with_runn.data.viewmodel.HotMoreViewModel
+import com.with_runn.R
 import com.with_runn.data.WalkCourse
 
 class HotMoreFragment : Fragment() {
@@ -33,32 +33,47 @@ class HotMoreFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = WalkCourseAdapter(emptyList()) { item ->
-            val bundle = Bundle().apply { putParcelable("course", item) }
+            val bundle = Bundle().apply {
+                putParcelable("course", item)
+            }
             findNavController().navigate(R.id.courseManageFragment, bundle)
         }
 
         binding.recyclerHotMore.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerHotMore.adapter = adapter
-
-        binding.editTextSearch.setOnEditorActionListener { _, _, _ ->
+        binding.editTextSearch.setOnEditorActionListener { v, actionId, event ->
             val keyword = binding.editTextSearch.text.toString()
             if (keyword.isNotBlank()) {
                 viewModel.searchRisingCourses(keyword)
                 true
-            } else false
+            } else {
+                false
+            }
         }
 
-        // 최초 로드
+        // API 호출
         viewModel.fetchRisingCourses()
 
-        // 기본 목록 (이미 WalkCourse 리스트)
+        // LiveData observe
         viewModel.hotCourses.observe(viewLifecycleOwner) { list ->
-            adapter.updateItems(list.toMutableList())
+            android.util.Log.d("HotMoreFragment", "RecyclerView 데이터 size: ${list.size} / $list")
+            adapter.updateItems(list)
         }
 
-        // ✅ 검색 결과 (이제 WalkCourse 리스트)
         viewModel.searchResults.observe(viewLifecycleOwner) { results ->
-            adapter.updateItems(results.toMutableList())
+            adapter.updateItems(results.map {
+                WalkCourse(
+                    id = it.courseId,
+                    title = it.name,
+                    tags = it.keyword,            // List<String>
+                    imageResId = R.drawable.image,
+                    distance = "",
+                    time = it.time,
+                    isScrapped = false,           // 필요에 따라 값 설정
+                    isLiked = false,              // 필요에 따라 값 설정
+                    imageUrl = it.courseImage
+                )
+            }.toMutableList())
         }
 
         binding.btnBack.setOnClickListener {

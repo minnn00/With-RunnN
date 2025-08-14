@@ -25,11 +25,8 @@ import com.with_runn.ui.chat.adapter.ChatAdapter
 import com.with_runn.ui.chat.repository.ChatRepository
 import com.with_runn.ui.chat.network.RetrofitClient
 import com.with_runn.ui.chat.data.UnreadMessageManager
-import com.with_runn.ui.chat.data.ChatRoomNameManager
 import com.with_runn.ui.chat.network.WebSocketManager
 import com.with_runn.ui.chat.model.dto.MessageListResponse
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 
 class ChatActivity : AppCompatActivity() {
@@ -71,10 +68,6 @@ class ChatActivity : AppCompatActivity() {
         super.onResume()
         // 채팅방 목록의 unreadMsgCnt를 로컬 저장소에서 업데이트
         updateUnreadCountsFromLocal()
-        // 로컬에 저장된 채팅방 이름을 적용
-        updateChatRoomNamesFromLocal()
-        // API에서 최신 채팅방 목록을 다시 가져와서 lastMessage 업데이트
-        refreshChatRoomsFromApi()
     }
     
     /**
@@ -89,25 +82,6 @@ class ChatActivity : AppCompatActivity() {
         chatRooms = updatedChatRooms
         chatAdapter.updateChatRooms(updatedChatRooms)
         Log.d("ChatActivity", "로컬 저장소에서 unreadMsgCnt 업데이트 완료")
-    }
-    
-    /**
-     * 로컬 저장소에서 채팅방 이름을 가져와서 UI 업데이트
-     */
-    private fun updateChatRoomNamesFromLocal() {
-        val updatedChatRooms = chatRooms.map { chatRoom ->
-            val localName = ChatRoomNameManager.getInstance(this).getChatRoomName(chatRoom.chatId)
-            if (localName != null) {
-                Log.d("ChatActivity", "onResume에서 채팅방 ${chatRoom.chatId} 로컬 이름 적용: $localName")
-                chatRoom.copy(name = localName)
-            } else {
-                chatRoom
-            }
-        }
-        
-        chatRooms = updatedChatRooms
-        chatAdapter.updateChatRooms(updatedChatRooms)
-        Log.d("ChatActivity", "로컬 저장소에서 채팅방 이름 업데이트 완료")
     }
     
     private fun setupBackButton() {
@@ -432,33 +406,14 @@ class ChatActivity : AppCompatActivity() {
                         val chatRoomDtos = chatListResponse.result
                         Log.d("ChatActivity", "API에서 가져온 채팅방 개수: ${chatRoomDtos.size}")
                         
-                        // 🆕 각 채팅방의 lastReceivedMsg 상세 로그
-                        chatRoomDtos.forEach { dto ->
-                            Log.d("ChatActivity", "채팅방 ${dto.chatId}:")
-                            Log.d("ChatActivity", "  lastReceivedMsg: '${dto.lastReceivedMsg}'")
-                            Log.d("ChatActivity", "  lastReceivedMsg 타입: ${dto.lastReceivedMsg?.javaClass?.simpleName}")
-                            Log.d("ChatActivity", "  chatName: '${dto.chatName}'")
-                        }
-                        
                         // DTO를 UI 모델로 변환 (마지막 메시지는 나중에 추가)
                         val chatRooms = chatRoomDtos.map { it.toChatRoom() }
                         Log.d("ChatActivity", "변환된 채팅방: $chatRooms")
                         
-                        // 로컬에 저장된 채팅방 이름으로 덮어쓰기
-                        val chatRoomsWithLocalNames = chatRooms.map { chatRoom ->
-                            val localName = ChatRoomNameManager.getInstance(this@ChatActivity).getChatRoomName(chatRoom.chatId)
-                            if (localName != null) {
-                                Log.d("ChatActivity", "채팅방 ${chatRoom.chatId} 로컬 이름 사용: $localName")
-                                chatRoom.copy(name = localName)
-                            } else {
-                                chatRoom
-                            }
-                        }
-                        
                         // UI 업데이트 (마지막 메시지 없이 먼저 표시)
                         runOnUiThread {
-                            this@ChatActivity.chatRooms = chatRoomsWithLocalNames
-                            chatAdapter.updateChatRooms(chatRoomsWithLocalNames)
+                            this@ChatActivity.chatRooms = chatRooms
+                            chatAdapter.updateChatRooms(chatRooms)
                         }
                         
                         // 각 채팅방의 마지막 메시지를 가져와서 업데이트
@@ -494,33 +449,17 @@ class ChatActivity : AppCompatActivity() {
      */
     private fun loadLastMessagesForChatRooms(chatRooms: List<ChatRoom>) {
         chatRooms.forEach { chatRoom ->
-            loadLastMessageForChatRoom(chatRoom.chatId) { lastMessage, createdAt ->
+            loadLastMessageForChatRoom(chatRoom.chatId) { lastMessage ->
+                // 마지막 메시지가 있으면 채팅방 정보 업데이트
                 if (lastMessage.isNotEmpty()) {
-                    val formattedTime = try {
-                        if (createdAt.contains("T")) {
-                            val normalized = if (createdAt.contains('.')) {
-                                val base = createdAt.substringBefore('.')
-                                val frac = createdAt.substringAfter('.')
-                                val frac6 = if (frac.length >= 6) frac.substring(0, 6) else frac.padEnd(6, '0')
-                                "$base.$frac6"
-                            } else createdAt
-                            val date = if (normalized.contains('.')) {
-                                java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", java.util.Locale.getDefault()).parse(normalized)
-                            } else {
-                                java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).parse(normalized)
-                            }
-                            java.text.SimpleDateFormat("a h:mm", java.util.Locale.KOREAN).format(date ?: java.util.Date())
-                        } else createdAt
-                    } catch (e: Exception) { "방금 전" }
-
                     val updatedChatRooms = this@ChatActivity.chatRooms.map { room ->
                         if (room.chatId == chatRoom.chatId) {
-                            room.copy(lastMessage = lastMessage, time = formattedTime)
+                            room.copy(lastMessage = lastMessage)
                         } else {
                             room
                         }
                     }
-
+                    
                     runOnUiThread {
                         this@ChatActivity.chatRooms = updatedChatRooms
                         chatAdapter.updateChatRooms(updatedChatRooms)
@@ -533,7 +472,7 @@ class ChatActivity : AppCompatActivity() {
     /**
      * 특정 채팅방의 마지막 메시지를 가져오기
      */
-    private fun loadLastMessageForChatRoom(chatId: Int, callback: (String, String) -> Unit) {
+    private fun loadLastMessageForChatRoom(chatId: Int, callback: (String) -> Unit) {
         RetrofitClient.chatApiService.getChatMessages(chatId).enqueue(object : retrofit2.Callback<MessageListResponse> {
             override fun onResponse(
                 call: retrofit2.Call<MessageListResponse>,
@@ -547,14 +486,14 @@ class ChatActivity : AppCompatActivity() {
                             // 가장 최근 메시지 (마지막 메시지) 가져오기
                             val lastMessage = messages.last()
                             Log.d("ChatActivity", "채팅방 $chatId 마지막 메시지: ${lastMessage.msg}")
-                            callback(lastMessage.msg, lastMessage.createdAt)
+                            callback(lastMessage.msg)
                         } else {
                             Log.d("ChatActivity", "채팅방 $chatId 메시지가 없음")
-                            callback("", "")
+                            callback("")
                         }
                     } else {
                         Log.e("ChatActivity", "메시지 조회 실패: 응답이 성공하지 않음")
-                        callback("", "")
+                        callback("")
                     }
                 } else {
                     // 500 에러인 경우 특별 처리
@@ -581,14 +520,14 @@ class ChatActivity : AppCompatActivity() {
                             errorMessage.contains("2 results were returned")) {
                             Log.w("ChatActivity", "⚠️ 데이터베이스 중복 데이터 문제: $chatId")
                             // 중복 데이터 문제는 서버 측 문제이므로 빈 메시지 반환
-                            callback("", "")
+                            callback("")
                         } else {
                             Log.w("ChatActivity", "⚠️ 기타 서버 오류: $errorMessage")
-                            callback("", "")
+                            callback("")
                         }
                     } else {
                         Log.e("ChatActivity", "메시지 조회 실패: ${response.code()}")
-                        callback("", "")
+                        callback("")
                     }
                 }
             }
@@ -612,7 +551,7 @@ class ChatActivity : AppCompatActivity() {
                     }
                 }
                 
-                callback("", "")
+                callback("")
             }
         })
     }
@@ -763,11 +702,6 @@ class ChatActivity : AppCompatActivity() {
                         updateUnreadCount(chatRoom.chatId, +1)
                     }
                 }
-                
-                // 🆕 모든 메시지에 대해 lastMessage와 time 업데이트
-                runOnUiThread {
-                    updateChatRoomLastMessage(chatRoom.chatId, message.content, message.timestamp)
-                }
             }
         }
     }
@@ -799,61 +733,5 @@ class ChatActivity : AppCompatActivity() {
         
         chatRooms = updatedChatRooms
         chatAdapter.updateChatRooms(updatedChatRooms)
-    }
-
-    /**
-     * 🆕 채팅방 리스트의 특정 채팅방 lastMessage와 time 업데이트
-     */
-    private fun updateChatRoomLastMessage(chatId: Int, messageContent: String, timestamp: String) {
-        val updatedChatRooms = chatRooms.map { chatRoom ->
-            if (chatRoom.chatId == chatId) {
-                chatRoom.copy(
-                    lastMessage = messageContent,
-                    time = formatTimestampForChatList(timestamp)
-                )
-            } else {
-                chatRoom
-            }
-        }
-        
-        chatRooms = updatedChatRooms
-        chatAdapter.updateChatRooms(updatedChatRooms)
-        Log.d("ChatActivity", "채팅방 $chatId lastMessage 업데이트: '$messageContent'")
-    }
-
-    /**
-     * 🆕 채팅 목록용 타임스탬프 포맷팅
-     */
-    private fun formatTimestampForChatList(timestamp: String): String {
-        return try {
-            // "방금 전"인 경우 그대로 반환
-            if (timestamp == "방금 전") return timestamp
-            
-            // ISO 8601 형식 (2025-08-10T12:05:48.832766145) 파싱
-            if (timestamp.contains("T")) {
-                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
-                val date = inputFormat.parse(timestamp)
-                if (date != null) {
-                    val outputFormat = SimpleDateFormat("a h:mm", Locale.KOREAN)
-                    outputFormat.format(date)
-                } else {
-                    "방금 전"
-                }
-            } else {
-                // 다른 형식인 경우 그대로 반환
-                timestamp
-            }
-        } catch (e: Exception) {
-            Log.e("ChatActivity", "타임스탬프 포맷팅 실패: $timestamp", e)
-            "방금 전"
-        }
-    }
-
-    /**
-     * API에서 최신 채팅방 목록을 다시 가져와서 lastMessage 업데이트
-     */
-    private fun refreshChatRoomsFromApi() {
-        Log.d("ChatActivity", "API에서 최신 채팅방 목록을 다시 가져오는 중...")
-        loadChatRoomsFromApi()
     }
 } 

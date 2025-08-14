@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 data class CreateChatResponse(
     @SerializedName("code") val code: String,
     @SerializedName("message") val message: String,
-    @SerializedName("result") val result: CreateChatResult? = null,
     @SerializedName("success") val success: Boolean
 )
 

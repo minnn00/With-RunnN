@@ -8,7 +8,6 @@ import retrofit2.http.PATCH
 import retrofit2.http.Path
 import retrofit2.http.Body
 import retrofit2.http.Query
-import retrofit2.http.Headers
 import com.with_runn.ui.chat.model.dto.ChatRoomDto
 import com.with_runn.ui.chat.model.dto.MessageDto
 import com.with_runn.ui.chat.model.dto.InviteUserRequest
@@ -42,16 +41,6 @@ interface ChatApiService {
      */
     @GET("api/chat/{chatId}")
     fun getChatMessages(@retrofit2.http.Path("chatId") chatId: Int): retrofit2.Call<MessageListResponse>
-
-    /**
-     * 이전 채팅 내역 추가 조회 (무한 스크롤)
-     * GET /api/chat/{chatId}?cursor={cursorId}
-     */
-    @GET("api/chat/{chatId}")
-    fun getChatMessagesBefore(
-        @retrofit2.http.Path("chatId") chatId: Int,
-        @Query("cursor") cursorId: Int
-    ): retrofit2.Call<MessageListResponse>
     
     /**
      * 메시지 전송
@@ -99,18 +88,17 @@ interface ChatApiService {
     
     /**
      * 채팅방 이름 설정
-     * PATCH /api/chat/{chatId}/rename?name={newName}
+     * PATCH /api/chat/{chatId}?newName={newName}
      */
-    @PATCH("api/chat/{chatId}/rename")
+    @PATCH("api/chat/{chatId}")
     fun updateChatName(
         @retrofit2.http.Path("chatId") chatId: Int,
-        @Query("name") newName: String
+        @Query("newName") newName: String
     ): retrofit2.Call<UpdateChatNameResponse>
     
     /**
      * 상대방과 채팅 생성
-     * 요구사항: POST /api/chat/hello?id={targetId}
-     * Body: { "userId": 1, ... }
+     * POST /api/chat/hello?id={targetUserId}
      */
     @POST("api/chat/hello")
     fun createChatRoom(

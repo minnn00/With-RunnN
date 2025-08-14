@@ -4,20 +4,21 @@ import FacilityItem
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import android.os.Bundle
+import android.os.Trace.isEnabled
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresPermission
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -26,9 +27,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
@@ -39,17 +41,12 @@ import com.with_runn.R
 import com.with_runn.databinding.FragmentMapBinding
 import com.with_runn.dp
 import com.with_runn.getCurrentTimeInt
+import com.with_runn.parseOperatingHours
 import com.with_runn.populateChips
 import kotlinx.coroutines.launch
 import com.with_runn.ui.map.search.SearchResultFragment
 import com.with_runn.ui.map.search.SearchResultItem
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.drawable.toBitmap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.with_runn.parseOperatingHours
-import kotlin.math.min
-import kotlin.math.roundToInt
-
+import kotlin.math.absoluteValue
 
 class MapFragment : Fragment() {
 
@@ -63,9 +60,10 @@ class MapFragment : Fragment() {
 
     private lateinit var behavior : BottomSheetBehavior<View>
 
-    private lateinit var searchResultFragment: SearchResultFragment
 
-    private val markerIconCache = mutableMapOf<String, BitmapDescriptor>()
+//    private lateinit var placeSearchFragment: PlaceSearchFragment
+//    private lateinit var placeDetailsFragment: PlaceDetailsFragment
+    private lateinit var searchResultFragment: SearchResultFragment
 
     private val keywords = listOf(
         "병원",
@@ -117,9 +115,7 @@ class MapFragment : Fragment() {
                         MarkerOptions()
                             .position(poi.latLng)
                             .title(poi.name)
-                            .icon(getMarkerIcon(null))
                     )
-                    mapViewModel.setTempMarker(marker)
                     marker?.showInfoWindow()
                 }
 
@@ -131,6 +127,8 @@ class MapFragment : Fragment() {
             }
 
             startMarkerCoroutine()
+
+//            searchByText("카페")
         }
 
         populateChips(
@@ -165,6 +163,56 @@ class MapFragment : Fragment() {
             .add(R.id.bottom_sheet_content, searchResultFragment, "SearchResult")
             .commitNow()
 
+//        placeSearchFragment = PlaceSearchFragment.newInstance(PlaceSearchFragment.ALL_CONTENT)
+//        placeDetailsFragment = PlaceDetailsFragment.newInstance(PlaceDetailsFragment.ALL_CONTENT)
+//
+//        placeSearchFragment.apply{
+//            selectable = true
+//
+//            registerListener(
+//                object : PlaceSearchFragmentListener{
+//                    override fun onLoad(places: List<Place>) {
+//                        // TODO: ViewModel 업데이트
+//                    }
+//                    override fun onRequestError(e: Exception) {
+//                        Log.e("PlaceSearch", "검색 실패", e)
+//                    }
+//                    override fun onPlaceSelected(place: Place) {
+//                        Log.d("PlaceSelected", "Place selected: $place")
+//                        place.id?.let {
+//                            placeDetailsFragment.loadWithPlaceId(it)
+//                            showDetailsFragment()
+//                        } ?: run{
+//                            Log.e("PlaceDetails", "Failed to load place details")
+//                            Snackbar.make(
+//                                requireView(),
+//                                "세부 정보를 불러올 수 없습니다.",
+//                                Snackbar.LENGTH_SHORT
+//                            ).show()
+//                        }
+//                    }
+//                }
+//            )
+//        }
+//
+//        placeDetailsFragment.setPlaceLoadListener(
+//            object: PlaceLoadListener{
+//                override fun onSuccess(place: Place) {
+//                    Log.d("PlaceDetails", "Place loaded: ${place.displayName}")
+//                }
+//
+//                override fun onFailure(e: java.lang.Exception) {
+//                    Log.e("PlaceDetails", "Failed to load place details", e)
+//                }
+//            }
+//        )
+//
+//        childFragmentManager.beginTransaction()
+//            .add(R.id.bottom_sheet_content, placeSearchFragment, "search")
+//            .add(R.id.bottom_sheet_content, placeDetailsFragment, "details")
+//            .hide(placeDetailsFragment)
+//            .hide(placeSearchFragment)
+//            .commitNow()
     }
 
     override fun onStart() {
@@ -197,7 +245,67 @@ class MapFragment : Fragment() {
         super.onSaveInstanceState(outState)
     }
 
-    @SuppressLint("PotentialBehaviorOverride")
+//    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+//    private fun searchNearbyPlaces(type: String){
+//        if (!mapViewModel.locationPermissionGranted.value) return
+//
+//        getMyLocation { center ->
+//            val placeFields = listOf(
+//                Place.Field.ID,
+//                Place.Field.DISPLAY_NAME,
+//                Place.Field.OPENING_HOURS,
+//                Place.Field.BUSINESS_STATUS,
+//                Place.Field.PARKING_OPTIONS,
+//                Place.Field.PHOTO_METADATAS
+//            )
+//
+//            val radius = CircularBounds.newInstance(center, 1000.0)
+//
+//            val includeType = listOf(type)
+//
+//            val searchNearbyRequest = SearchNearbyRequest.builder(radius, placeFields)
+//                .setIncludedTypes(includeType)
+//                .setMaxResultCount(20)
+//                .build()
+//
+//            placeSearchFragment.configureFromSearchNearbyRequest(searchNearbyRequest)
+//            showSearchResultFragment()
+//        }
+//
+//
+//    }
+
+//    @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
+//    private fun searchByText(text: String){
+//        if (!mapViewModel.locationPermissionGranted.value) return
+//        getMyLocation { center ->
+//            val placeFields = listOf(
+//                Place.Field.ID,
+//                Place.Field.DISPLAY_NAME,
+//                Place.Field.OPENING_HOURS,
+//                Place.Field.BUSINESS_STATUS,
+//                Place.Field.PARKING_OPTIONS,
+//                Place.Field.PHOTO_METADATAS
+//            )
+//
+//            val latDistance = 0.5 / 111.0     // 0.5km = 500m
+//            val lngDistance = 0.5 / (111.0 * cos(Math.toRadians(center.latitude)))
+//
+//            val southWest = LatLng(center.latitude - latDistance, center.longitude - lngDistance)
+//            val northEast = LatLng(center.latitude + latDistance, center.longitude + lngDistance)
+//            val bounds = RectangularBounds.newInstance(southWest, northEast)
+//
+//            val searchByTextRequest = SearchByTextRequest.builder(text, placeFields)
+//                .setMaxResultCount(20)
+//                .setLocationRestriction(bounds)
+//                .build()
+//
+//
+//            placeSearchFragment.configureFromSearchByTextRequest(searchByTextRequest)
+//            showSearchResultFragment()
+//        }
+//    }
+
     private fun startMarkerCoroutine(){
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
@@ -205,6 +313,12 @@ class MapFragment : Fragment() {
                     googleMap.clear()
                     markerList.forEach { item ->
                         addMarker(item.position, item.title, item.snippet)
+                    }
+                    googleMap.setOnMarkerClickListener { marker ->
+                        Log.d("MARKER_CLICK", "Clicked Marker at: ${marker.position}")
+                        // TODO: 마커 정보 ViewModel에서 추출 및 팝업
+
+                        false
                     }
                 }
             }
@@ -216,7 +330,7 @@ class MapFragment : Fragment() {
             .position(position)
             .title(title)
             .snippet(snippet)
-            .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_basic_pin))
+            //.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location))
 
         val marker = googleMap.addMarker(markerOptions)
         return marker
@@ -248,7 +362,6 @@ class MapFragment : Fragment() {
 
         if (current == category) {
             mapViewModel.setCurrentChipType("")
-            getMarkerIcon(category)
             mapViewModel.clearFacilityList()
             googleMap.clear()
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
@@ -256,9 +369,9 @@ class MapFragment : Fragment() {
         }else{
             mapViewModel.setCurrentChipType(category)
 
-            val sido = activityVM.firstRegion.value?.name ?: "서울특별시"
-            val gugun = activityVM.secondRegion.value?.name
-            val dong = activityVM.thirdRegion.value?.name
+            val sido = "서울특별시" // TODO: ActivityViewModel에서 연결
+            val gugun = null // TODO: ActivityViewModel에서 연결
+            val dong = null // TODO: ActivityViewModel에서 연결
 
             mapViewModel.loadFacilities(
                 sido = sido,
@@ -274,10 +387,10 @@ class MapFragment : Fragment() {
                         .asSequence()
                         .filter { item ->
                             // 지역 필터
-                            (item.sido_name == sido) &&
+                            (sido == null || item.sido_name == sido) &&
                             (gugun == null || item.gugun_name == gugun) &&
                             (dong == null || item.dong_name == dong) &&
-                            (item.ctg3_name == category)
+                            (category == null || item.ctg3_name == category)
                         }.toList()
 
                     showFacilityMarkers(filteredData)
@@ -285,15 +398,8 @@ class MapFragment : Fragment() {
                     val results = filteredData
                         .map { item ->
                             val (openInt, closeInt) = parseOperatingHours(item.weekday_oper_time)
-                            Log.d(
-                                "OPER_HOURS",
-                                "name=${item.fac_name} raw=\"${item.weekday_oper_time}\" -> parsed=($openInt,$closeInt)")
                             val now = getCurrentTimeInt()
-                            val isOpen = if (closeInt < openInt) {
-                                now >= openInt || now < closeInt
-                            } else {
-                                now in openInt until closeInt
-                            }
+                            val isOpen = now in openInt until closeInt
 
                             SearchResultItem(
                                 placeId = "${item.latitude},${item.longitude}",
@@ -385,21 +491,17 @@ class MapFragment : Fragment() {
     private fun showFacilityMarkers(items: List<FacilityItem>) {
         googleMap.clear()
 
-        val cat = mapViewModel.currentChipType.value.takeIf { it.isNotBlank() }
-        val icon = getMarkerIcon(cat)
-            ?: BitmapDescriptorFactory.fromResource(R.drawable.ic_basic_pin)
-
         for (item in items) {
             val lat = item.latitude?.toDoubleOrNull()
             val lng = item.longitude?.toDoubleOrNull()
             if (lat != null && lng != null) {
                 val position = LatLng(lat, lng)
                 val title = item.fac_name ?: "이름 없음"
+
                 val marker = googleMap.addMarker(
                     MarkerOptions()
                         .position(position)
                         .title(title)
-                        .icon(icon)
                 )
             }
         }
@@ -447,11 +549,61 @@ class MapFragment : Fragment() {
             }
         })
 
+//        binding.viewHomeIndicator.bottomSheetHandle.setOnTouchListener { v, event ->
+//            when (event.action){
+//                MotionEvent.ACTION_DOWN ->{
+//                    initY = event.rawY
+//                    lastY = initY
+//                    true
+//                }
+//                MotionEvent.ACTION_MOVE -> {
+//                    lastY = event.rawY
+//                    true
+//                }
+//                MotionEvent.ACTION_UP -> {
+//                    v.performClick()
+//
+//                    val deltaY = lastY - initY
+//                    val state = behavior.state
+//
+//                    if(deltaY < -20){
+//                        behavior.state = when(state){
+//                            BottomSheetBehavior.STATE_COLLAPSED -> BottomSheetBehavior.STATE_HALF_EXPANDED
+//                            BottomSheetBehavior.STATE_HALF_EXPANDED -> BottomSheetBehavior.STATE_EXPANDED
+//                            else -> BottomSheetBehavior.STATE_EXPANDED
+//                        }
+//                    }else if(deltaY > 20){
+//                        behavior.state = when(state){
+//                            BottomSheetBehavior.STATE_EXPANDED -> BottomSheetBehavior.STATE_HALF_EXPANDED
+//                            BottomSheetBehavior.STATE_HALF_EXPANDED -> BottomSheetBehavior.STATE_COLLAPSED
+//                            else -> BottomSheetBehavior.STATE_COLLAPSED
+//                        }
+//                    }
+//                    true
+//                }else -> {false}
+//            }
+//        }
+
         binding.viewHomeIndicator.bottomSheetBehaviour.post{
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
     }
+//
+//
+//    private fun showSearchResultFragment() {
+//        childFragmentManager.beginTransaction()
+//            .show(placeSearchFragment)
+//            .hide(placeDetailsFragment)
+//            .commit()
+//    }
+//
+//    private fun showDetailsFragment() {
+//        childFragmentManager.beginTransaction()
+//            .show(placeDetailsFragment)
+//            .hide(placeSearchFragment)
+//            .commit()
+//    }
 
     private fun setBackPressedCallback(){
         requireActivity().onBackPressedDispatcher.addCallback(
@@ -540,54 +692,6 @@ class MapFragment : Fragment() {
             .create()
     }
 
-    private fun getIconResForCategory(category: String?): Int? = when (category) {
-        "동물병원" -> R.drawable.ic_vat
-        "동물약국" -> R.drawable.ic_pharmacy
-        "반려동물용품" -> R.drawable.ic_merch
-        "미용"     -> R.drawable.ic_design
-        "식당"     -> R.drawable.ic_food
-        "카페"     -> R.drawable.ic_food
-        "호텔"     -> R.drawable.ic_rentalhouse
-        "박물관"   -> R.drawable.ic_curtural
-        "미술관"   -> R.drawable.ic_curtural
-        "여행지"   -> R.drawable.ic_curtural
-        "문예회관" -> R.drawable.ic_curtural
-        "위탁관리" -> R.drawable.ic_boarding
-        else -> R.drawable.ic_basic_pin
-    }
-
-    private fun getMarkerIcon(category: String?, maxSizeDp: Float? = null): BitmapDescriptor? {
-        // 캐시 히트
-        if (category != null) {
-            markerIconCache[category]?.let { return it }
-        }
-
-        val resId = getIconResForCategory(category) ?: return null
-        val drawable = getDrawable(requireContext(), resId) ?: return null
-
-        val dm = resources.displayMetrics
-        val density = dm.density
-
-        // 드로어블의 고유 크기 (벡터면 intrinsic, -1일 수 있어요)
-        val intrinsicW = (drawable.intrinsicWidth).takeIf { it > 0 } ?: (24 * density).toInt()
-        val intrinsicH = (drawable.intrinsicHeight).takeIf { it > 0 } ?: (24 * density).toInt()
-
-        val (outW, outH) = if (maxSizeDp == null) {
-            // 스케일 없음: 고유 크기 그대로
-            intrinsicW to intrinsicH
-        } else {
-            // 긴 변을 maxSizeDp로 맞추고 비율 유지
-            val maxPx = (maxSizeDp * density).toInt().coerceAtLeast(1)
-            val ratio = min(maxPx / intrinsicW.toFloat(), maxPx / intrinsicH.toFloat())
-            (intrinsicW * ratio).roundToInt().coerceAtLeast(1) to
-                    (intrinsicH * ratio).roundToInt().coerceAtLeast(1)
-        }
-
-        val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
-        val desc = BitmapDescriptorFactory.fromBitmap(bitmap)
-        if (category != null) markerIconCache[category] = desc
-        return desc
-    }
 
 
 }

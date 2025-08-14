@@ -132,34 +132,6 @@ class ChatRepository {
             }
         })
     }
-
-    /**
-     * 이전 채팅 내역 추가 조회 (cursorId 이전 30개)
-     */
-    fun getChatMessagesBefore(chatId: Int, cursorMessageId: Int, callback: (Result<List<Message>>) -> Unit) {
-        chatApiService.getChatMessagesBefore(chatId, cursorMessageId).enqueue(object : retrofit2.Callback<MessageListResponse> {
-            override fun onResponse(
-                call: retrofit2.Call<MessageListResponse>,
-                response: retrofit2.Response<MessageListResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val body = response.body()
-                    if (body != null && body.success) {
-                        val messages = body.result.map { it.toMessage() }
-                        callback(Result.success(messages))
-                    } else {
-                        // CHAT4009 등 에러 코드 대응
-                        callback(Result.failure(Exception(body?.message ?: "이전 메시지 조회 실패")))
-                    }
-                } else {
-                    callback(Result.failure(Exception("이전 메시지 조회 실패: ${response.code()}")))
-                }
-            }
-            override fun onFailure(call: retrofit2.Call<MessageListResponse>, t: Throwable) {
-                callback(Result.failure(t))
-            }
-        })
-    }
     
     /**
      * 메시지 전송
@@ -345,8 +317,7 @@ class ChatRepository {
         Log.d("ChatRepository", "채팅방 생성 및 찾기 시작: userId=$userId, targetUserId=$targetUserId, friendName=$friendName")
         
         val request = CreateChatRequest(
-            userId = userId,
-            targetUserId = targetUserId
+            userId = userId
         )
         Log.d("ChatRepository", "요청 객체 생성: $request")
         

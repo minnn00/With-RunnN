@@ -1,18 +1,12 @@
 package com.with_runn.ui.course
 
-import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -33,17 +27,6 @@ import kotlinx.coroutines.launch
 import kotlin.getValue
 import androidx.fragment.app.Fragment
 import com.with_runn.databinding.FragmentCourseDetailBinding
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.*
-import com.google.maps.android.PolyUtil
-import com.with_runn.data.course.CourseDetailResponse
-import com.with_runn.ui.course_edit.PinItem
-import androidx.core.graphics.toColorInt
-import com.with_runn.data.course.CourseActionRepository
-import com.with_runn.toHM
-import com.with_runn.ui.ShareBottomSheetDialogFragment
-import kotlin.math.min
-import kotlin.math.roundToInt
 
 class CourseDetailFragment : Fragment() {
 
@@ -52,13 +35,6 @@ class CourseDetailFragment : Fragment() {
     private val activityVM : ActivityViewModel by activityViewModels()
     private lateinit var courseDetailsVM: CourseDetailsViewModel
 
-    private var isMapReady = false
-    private var rendered = false
-    private var cachedCourse: CourseDetailResponse? = null
-
-    private var routeMain: Polyline? = null
-    private val markerToPin = mutableMapOf<Marker, PinItem>()
-
     private lateinit var behavior : BottomSheetBehavior<View>
     private lateinit var googleMap: GoogleMap
 
@@ -66,16 +42,23 @@ class CourseDetailFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // [1] Argument에서 courseId만 받기
         val courseId = arguments?.getInt("courseId") ?: throw IllegalStateException("courseId is required for CourseDetailFragment")
 
+        // [2] ViewModel 생성 및 fetchCourse
         val token = activityVM.accessToken.value.orEmpty()
         val repository = CourseFetchRepository(CourseService.api)
-        val actionRepo = CourseActionRepository(CourseService.actionApi)
-        courseDetailsVM = CourseDetailsVMFactory(token, repository, actionRepo)
+        courseDetailsVM = CourseDetailsVMFactory(token, repository)
             .create(CourseDetailsViewModel::class.java)
 
         courseDetailsVM.fetchCourse(courseId)
     }
+/*
+    private lateinit var viewModel: CourseDetailViewModel
+    private lateinit var likeViewModel: WalkCourseViewModel
+    private lateinit var repository: CourseRepository
+    private var isScrapped: Boolean = false
+*/
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,29 +81,14 @@ class CourseDetailFragment : Fragment() {
 
 
                 googleMap.apply{
-
-
-                    @SuppressLint("PotentialBehaviorOverride")
-                    setOnMarkerClickListener{ marker ->
-                        val pin = markerToPin[marker]
-
-                        val args = Bundle().apply {
-                            putString("pin_name", pin?.name ?: marker.title)
-                            putString("pin_detail", pin?.content ?: marker.snippet)
-                        }
-
-                        googleMap.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(marker.position, 16f),
-                            object : GoogleMap.CancelableCallback {
-                                override fun onFinish() {
-                                    PinInfoDialogFragment
-                                        .newInstance(args)
-                                        .show(parentFragmentManager, "PinInfo")
-                                }
-                                override fun onCancel() { /* 필요시 처리 */ }
-                            }
+                    setOnPoiClickListener { poi ->
+                        val marker = googleMap.addMarker(
+                            MarkerOptions()
+                                .position(poi.latLng)
+                                .title(poi.name)
                         )
-                        true
+                        courseDetailsVM.setTempMarker(marker)
+                        marker?.showInfoWindow()
                     }
 
                     uiSettings.apply {
@@ -128,11 +96,7 @@ class CourseDetailFragment : Fragment() {
                         isMyLocationButtonEnabled = false
                         isMapToolbarEnabled = false
                     }
-
-                    isMapReady = true
-                    cachedCourse?.let { if (!rendered) renderCourseOnMap(it) }
                 }
-
             }
         }
 
@@ -141,34 +105,12 @@ class CourseDetailFragment : Fragment() {
         setListeners()
 
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    courseDetailsVM.isLiked.collect { liked ->
-                        binding.likeIc.setImageResource(
-                            if (liked) R.drawable.ic_heart_active else R.drawable.ic_heart_outlined
-                        )
-                    }
-                }
-                launch {
-                    courseDetailsVM.isBookmarked.collect { bookmarked ->
-                        binding.bookmarkIc.setImageResource(
-                            if (bookmarked) R.drawable.ic_bookmark_filled else R.drawable.ic_bookmark_outlined
-                        )
-                    }
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED){
                 courseDetailsVM.courseData.collect { course ->
-                    if (rendered) return@collect
-
-
                     binding.apply {
                         courseName.text = course.name
                         courseInfo.text = course.description
-                        estimatedTime.text = course.time.toHM()
+                        estimatedTime.text = course.time
                         setTags(course.keywords)
 
                         Glide.with(requireContext())
@@ -176,32 +118,7 @@ class CourseDetailFragment : Fragment() {
                             .error(R.drawable.img_app_logo)
                             .into(courseImage)
                     }
-
-                    cachedCourse = course
-
-                    if (isMapReady) {
-                        renderCourseOnMap(course)
-                    }
                 }
-            }
-        }
-
-        parentFragmentManager.setFragmentResultListener(
-            ShareBottomSheetDialogFragment.REQ_SHARE_RESULT,
-            viewLifecycleOwner
-        ) { _, bundle ->
-            val success = bundle.getBoolean(
-                ShareBottomSheetDialogFragment.KEY_SHARE_SUCCESS, false
-            )
-            if (success) {
-                val roomId = bundle.getInt(
-                    ShareBottomSheetDialogFragment.KEY_ROOM_ID
-                )
-                val roomName = bundle.getString(
-                    ShareBottomSheetDialogFragment.KEY_ROOM_NAME
-                )
-                // TODO: 채팅방 화면으로 이동
-                // findNavController().navigate(R.id.chatFragment, bundleOf("roomId" to roomId))
             }
         }
 
@@ -225,143 +142,101 @@ class CourseDetailFragment : Fragment() {
             }
         }
     }
+/*
+        Log.d("CourseDetail", "onViewCreated 호출됨")
+        val courseId = arguments?.getInt("courseId") ?: return
 
+        val repository = CourseRepository()
+        val factory = CourseDetailViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[CourseDetailViewModel::class.java]
+
+        // 상세 데이터 요청
+        viewModel.fetchCourseDetail(courseId)
+
+        // 상세 데이터 observe → UI 바인딩
+        viewModel.courseDetail.observe(viewLifecycleOwner) { course ->
+            course?.let {
+                Glide.with(this).load(it.imageUrl).into(binding.imageCourse)
+                binding.textTitle.text = it.name
+                binding.textDescription.text = "우리 동네 코스 소개\n${it.time} 소요됩니다."
+                binding.textTimeValue.text = it.time.replace("분", "M")
+                // ... 태그 등 나머지 UI 세팅
+            }
+        }
+
+        // 좋아요 버튼 리스너 (ViewModel 통해 API 호출)
+        binding.btnLike.setOnClickListener {
+            Log.d("LikeBtn", "좋아요 버튼 클릭됨 (courseId=$courseId)")
+            viewModel.postLike(courseId)
+        }
+
+        // 좋아요 결과 메시지 observe → Toast 등으로 안내
+        viewModel.likeMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+
+        // 스크랩 버튼 리스너 (ViewModel 통해 API 호출)
+        binding.btnScrap.setOnClickListener {
+            Log.d("ScrapBtn", "스크랩 버튼 클릭됨 (courseId=$courseId)")
+            viewModel.postScrap(courseId) { msg ->
+                Log.d("ScrapResult", "스크랩 API 결과: $msg")
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+            }
+        }
+        // 공유 버튼 리스너 (ViewModel 통해 API 호출)
+        binding.btnShare.setOnClickListener {
+            Log.d("ShareBtn", "공유 버튼 클릭됨 (courseId=$courseId)")
+            val isChat = true
+            val userId = 1
+            val targetUserId = null     // 채팅방 공유면 null
+            val chatId = 1              // 실제 채팅방 id
+            viewModel.postShareCourse(
+                isChat = isChat,
+                userId = userId,
+                targetUserId = targetUserId,
+                chatId = chatId,
+                courseId = courseId
+            ) { success, msg ->
+                if (success) {
+                    Log.d("ShareResult", "공유 성공: $msg")
+                    Toast.makeText(requireContext(), "공유 성공: $msg", Toast.LENGTH_SHORT).show()
+                } else {
+                    Log.e("ShareResult", "공유 실패: $msg")
+                    Toast.makeText(requireContext(), "공유 실패: $msg", Toast.LENGTH_SHORT).show()
+                }
+            // 공유 버튼 클릭 이벤트 처리
+            binding.btnShare.setOnClickListener {
+                Log.d("CourseDetail", "공유 버튼 클릭됨")
+                // TODO: 공유 바텀시트 연결 예정
+
+            }
+        }
+    }
+*/
     private fun setTags(tags: List<String>){
         binding.tagContainer.apply{
             removeAllViews()
-            tags.take(1).forEach { tag ->
+            tags.take(2).forEach { tag ->
                 val tagView = layoutInflater.inflate(R.layout.item_tag, this, false) as TextView
                 tagView.text = "#" + tag
                 addView(tagView)
             }
         }
+
+//        binding.btnScrap.setOnClickListener {
+//            Log.d("DeleteScrapBtn", "스크랩 취소 버튼 클릭 (courseId=$courseId)")
+//            viewModel.deleteScrap(courseId) { msg ->
+//                Log.d("DeleteScrapResult", "스크랩 취소 결과: $msg")
+//                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     private fun setListeners(){
         binding.apply {
             backBtn.setOnClickListener { findNavController().popBackStack() }
-            btnLike.setOnClickListener {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    val result = courseDetailsVM.toggleLike()()
-                    if (!result) {
-                        showToast("좋아요 처리 실패")
-                    }
-                }
-            }
-            btnScrap.setOnClickListener {
-                viewLifecycleOwner.lifecycleScope.launch {
-                    val result = courseDetailsVM.toggleScrap()()
-                    if (!result) {
-                        showToast("북마크 처리 실패")
-                    }
-                }
-            }
-            btnShare.setOnClickListener {
-                val courseId = courseDetailsVM.courseData.value.id
-                ShareBottomSheetDialogFragment
-                    .newInstance(courseId)
-                    .show(parentFragmentManager, "ShareSheet")
-            }
         }
     }
-
-
-    private fun renderCourseOnMap(course: CourseDetailResponse) {
-        // 안전 제거
-        googleMap.clear()
-        routeMain?.let { main ->
-            (main.tag as? Polyline)?.remove()
-            main.remove()
-        }
-        routeMain = null
-        markerToPin.clear()
-
-        // 핀 생성
-        course.pins.forEach { p ->
-            val m = googleMap.addMarker(
-                MarkerOptions()
-                    .position(LatLng(p.lat, p.lng))
-                    .title(p.name)
-                    .snippet(p.content)
-                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
-            )
-            if (m != null) markerToPin[m] = p
-        }
-
-        // 폴리라인(있을 때만)
-        val path = decodeOverviewPolyline(course.overviewPolyline)
-        if (path.isNotEmpty()) {
-            val outline = googleMap.addPolyline(
-                PolylineOptions()
-                    .addAll(path)
-                    .width(20f)
-                    .color(Color.argb(80, 0, 0, 0))
-                    .zIndex(0f)
-                    .startCap(RoundCap())
-                    .endCap(RoundCap())
-                    .jointType(JointType.ROUND)
-            )
-            val main = googleMap.addPolyline(
-                PolylineOptions()
-                    .addAll(path)
-                    .width(7f)
-                    .color("#2F7CF6".toColorInt())
-                    .zIndex(1f)
-                    .startCap(RoundCap())
-                    .endCap(RoundCap())
-                    .jointType(JointType.ROUND)
-            )
-            main.tag = outline
-            routeMain = main
-            fitCameraToPath(path)
-        } else {
-            fitCameraToPins(course.pins)
-        }
-
-        rendered = true
-    }
-
-    // 유틸들
-    private fun decodeOverviewPolyline(encoded: String?): List<LatLng> {
-        if (encoded.isNullOrBlank()) return emptyList()
-        return try { PolyUtil.decode(encoded) } catch (_: Exception) { emptyList() }
-    }
-
-    private fun fitCameraToPath(path: List<LatLng>) {
-        if (path.isEmpty()) return
-        val b = LatLngBounds.Builder()
-        path.forEach { b.include(it) }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 80))
-    }
-
-    private fun fitCameraToPins(pins: List<PinItem>) {
-        if (pins.isEmpty()) return
-        val b = LatLngBounds.Builder()
-        pins.forEach { b.include(LatLng(it.lat, it.lng)) }
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(b.build(), 80))
-    }
-
-    fun resToMarkerIcon(resId: Int, maxSizeDp: Float? = null): BitmapDescriptor {
-        val drawable = ContextCompat.getDrawable(requireContext(), resId) ?: error("Resource not found")
-        val dm = requireContext().resources.displayMetrics
-        val density = dm.density
-
-        val intrinsicW = drawable.intrinsicWidth.takeIf { it > 0 } ?: (24 * density).toInt()
-        val intrinsicH = drawable.intrinsicHeight.takeIf { it > 0 } ?: (24 * density).toInt()
-
-        val (outW, outH) = if (maxSizeDp == null) {
-            intrinsicW to intrinsicH
-        } else {
-            val maxPx = (maxSizeDp * density).toInt().coerceAtLeast(1)
-            val ratio = min(maxPx / intrinsicW.toFloat(), maxPx / intrinsicH.toFloat())
-            (intrinsicW * ratio).roundToInt().coerceAtLeast(1) to
-                    (intrinsicH * ratio).roundToInt().coerceAtLeast(1)
-        }
-
-        val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
-        return BitmapDescriptorFactory.fromBitmap(bitmap)
-    }
-
 
     override fun onStart() {
         binding.mapView.onStart()
@@ -381,8 +256,6 @@ class CourseDetailFragment : Fragment() {
     }
     override fun onDestroyView() {
         binding.mapView.onDestroy()
-        routeMain = null
-        markerToPin.clear()
         _binding = null
         super.onDestroyView()
     }
@@ -393,9 +266,5 @@ class CourseDetailFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         binding.mapView.onSaveInstanceState(outState)
         super.onSaveInstanceState(outState)
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }

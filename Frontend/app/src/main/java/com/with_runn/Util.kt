@@ -2,12 +2,10 @@ package com.with_runn
 
 import android.content.res.Resources
 import android.icu.util.Calendar
-import android.util.Log
 import android.view.LayoutInflater
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import org.json.JSONArray
 
 fun populateChips(
     chipGroup: ChipGroup,
@@ -74,84 +72,11 @@ fun parseHours(text: String?): Pair<Int, Int> {
 }
 
 fun parseOperatingHours(raw: String?): Pair<Int, Int> {
-    if (raw.isNullOrBlank()) return 0 to 0
-
-    val cleaned = raw
-        .replace(Regex("\\(.*?\\)"), "")      // 괄호 내 보조 문구 제거: (일 18:00) 등
-        .replace("법정공휴일", "")              // 노이즈 제거
-        .replace(Regex("[-–—－]"), "-")        // 대시류 정규화  ← 여기 고침!
-        .replace(Regex("[〜∼~]"), "~")         // 물결류 정규화
-        .replace(Regex("\\s+"), " ")           // 공백 정규화
-        .trim()
-
-    // 순수 HH:MM~HH:MM만 있는 경우 빠르게 처리
-    val plain = Regex("""^\d{1,2}:\d{2}\s*~\s*\d{1,2}:\d{2}$""")
-    if (plain.matches(cleaned)) {
-        val (o, c) = cleaned.split("~").map { it.trim() }
-        return hhmmFromColon(o) to hhmmFromColon(c)
-    }
-
-    // 요일/매일 + 시간 패턴
-    val pattern = Regex(
-        """(?:(매일|[일월화수목금토](?:\s*[~\-]\s*[일월화수목금토])?(?:\s*,\s*[일월화수목금토](?:\s*[~\-]\s*[일월화수목금토])*)*))\s+(\d{1,2}):(\d{2})\s*[~\-]\s*(\d{1,2}):(\d{2})"""
-    )
-
-    val days = charArrayOf('일','월','화','수','목','금','토')
-    val todayChar = days[(java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_WEEK) + 6) % 7]
-
-    fun expandDays(spec: String): Set<Char> {
-        if (spec == "매일") return days.toSet()
-        val set = linkedSetOf<Char>()
-        spec.split(Regex("\\s*,\\s*")).forEach { token ->
-            val t = token.trim()
-            val range = Regex("([일월화수목금토])\\s*[~\\-]\\s*([일월화수목금토])").matchEntire(t)
-            if (range != null) {
-                val s = range.groupValues[1][0]
-                val e = range.groupValues[2][0]
-                val si = days.indexOf(s); val ei = days.indexOf(e)
-                if (si >= 0 && ei >= 0) {
-                    var i = si
-                    while (true) {
-                        set += days[i]
-                        if (i == ei) break
-                        i = (i + 1) % 7
-                    }
-                }
-            } else {
-                t.firstOrNull { it in days }?.let(set::add)
-            }
-        }
-        return set
-    }
-
-    fun toHHmm(h: String, m: String): Int {
-        val hh = h.toIntOrNull() ?: return 0
-        val mm = m.toIntOrNull() ?: 0
-        return if (hh == 24 && mm == 0) 2400 else (hh.coerceIn(0,24) * 100 + mm.coerceIn(0,59))
-    }
-
-    var minOpen: Int? = null
-    var maxClose: Int? = null
-
-    pattern.findAll(cleaned).forEach { m ->
-        val daySpec = m.groupValues[1].trim()
-        val o = toHHmm(m.groupValues[2], m.groupValues[3])
-        val c = toHHmm(m.groupValues[4], m.groupValues[5])
-        val applies = daySpec == "매일" || todayChar in expandDays(daySpec)
-        if (applies) {
-            minOpen = minOf(minOpen ?: o, o)
-            maxClose = maxOf(maxClose ?: c, c)
-        }
-    }
-
-    return if (minOpen != null && maxClose != null) (minOpen!! to maxClose!!) else 0 to 0
-}
-
-private fun hhmmFromColon(s: String): Int {
-    val parts = s.trim().split(":")
-    val h = parts.getOrNull(0)?.toIntOrNull() ?: return 0
-    val m = parts.getOrNull(1)?.toIntOrNull() ?: 0
-    return if (h == 24 && m == 0) 2400 else h.coerceIn(0,24) * 100 + m.coerceIn(0,59)
+    if (raw == null || !raw.contains("~")) return 0 to 0
+    val parts = raw.split("~").map { it.trim() }
+    val open = parts.getOrNull(0)?.replace(":", "")?.toIntOrNull() ?: 0
+    val close = parts.getOrNull(1)?.replace(":", "")?.toIntOrNull() ?: 0
+    return open to close
 }
 
 fun getCurrentTimeInt(): Int {
@@ -174,82 +99,6 @@ fun BottomNavigationView.slideUp(){
         .setDuration(500)
         .start()
 }
-open class Event<out T>(private val content: T) {
-    private var handled = false
-    fun getContentIfNotHandled(): T? =
-        if (handled) null else { handled = true; content }
-}
-fun formatMinutesToHM(minutes: Int): String {
-    val hours = minutes / 60
-    val mins = minutes % 60
-    return buildString {
-        if (hours > 0) append("${hours}H ")
-        if (mins > 0) append("${mins}M")
-        if (hours == 0 && mins == 0) append("0M")
-    }.trim()
-}
-
-fun Int.toHM(): String {
-    val hours = this / 60
-    val mins = this % 60
-    return buildString {
-        if (hours > 0) append("${hours}H ")
-        if (mins > 0) append("${mins}M")
-        if (hours == 0 && mins == 0) append("0M")
-    }.trim()
-}
-
-fun parseJsonArrayString(src: String?): List<String> {
-    if (src.isNullOrBlank()) return emptyList()
-    return try {
-        val arr = JSONArray(src)
-        List(arr.length()) { i -> arr.getString(i) }
-    } catch (_: Exception) { emptyList() }
-}
-
-fun parseTags(src: String?): List<String> {
-    if (src.isNullOrBlank() || src.equals("string", true)) return emptyList()
-    return try {
-        if (src.trim().startsWith("[")) {
-            val arr = org.json.JSONArray(src)
-            (0 until arr.length()).map { arr.getString(it) }
-        } else {
-            listOf(src)
-        }
-    } catch (_: Exception) {
-        emptyList()
-    }.filter { it.isNotBlank() && !it.equals("string", true) }
-}
-
-
-fun cleanText(src: String?): String =
-    if (src.isNullOrBlank() || src.equals("string", ignoreCase = true)) "" else src
-
-fun ageFromBirth(yyyyMmDd: String?): String {
-    if (yyyyMmDd.isNullOrBlank()) return ""
-    return try {
-        val y = yyyyMmDd.substring(0,4).toInt()
-        val m = yyyyMmDd.substring(5,7).toInt()
-        val d = yyyyMmDd.substring(8,10).toInt()
-
-        val cal = java.util.Calendar.getInstance()
-        val nowY = cal.get(java.util.Calendar.YEAR)
-        val nowM = cal.get(java.util.Calendar.MONTH) + 1
-        val nowD = cal.get(java.util.Calendar.DAY_OF_MONTH)
-
-        var years = nowY - y
-        var months = nowM - m
-        if (nowD < d) months -= 1
-        if (months < 0) { years -= 1; months += 12 }
-
-        buildString {
-            if (years > 0) append("${years}년 ")
-            append("${months}개월")
-        }.trim()
-    } catch (_: Exception) { "" }
-}
-
-
 
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()

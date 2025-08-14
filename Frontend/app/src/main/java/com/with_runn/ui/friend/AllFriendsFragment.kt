@@ -52,7 +52,7 @@ class AllFriendsFragment : Fragment() {
         setupRecyclerView()
         setupObservers()
         
-        // 기본값으로 모든 친구 조회 (백엔드 요청: provinceId = 9)
+        // 기본값으로 모든 친구 조회 (provinceId = 1, 서울)
         loadAllFriends()
     }
 
@@ -73,14 +73,11 @@ class AllFriendsFragment : Fragment() {
         val layoutManager = GridLayoutManager(requireContext(), 2)
         recyclerView?.layoutManager = layoutManager
         
-        // 어댑터 설정 (카드형 레이아웃 유지)
-        friendsAdapter = RecommendedFriendAdapter(
-            onItemClick = { friend ->
-                // 프로필 다이얼로그 표시
-                showFriendProfileDialog(friend)
-            },
-            layoutType = RecommendedFriendAdapter.LayoutType.Card
-        )
+        // 어댑터 설정
+        friendsAdapter = RecommendedFriendAdapter { friend ->
+            // 프로필 다이얼로그 표시
+            showFriendProfileDialog(friend)
+        }
         recyclerView?.adapter = friendsAdapter
     }
 
@@ -199,7 +196,7 @@ class AllFriendsFragment : Fragment() {
         loadingTextView?.visibility = View.GONE
     }
 
-    private fun loadAllFriends(provinceId: Int = 9, cityId: Int? = null, townId: Int? = null) {
+    private fun loadAllFriends(provinceId: Int = 1, cityId: Int? = null, townId: Int? = null) {
         viewModel.loadAllFriends(provinceId, cityId, townId)
     }
 
@@ -211,7 +208,7 @@ class AllFriendsFragment : Fragment() {
         } else {
             // 검색어가 있으면 API 검색 실행
             viewModel.searchFriends(
-                provinceId = 9, // 백엔드 요청: provinceId=9
+                provinceId = 1, // 기본값: 서울
                 cityId = null,
                 townId = null,
                 keyword = searchQuery
