@@ -1,158 +1,99 @@
-package com.with_runn.ui.notice
-
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.with_runn.R
+import com.with_runn.data.model.FollowResponse
 import com.with_runn.data.model.Notice
-import com.with_runn.data.viewmodel.MypageFollowerViewmodel
-import com.with_runn.databinding.ItemNoticeFollowBinding
-import com.with_runn.databinding.ItemNoticeLikeBinding
-import com.with_runn.databinding.ItemNoticeScrapBinding
-import com.with_runn.ui.mypage.MypageUserProfileDialogFragment
+import com.with_runn.databinding.ItemNoticeBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class NoticeAdapter(
-    private var noticeList: List<Notice>,
-    private val fragmentManager: androidx.fragment.app.FragmentManager,
-    private val viewModel: MypageFollowerViewmodel
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    private val callbacks: Callbacks,
+    private val scope: CoroutineScope
+) : ListAdapter<Notice, NoticeAdapter.NoticeViewHolder>(DIFF) {
+
+    interface Callbacks {
+        suspend fun onFollowClick(notice: Notice): FollowResponse
+        fun onItemClick(notice: Notice)
+        fun onProfileClick(actorId: Int)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        NoticeViewHolder(
+            ItemNoticeBinding.inflate(LayoutInflater.from(parent.context), parent, false),
+            callbacks,
+            scope
+        )
+
+    override fun onBindViewHolder(holder: NoticeViewHolder, position: Int) =
+        holder.bind(getItem(position))
+
+    class NoticeViewHolder(
+        private val binding: ItemNoticeBinding,
+        private val callbacks: Callbacks,
+        private val scope: CoroutineScope
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(notice: Notice) = with(binding) {
+            // 1) 텍스트 바인딩
+            alertText.text = notice.message
+
+            // 2) 타입별 아이콘 선택 (null이면 GONE)
+            val iconRes = when (notice.noticeType) {
+                "LIKE"  -> R.drawable.ic_heart_hollow
+                "SCRAP" -> R.drawable.ic_bookmark_hollow
+                else    -> null
+            }
+            if (iconRes != null) {
+                alertTypeImg.visibility = View.VISIBLE
+                alertTypeImg.setImageResource(iconRes)
+            } else {
+                alertTypeImg.visibility = View.GONE
+            }
+
+            // 3) 클릭 리스너
+            userImg.setOnClickListener { callbacks.onProfileClick(notice.actorId) }
+            root.setOnClickListener { callbacks.onItemClick(notice) }
+
+            // 4) 팔로우 버튼: 콜백의 FollowResponse 반환에 따라 정적 변경
+            followBtn.setOnClickListener {
+                followBtn.isEnabled = false
+                scope.launch {
+                    val resp = callbacks.onFollowClick(notice)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(itemView.context, resp.message, Toast.LENGTH_SHORT).show()
+                        if (resp.success) {
+                            followBtn.text = "팔로잉"
+                            followBtn.background = AppCompatResources.getDrawable(
+                                itemView.context, R.drawable.bg_button_inactive
+                            )
+                            followBtn.setTextColor(
+                                ContextCompat.getColor(itemView.context, R.color.green_700)
+                            )
+                        }
+                        followBtn.isEnabled = true
+                    }
+                }
+            }
+        }
+    }
 
     companion object {
-        private const val TYPE_LIKE = 0
-        private const val TYPE_FOLLOW = 1
-        private const val TYPE_SCRAP = 2
-    }
+        private val DIFF = object : DiffUtil.ItemCallback<Notice>() {
+            override fun areItemsTheSame(oldItem: Notice, newItem: Notice): Boolean =
+                oldItem.id == newItem.id
 
-    override fun getItemViewType(position: Int): Int = when (noticeList[position].noticeType) {
-        "LIKE" -> TYPE_LIKE
-        "FOLLOW" -> TYPE_FOLLOW
-        "SCRAP" -> TYPE_SCRAP
-        else -> TYPE_LIKE
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        return when (viewType) {
-            TYPE_LIKE -> LikeViewHolder(ItemNoticeLikeBinding.inflate(inflater, parent, false))
-            TYPE_FOLLOW -> FollowViewHolder(ItemNoticeFollowBinding.inflate(inflater, parent, false))
-            TYPE_SCRAP -> ScrapViewHolder(ItemNoticeScrapBinding.inflate(inflater, parent, false))
-            else -> LikeViewHolder(ItemNoticeLikeBinding.inflate(inflater, parent, false))
-        }
-    }
-
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val notice = noticeList[position]
-        when (holder) {
-            is LikeViewHolder -> holder.bind(notice)
-            is FollowViewHolder -> holder.bind(notice)
-            is ScrapViewHolder -> holder.bind(notice)
-        }
-    }
-
-    override fun getItemCount(): Int = noticeList.size
-
-    fun updateData(newList: List<Notice>) {
-        noticeList = newList
-        notifyDataSetChanged()
-    }
-
-    // --------------------------
-    // ViewHolder
-    // --------------------------
-
-    inner class LikeViewHolder(private val binding: ItemNoticeLikeBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(notice: Notice) {
-            binding.noticeText.text = notice.message
-
-            // 예: 클릭 기능 연결
-            binding.root.setOnClickListener {
-                handleLikeClick(notice)
-            }
-
-            binding.profileLayout.setOnClickListener {
-                MypageUserProfileDialogFragment
-                    .newInstance(notice.actorId)
-                    .show(fragmentManager, "FriendProfileDialog")
-            }
-            binding.followBtn.setOnClickListener {
-                viewModel.followUser(notice.actorId)
-                binding.followBtn.background = AppCompatResources.getDrawable(itemView.context,R.drawable.bg_button_inactive)
-                binding.followBtn.text = "팔로잉"
-                binding.followBtn.setTextColor(itemView.context.getColor(R.color.green_700))
-                Log.d("followBtn", "followBtn clicked")
-            }
-        }
-
-        private fun handleLikeClick(notice: Notice) {
-            // 이미 구현된 좋아요 기능 호출
-        }
-    }
-
-    inner class FollowViewHolder(private val binding: ItemNoticeFollowBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(notice: Notice) {
-            binding.noticeText.text = notice.message
-
-            // 팔로우 버튼 클릭
-            binding.followBtn.setOnClickListener {
-                handleFollowClick(notice)
-            }
-
-            binding.profileLayout.setOnClickListener {
-                MypageUserProfileDialogFragment
-                    .newInstance(notice.actorId)
-                    .show(fragmentManager, "FriendProfileDialog")
-            }
-            binding.followBtn.setOnClickListener {
-                viewModel.followUser(notice.actorId)
-                binding.followBtn.background = AppCompatResources.getDrawable(itemView.context,R.drawable.bg_button_inactive)
-                binding.followBtn.text = "팔로잉"
-                binding.followBtn.setTextColor(itemView.context.getColor(R.color.green_700))
-                Log.d("followBtn", "followBtn clicked")
-            }
-        }
-
-        private fun handleFollowClick(notice: Notice) {
-            // 이미 구현된 팔로우 기능 호출
-        }
-    }
-
-    inner class ScrapViewHolder(private val binding: ItemNoticeScrapBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(notice: Notice) {
-            binding.noticeText.text = notice.message
-
-            // 예: 스크랩 아이템 클릭
-            binding.root.setOnClickListener {
-                handleScrapClick(notice)
-            }
-
-            binding.profileLayout.setOnClickListener {
-                MypageUserProfileDialogFragment
-                    .newInstance(notice.actorId)
-                    .show(fragmentManager, "FriendProfileDialog")
-            }
-            binding.followBtn.setOnClickListener {
-                viewModel.followUser(notice.actorId)
-                binding.followBtn.background = AppCompatResources.getDrawable(itemView.context,R.drawable.bg_button_inactive)
-                binding.followBtn.text = "팔로잉"
-                binding.followBtn.setTextColor(itemView.context.getColor(R.color.green_700))
-                Log.d("followBtn", "followBtn clicked")
-            }
-        }
-
-        private fun handleScrapClick(notice: Notice) {
-            // 이미 구현된 스크랩 기능 호출
+            override fun areContentsTheSame(oldItem: Notice, newItem: Notice): Boolean =
+                oldItem == newItem
         }
     }
 }
-
-

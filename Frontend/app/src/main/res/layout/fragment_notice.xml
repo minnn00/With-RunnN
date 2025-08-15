@@ -6,10 +6,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fitsSystemWindows="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:layout_height="66dp"
+        android:layout_height="wrap_content"
+        android:padding="18dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -17,20 +18,20 @@
         <ImageView
             android:id="@+id/back_button"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
-            android:layout_marginStart="17dp"
-            android:layout_marginTop="23dp"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
             android:clickable="true"
+            android:src="@drawable/ic_arrow_back_32"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_arrow_back" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/textView5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="23dp"
-            android:fontFamily="@font/pretendard_semibold"
+            android:layout_gravity="center"
+
+            style="@style/Text_Pretendard_SemiBold_18"
             android:text="알림"
             android:textColor="@color/gray_950"
             android:textSize="16sp"
@@ -38,7 +39,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/notice_item_recyclerView"

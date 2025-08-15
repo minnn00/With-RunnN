@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingVertical="10dp">
+
+    <FrameLayout
+        android:layout_width="50dp"
+        android:layout_height="50dp">
+        <ImageButton
+            android:id="@+id/user_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:background="@drawable/bg_circle"
+            android:src="@drawable/ic_logo_fallback"/>
+        <ImageView
+            android:id="@+id/alert_type_img"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:scaleType="centerCrop"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_heart_hollow"
+            android:layout_gravity="bottom|end"/>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/alert_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_weight="1"
+        android:layout_marginHorizontal="9dp"
+
+        style="@style/Text_Pretendard_Regular_12"
+        android:textColor="@color/gray_950"
+        android:text="샘플님이 샘플데이터에 작업을 했습니다"/>
+
+    <android.widget.Button
+        android:id="@+id/follow_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_button_main"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="8dp"
+        android:text="팔로우"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:fontFamily="@font/pretendard_regular"
+        android:textSize="12sp"
+        android:textColor="@color/gray_050"
+        android:stateListAnimator="@null"/>
+</LinearLayout>

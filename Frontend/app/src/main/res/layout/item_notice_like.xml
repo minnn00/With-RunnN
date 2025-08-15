@@ -48,9 +48,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
+
             android:fontFamily="@font/pretendard_medium"
             android:text="notice_like_text"
             android:textSize="12sp"
+            android:scrollHorizontally="false"
+            android:ellipsize="end"
+            android:maxLines="2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/user_img_frame"
             app:layout_constraintTop_toTopOf="parent" />

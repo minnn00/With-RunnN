@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.with_runn.data.model.FollowResponse
 import com.with_runn.data.model.Follower
 import com.with_runn.data.repository.MypageFollowerRepository
 import com.with_runn.ui.friend.model.dto.FriendDetailResponse
@@ -70,6 +71,22 @@ class MypageFollowerViewmodel : ViewModel() {
                 .onFailure { exception ->
                     _error.value = exception.message ?: "팔로우 요청에 실패했습니다."
                 }
+        }
+    }
+
+    // MypageFollowerViewmodel
+    suspend fun followUserAwait(userId: Int): FollowResponse {
+        return try {
+            when (val r = repository.followUser(userId)) {
+                else -> r.getOrThrow()
+            }
+        } catch (e: Throwable) {
+            FollowResponse(
+                code = "ERR",
+                message = e.message ?: "팔로우 요청에 실패했습니다.",
+                result = "ERROR",
+                success = false
+            )
         }
     }
 }
