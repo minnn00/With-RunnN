@@ -1,12 +1,16 @@
 package com.with_runn.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
+import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.with_runn.ActivityViewModel
 import com.with_runn.databinding.DialogShareBottomSheetBinding
 import kotlinx.coroutines.launch
 
@@ -16,12 +20,13 @@ class ShareBottomSheetDialogFragment : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
 
     private val vm: ShareSheetViewModel by viewModels()
+    private val activityVM: ActivityViewModel by activityViewModels()
 
     private val courseId by lazy {
         requireArguments().getInt(ARG_COURSE_ID)
     }
 
-    private lateinit var adapter: ChatRoomShareAdapter
+    private lateinit var shareAdapter: ChatRoomShareAdapter
 
 
     override fun onCreateView(
@@ -35,7 +40,7 @@ class ShareBottomSheetDialogFragment : BottomSheetDialogFragment() {
         super.onViewCreated(v, s)
 
         // RecyclerView 구성 (3열)
-        adapter = ChatRoomShareAdapter { room ->
+        shareAdapter = ChatRoomShareAdapter { room ->
             // 선택 시 확인 팝업
             MaterialAlertDialogBuilder(requireContext())
                 .setTitle("공유 확인")
@@ -45,10 +50,27 @@ class ShareBottomSheetDialogFragment : BottomSheetDialogFragment() {
                     // 공유 API 호출 (성공/실패에 따라 dismiss)
                     lifecycleScope.launch {
                         binding.progress.visibility = View.VISIBLE
-                        val success = vm.shareCourseToRoom(courseId, room.chatId)
+                        val success = activityVM.memberId.value?.let { uid ->
+                            vm.shareCourseToRoom(uid, courseId, room.chatId)
+                        } ?: run {
+                            Log.w("ShareSheet", "memberId is null → auto-fail")
+                            false
+                        }
                         binding.progress.visibility = View.GONE
-                        dismiss()
-                        vm.emitNavigateToRoomIfSuccess(success, room)
+                        if (success) {
+                            parentFragmentManager.setFragmentResult(
+                                REQ_SHARE_RESULT,
+                                Bundle().apply {
+                                    putBoolean(KEY_SHARE_SUCCESS, true)
+                                    putInt(KEY_ROOM_ID, room.chatId)
+                                    putString(KEY_ROOM_NAME, room.name)
+                                }
+                            )
+                        } else {
+                            // 실패 처리 (필요 시 안내)
+                            Toast.makeText(requireContext(), "코스를 공유하지 못했습니다.", Toast.LENGTH_SHORT).show()
+                        }
+                        if (parentFragmentManager.isStateSaved) dismissAllowingStateLoss() else dismiss()
                     }
                 }
                 .show()
@@ -56,35 +78,28 @@ class ShareBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         binding.recycler.apply {
             layoutManager = GridLayoutManager(requireContext(), 3)
-            adapter = this@ShareBottomSheetDialogFragment.adapter
-            setHasFixedSize(true)
+            adapter = shareAdapter
         }
 
-        // 데이터 fetch (API는 나중에 연결)
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
+            vm.rooms.collect { list ->
+                Log.d("ShareSheet", "adapter@collect=${System.identityHashCode(shareAdapter)}")
+                shareAdapter.submitList(list){
+                    Log.d("ShareSheet", "commit size=${shareAdapter.itemCount}, current=${shareAdapter.currentList.size}")
+                }
+                Log.d("ShareSheet", "collect size=${list.size} -> adapterCount=${shareAdapter.itemCount}")
+                binding.empty.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
             binding.progress.visibility = View.VISIBLE
-            vm.loadRooms()                   // 추후 실제 API 연동
+            vm.loadRooms()
             binding.progress.visibility = View.GONE
-            adapter.submitList(vm.rooms.value)
-            binding.empty.visibility = if (vm.rooms.value.isEmpty()) View.VISIBLE else View.GONE
         }
 
         // 닫기 버튼(optional)
         binding.btnClose.setOnClickListener { dismiss() }
-
-        // 공유 성공 시 외부로 이벤트 전달 (FragmentResult 사용)
-        vm.navigateEvent.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let { room ->
-                parentFragmentManager.setFragmentResult(
-                    REQ_SHARE_RESULT,
-                    Bundle().apply {
-                        putBoolean(KEY_SHARE_SUCCESS, true)
-                        putInt(KEY_ROOM_ID, room.chatId)
-                        putString(KEY_ROOM_NAME, room.name)
-                    }
-                )
-            }
-        }
     }
 
     override fun onDestroyView() {

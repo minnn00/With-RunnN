@@ -3,11 +3,15 @@ package com.with_runn
 import androidx.lifecycle.ViewModel
 import com.with_runn.data.TokenManager
 import com.with_runn.data.region.RegionResponse
+import com.with_runn.login.AuthRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 
 class ActivityViewModel: ViewModel() {
 
+    private val authRepo = AuthRepository()
 
     private val _isBottomNavVisible = MutableStateFlow(true)
     val isBottomNavVisible : StateFlow<Boolean> = _isBottomNavVisible
@@ -72,6 +76,22 @@ class ActivityViewModel: ViewModel() {
         _accessToken.value = null
         TokenManager.clearAccessToken()
     }*/
+
+    suspend fun logout() = withContext(Dispatchers.IO) {
+        TokenManager.clearAll()
+        _accessToken.value = null
+        _memberId.value = null
+    }
+
+    suspend fun deleteAccount(): Boolean = withContext(Dispatchers.IO) {
+        val ok = authRepo.deleteAccount()
+        if (ok) {
+            TokenManager.clearAll()
+            _accessToken.value = null
+            _memberId.value = null
+        }
+        ok
+    }
 
     fun updateSelectedRegion(firstRegion : RegionResponse, secondRegion : RegionResponse, thirdRegion : RegionResponse){
         _firstRegion.value = firstRegion

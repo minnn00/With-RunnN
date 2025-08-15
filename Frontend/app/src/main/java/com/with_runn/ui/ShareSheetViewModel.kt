@@ -4,12 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.with_runn.Event
+import com.with_runn.share.ChatRepository
 import com.with_runn.ui.chat.model.ChatRoom
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ShareSheetViewModel : ViewModel() {
+
+    private val repo = ChatRepository()
+    private val shareRepo = com.with_runn.share.ShareRepository()
 
     private val _rooms = MutableStateFlow<List<ChatRoom>>(emptyList())
     val rooms = _rooms.asStateFlow()
@@ -19,15 +23,13 @@ class ShareSheetViewModel : ViewModel() {
     val navigateEvent: LiveData<Event<ChatRoom>> = _navigateEvent
 
     suspend fun loadRooms() {
-        // TODO: 실제 API 연동
-        delay(200) // 샘플 딜레이
-
+        val r = runCatching { repo.getRooms() }.getOrElse { emptyList() }
+        android.util.Log.d("ShareVM", "emit size=${r.size}")
+        _rooms.value = r
     }
 
-    suspend fun shareCourseToRoom(courseId: Int, roomId: Int): Boolean {
-        // TODO: 실제 공유 API 연동
-        delay(300)
-        return true // 실패 시 false
+    suspend fun shareCourseToRoom(userId: Int, courseId: Int, roomId: Int): Boolean {
+        return shareRepo.shareCourse(userId = userId, chatId = roomId, courseId = courseId)
     }
 
     fun emitNavigateToRoomIfSuccess(success: Boolean, room: ChatRoom) {

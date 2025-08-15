@@ -1,6 +1,7 @@
 package com.with_runn.ui.course
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
@@ -40,9 +41,11 @@ import com.google.maps.android.PolyUtil
 import com.with_runn.data.course.CourseDetailResponse
 import com.with_runn.ui.course_edit.PinItem
 import androidx.core.graphics.toColorInt
+import androidx.core.os.bundleOf
 import com.with_runn.data.course.CourseActionRepository
 import com.with_runn.toHM
 import com.with_runn.ui.ShareBottomSheetDialogFragment
+import com.with_runn.ui.chat.activity.ChatActivity
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -169,7 +172,7 @@ class CourseDetailFragment : Fragment() {
                     binding.apply {
                         courseName.text = course?.name
                         courseInfo.text = course?.description
-                        estimatedTime.text = course?.time?.toHM()
+                        estimatedTime.text = (course?.time.toString() + "M")
                         setTags(course?.keywords ?: emptyList())
 
                         Glide.with(requireContext())
@@ -202,7 +205,7 @@ class CourseDetailFragment : Fragment() {
                     ShareBottomSheetDialogFragment.KEY_ROOM_NAME
                 )
                 // TODO: 채팅방 화면으로 이동
-                // findNavController().navigate(R.id.chatFragment, bundleOf("roomId" to roomId))
+                startActivity(Intent(requireContext(), ChatActivity::class.java))
             }
         }
 

@@ -21,3 +21,10 @@ data class ApiResponse<T>(
     val result: T?,
     val success: Boolean
 )
+
+data class AccountResponseEnvelope(
+    @SerializedName("code") val code: String?,
+    @SerializedName("message") val message: String?,
+    @SerializedName("result") val result: Map<String, Any?>?,
+    @SerializedName("success") val success: Boolean?
+)
