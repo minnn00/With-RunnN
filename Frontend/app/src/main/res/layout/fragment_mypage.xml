@@ -417,7 +417,6 @@
         android:orientation="horizontal"
         android:gravity="end"
         android:padding="12dp"
-        android:layout_marginBottom="120dp"
         android:elevation="12dp">
 
 

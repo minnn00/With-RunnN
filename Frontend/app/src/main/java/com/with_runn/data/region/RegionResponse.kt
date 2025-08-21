@@ -7,9 +7,9 @@ data class RegionResponse(
 
 // 저장 요청 DTO
 data class SaveRegionRequest(
-    val provinceId: Int,
-    val cityId: Int,
-    val townId: Int
+    val provinceId: Int?,
+    val cityId: Int?,
+    val townId: Int?
 )
 
 // 저장 응답 DTO

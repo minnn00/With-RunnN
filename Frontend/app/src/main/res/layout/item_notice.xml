@@ -40,21 +40,21 @@
         android:textColor="@color/gray_950"
         android:text="샘플님이 샘플데이터에 작업을 했습니다"/>
 
-    <android.widget.Button
-        android:id="@+id/follow_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_button_main"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingHorizontal="24dp"
-        android:paddingVertical="8dp"
-        android:text="팔로우"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:fontFamily="@font/pretendard_regular"
-        android:textSize="12sp"
-        android:textColor="@color/gray_050"
-        android:stateListAnimator="@null"/>
+<!--    <android.widget.Button-->
+<!--        android:id="@+id/follow_btn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@drawable/bg_button_main"-->
+<!--        android:minWidth="0dp"-->
+<!--        android:minHeight="0dp"-->
+<!--        android:paddingHorizontal="24dp"-->
+<!--        android:paddingVertical="8dp"-->
+<!--        android:text="팔로우"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:fontFamily="@font/pretendard_regular"-->
+<!--        android:textSize="12sp"-->
+<!--        android:textColor="@color/gray_050"-->
+<!--        android:stateListAnimator="@null"/>-->
 </LinearLayout>

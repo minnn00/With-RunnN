@@ -12,13 +12,13 @@
             android:layout_width="match_parent"
             android:layout_height="66dp"
             android:layout_marginTop="20dp"
-            android:padding="16dp">
+            android:padding="18dp">
 
             <ImageView
                 android:id="@+id/btn_back"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:src="@drawable/left_arrow"
+                android:src="@drawable/ic_arrow_back_32"
                 android:layout_alignParentStart="true"
                 android:contentDescription="뒤로가기" />
 
@@ -40,8 +40,8 @@
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginEnd="18dp"
             android:hint="산책하고 싶은 지역을 검색해보세요"
             android:background="@drawable/search_edittext_background"
             android:drawableStart="@drawable/search"
@@ -60,9 +60,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="많이 검색되는 코스"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="12dp"
             android:textSize="12sp"
             android:fontFamily="@font/pretendard_regular"
             android:textColor="@color/gray_600" />
@@ -73,8 +73,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
             android:overScrollMode="never" />
 
     </LinearLayout>

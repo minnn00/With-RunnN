@@ -168,7 +168,7 @@ class WalkCourseFragment : Fragment() {
         activityVM.firstRegion.value?.let { province ->
             val pid = province.id
             Log.d(TAG, "초기 provinceId=$pid → ensureHomePreviews(pid)")
-            viewModel.ensureHomePreviews(pid)
+            viewModel.ensureHomePreviews(pid ?: 9)
         } ?: Log.d(TAG, "초기 provinceId 없음 → 우리동네 호출 보류")
 
         // === pID 변경 감지되면 그때만 재호출 ===

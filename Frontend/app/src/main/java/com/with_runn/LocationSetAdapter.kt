@@ -8,11 +8,16 @@ import com.with_runn.data.region.RegionResponse
 import com.with_runn.databinding.ItemRegionBinding
 
 
+data class RegionItem(
+    val id: Int?,      // "[지역] 전체"는 null
+    val name: String
+)
+
 class LocationSetAdapter (
-    private val onItemClick: (RegionResponse) -> Unit,
+    private val onItemClick: (RegionItem) -> Unit,
 ) : RecyclerView.Adapter<LocationSetAdapter.ViewHolder>() {
 
-    private val items: MutableList<RegionResponse> = mutableListOf()
+    private val items: MutableList<RegionItem> = mutableListOf()
     private var selectedId: Int? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,14 +46,14 @@ class LocationSetAdapter (
             root.setOnClickListener {
                 if (selectedId == item.id) return@setOnClickListener
 
-                val oldId = selectedId
+                // [FIX] 이전 포지션을 'null' 포함해서 항상 계산
+                val prevId = selectedId
+                val prevPos = items.indexOfFirst { it.id == prevId }
+
                 selectedId = item.id
 
-                // 이전/신규 포지션만 부분 갱신
-                oldId?.let {
-                    val oldPos = items.indexOfFirst { it.id == oldId }
-                    if (oldPos >= 0) notifyItemChanged(oldPos)
-                }
+                // [FIX] 이전이 null이었어도 올바르게 갱신
+                if (prevPos >= 0) notifyItemChanged(prevPos)
                 notifyItemChanged(holder.bindingAdapterPosition)
 
                 onItemClick(item)
@@ -61,7 +66,7 @@ class LocationSetAdapter (
 
     inner class ViewHolder(val binding: ItemRegionBinding) : RecyclerView.ViewHolder(binding.root)
 
-    fun submitList(newList: List<RegionResponse>) {
+    fun submitList(newList: List<RegionItem>) {
         items.clear()
         selectedId = null
         items.addAll(newList)
@@ -71,5 +76,16 @@ class LocationSetAdapter (
     fun reset(){
         selectedId = null
         notifyDataSetChanged()
+    }
+
+    fun selectById(id: Int?) {
+        val old = selectedId
+        selectedId = id
+        if (old != null) {
+            val pos = items.indexOfFirst { it.id == old }
+            if (pos >= 0) notifyItemChanged(pos)
+        }
+        val newPos = items.indexOfFirst { it.id == id }
+        if (newPos >= 0) notifyItemChanged(newPos)
     }
 }

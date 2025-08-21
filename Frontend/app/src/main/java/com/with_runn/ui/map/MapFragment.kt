@@ -410,7 +410,7 @@ class MapFragment : Fragment() {
         behavior.isFitToContents = false
         behavior.halfExpandedRatio = 0.45f
         behavior.isHideable = true
-        behavior.peekHeight = 150.dp
+        behavior.peekHeight = 30.dp
 
 //        var initY = 0f
 //        var lastY = 0f

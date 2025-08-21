@@ -77,8 +77,9 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             activityVM.isBottomNavVisible.collect { isVisible ->
-                if (isVisible) binding.bottomNavigationView.slideUp()
-                else binding.bottomNavigationView.slideDown()
+                binding.bottomNavigationView.visibility = if (isVisible) View.VISIBLE else View.GONE
+//                if (isVisible) binding.bottomNavigationView.slideUp()
+//                else binding.bottomNavigationView.slideDown()
             }
         }
         lifecycleScope.launch {

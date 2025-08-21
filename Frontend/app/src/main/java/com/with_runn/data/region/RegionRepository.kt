@@ -16,6 +16,6 @@ class RegionRepository(
         return api.getTowns("Bearer $token", cityId)
     }
 
-    suspend fun saveUserLocation(token: String, provinceId: Int, cityId: Int, townId: Int) =
+    suspend fun saveUserLocation(token: String, provinceId: Int?, cityId: Int?, townId: Int?) =
         api.saveUserLocation("Bearer $token", SaveRegionRequest(provinceId, cityId, townId))
 }

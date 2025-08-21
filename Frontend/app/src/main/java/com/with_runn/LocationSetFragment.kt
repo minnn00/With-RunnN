@@ -5,12 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.with_runn.data.TokenManager
 import com.with_runn.data.region.RegionResponse
 import com.with_runn.databinding.FragmentLocationSetBinding
 import kotlinx.coroutines.launch
@@ -69,19 +70,40 @@ class LocationSetFragment : Fragment() {
             thirdRegionAdapter.submitList(emptyList())
 
             viewLifecycleOwner.lifecycleScope.launch {
-                val token = activityVM.accessToken.value.orEmpty()
+                val token = TokenManager.getAccessToken().orEmpty()
                 if (token.isEmpty()) return@launch
-                val cities = locationSetVM.fetchCities(token, item.id)
+                val citiesRes = locationSetVM.fetchCities(token, item.id ?: 9)
+                val cities = citiesRes.toItemsWithAll(item.name)
                 secondRegionAdapter.submitList(cities)
+
+                val allItem = cities.firstOrNull()
+                locationSetVM.setSecondRegion(allItem)
+                secondRegionAdapter.selectById(allItem?.id)
+
+                thirdRegionAdapter.submitList(emptyList())
+                locationSetVM.setThirdRegion(null)
             }
         }
         secondRegionAdapter = LocationSetAdapter { item ->
             locationSetVM.setSecondRegion(item)
             viewLifecycleOwner.lifecycleScope.launch {
-                val token = activityVM.accessToken.value.orEmpty()
+                val token = TokenManager.getAccessToken().orEmpty()
                 if (token.isEmpty()) return@launch
-                val towns = locationSetVM.fetchTowns(token, item.id)
-                thirdRegionAdapter.submitList(towns)
+
+                if (item.id == null) {
+                    // "~~ 전체": 다음 단계 호출하지 않음 (요구 9)
+                    thirdRegionAdapter.submitList(emptyList())
+                    locationSetVM.setThirdRegion(null)
+                } else {
+                    // city 선택 시 towns 로드 + "city 전체(null)" 0번 삽입 + 기본값 전체 선택 (요구 5, 7)
+                    val townsRes = locationSetVM.fetchTowns(token, item.id)
+                    val towns = townsRes.toItemsWithAll(item.name)
+                    thirdRegionAdapter.submitList(towns)
+
+                    val allItem = towns.firstOrNull()
+                    locationSetVM.setThirdRegion(allItem)
+                    thirdRegionAdapter.selectById(allItem?.id)
+                }
             }
         }
         thirdRegionAdapter = LocationSetAdapter { item ->
@@ -104,7 +126,9 @@ class LocationSetFragment : Fragment() {
             backBtn.setOnClickListener { findNavController().popBackStack() }
             btnReset.setOnClickListener {
                 locationSetVM.apply {
-                    setFirstRegion(null)
+                    setFirstRegion(
+                        RegionItem(9, "서울")
+                    )
                     setSecondRegion(null)
                     setThirdRegion(null)
                 }
@@ -114,19 +138,19 @@ class LocationSetFragment : Fragment() {
                 thirdRegionAdapter.submitList(emptyList())
             }
             btnSave.setOnClickListener {
-                val l1 = locationSetVM.firstRegion.value ?: return@setOnClickListener
-                val l2 = locationSetVM.secondRegion.value ?: return@setOnClickListener
-                val l3 = locationSetVM.thirdRegion.value  ?: return@setOnClickListener
+                val l1 = locationSetVM.firstRegion.value
+                val l2 = locationSetVM.secondRegion.value ?: RegionItem(10, "")
+                val l3 = locationSetVM.thirdRegion.value  ?: RegionItem(100, "")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     val token = activityVM.accessToken.value.orEmpty()
                     if (token.isEmpty()) return@launch
-                    val success = locationSetVM.saveSelection(token, l1.id, l2.id, l3.id)
+                    val success = locationSetVM.saveSelection(token, l1.id, l2.id ?: 10, l3.id ?: 100)
                     if (success) {
                         activityVM.updateSelectedRegion(l1, l2, l3) // 전역 상태 반영
                         findNavController().popBackStack()
                     } else {
-                        // TODO: 실패 처리 (토스트 등)
+                        Toast.makeText(requireContext(), "동네 설정 실패", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -135,7 +159,7 @@ class LocationSetFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             locationSetVM.firstRegion.collect { data ->
                 binding.apply {
-                    textRegion.text = data?.name ?: ""
+                    textRegion.text = data.name
                 }
             }
         }
@@ -158,7 +182,7 @@ class LocationSetFragment : Fragment() {
                     text += " ${data?.name ?: ""}"
                     textRegion.text = text
 
-                    val enabled = (data != null)
+                    val enabled = (data != null) || (locationSetVM.secondRegion.value?.id == null)
                     btnSave.isEnabled = enabled
                     btnSave.setBackgroundResource(
                         if (enabled) R.drawable.bg_btn_filled else R.drawable.bg_btn_filled_inactive
@@ -174,13 +198,34 @@ class LocationSetFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             activityVM.loadToken()
-            val token = activityVM.accessToken.value.orEmpty()
+            val token = TokenManager.getAccessToken().orEmpty()
             if (token.isEmpty()) return@launch
 
-            val provinces = locationSetVM.fetchProvinces(token)
+            val provincesRes = locationSetVM.fetchProvinces(token)
+            val provinces = provincesRes.map { it.toItem() }
             firstRegionAdapter.submitList(provinces)
-            secondRegionAdapter.submitList(emptyList())
-            thirdRegionAdapter.submitList(emptyList())
+
+            val seoul = provinces.firstOrNull { it.id == 9 }
+            if (seoul != null) {
+                locationSetVM.setFirstRegion(seoul)
+                firstRegionAdapter.selectById(seoul.id)
+
+                val citiesRes = locationSetVM.fetchCities(token, seoul.id!!)
+                val cities = citiesRes.toItemsWithAll(seoul.name)
+                secondRegionAdapter.submitList(cities)
+
+                val allItem = cities.firstOrNull() // "서울 전체(null)"
+                locationSetVM.setSecondRegion(allItem)
+                secondRegionAdapter.selectById(allItem?.id)
+
+                // "전체"이므로 3단계는 비워두고 대기
+                thirdRegionAdapter.submitList(emptyList())
+                locationSetVM.setThirdRegion(null)
+            } else {
+                // 서울 항목이 없는 예외 케이스만 안전 처리
+                secondRegionAdapter.submitList(emptyList())
+                thirdRegionAdapter.submitList(emptyList())
+            }
         }
     }
 
@@ -188,4 +233,9 @@ class LocationSetFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun RegionResponse.toItem() = RegionItem(this.id, this.name)
+
+    fun List<RegionResponse>.toItemsWithAll(parentName: String): List<RegionItem> =
+        listOf(RegionItem(null, "$parentName 전체")) + this.map { it.toItem() }
 }

@@ -34,14 +34,16 @@ class ActivityViewModel: ViewModel() {
     private val _memberId = MutableStateFlow<Int?>(null)
     val memberId: StateFlow<Int?> = _memberId
 
-    private val _firstRegion = MutableStateFlow<RegionResponse?>(null)
-    val firstRegion: StateFlow<RegionResponse?> = _firstRegion
+    private val _firstRegion = MutableStateFlow<RegionItem>(
+        RegionItem(9, "서울")
+    )
+    val firstRegion: StateFlow<RegionItem> = _firstRegion
 
-    private val _secondRegion = MutableStateFlow<RegionResponse?>(null)
-    val secondRegion : StateFlow<RegionResponse?> = _secondRegion
+    private val _secondRegion = MutableStateFlow<RegionItem?>(null)
+    val secondRegion : StateFlow<RegionItem?> = _secondRegion
 
-    private val _thirdRegion = MutableStateFlow<RegionResponse?>(null)
-    val thirdRegion : StateFlow<RegionResponse?> = _thirdRegion
+    private val _thirdRegion = MutableStateFlow<RegionItem?>(null)
+    val thirdRegion : StateFlow<RegionItem?> = _thirdRegion
 
     fun setBottomNavVisibility(isVisible: Boolean){
         _isBottomNavVisible.value = isVisible
@@ -93,7 +95,7 @@ class ActivityViewModel: ViewModel() {
         ok
     }
 
-    fun updateSelectedRegion(firstRegion : RegionResponse, secondRegion : RegionResponse, thirdRegion : RegionResponse){
+    fun updateSelectedRegion(firstRegion: RegionItem, secondRegion: RegionItem, thirdRegion: RegionItem){
         _firstRegion.value = firstRegion
         _secondRegion.value = secondRegion
         _thirdRegion.value = thirdRegion

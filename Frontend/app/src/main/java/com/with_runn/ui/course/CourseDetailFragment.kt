@@ -93,6 +93,7 @@ class CourseDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activityVM.setBottomNavVisibility(false)
+        activityVM.setUpperToolbarVisibility(false)
 
         binding.mapView.apply {
             onCreate(savedInstanceState)

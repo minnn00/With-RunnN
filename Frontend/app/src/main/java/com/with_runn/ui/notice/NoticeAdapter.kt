@@ -64,26 +64,26 @@ class NoticeAdapter(
             userImg.setOnClickListener { callbacks.onProfileClick(notice.actorId) }
             root.setOnClickListener { callbacks.onItemClick(notice) }
 
-            // 4) 팔로우 버튼: 콜백의 FollowResponse 반환에 따라 정적 변경
-            followBtn.setOnClickListener {
-                followBtn.isEnabled = false
-                scope.launch {
-                    val resp = callbacks.onFollowClick(notice)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(itemView.context, resp.message, Toast.LENGTH_SHORT).show()
-                        if (resp.success) {
-                            followBtn.text = "팔로잉"
-                            followBtn.background = AppCompatResources.getDrawable(
-                                itemView.context, R.drawable.bg_button_inactive
-                            )
-                            followBtn.setTextColor(
-                                ContextCompat.getColor(itemView.context, R.color.green_700)
-                            )
-                        }
-                        followBtn.isEnabled = true
-                    }
-                }
-            }
+//            // 4) 팔로우 버튼: 콜백의 FollowResponse 반환에 따라 정적 변경
+//            followBtn.setOnClickListener {
+//                followBtn.isEnabled = false
+//                scope.launch {
+//                    val resp = callbacks.onFollowClick(notice)
+//                    withContext(Dispatchers.Main) {
+//                        Toast.makeText(itemView.context, resp.message, Toast.LENGTH_SHORT).show()
+//                        if (resp.success) {
+//                            followBtn.text = "팔로잉"
+//                            followBtn.background = AppCompatResources.getDrawable(
+//                                itemView.context, R.drawable.bg_button_inactive
+//                            )
+//                            followBtn.setTextColor(
+//                                ContextCompat.getColor(itemView.context, R.color.green_700)
+//                            )
+//                        }
+//                        followBtn.isEnabled = true
+//                    }
+//                }
+//            }
         }
     }
 
