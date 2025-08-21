@@ -139,13 +139,13 @@ class LocationSetFragment : Fragment() {
             }
             btnSave.setOnClickListener {
                 val l1 = locationSetVM.firstRegion.value
-                val l2 = locationSetVM.secondRegion.value ?: RegionItem(10, "")
-                val l3 = locationSetVM.thirdRegion.value  ?: RegionItem(100, "")
+                val l2 = locationSetVM.secondRegion.value ?: RegionItem(null, "")
+                val l3 = locationSetVM.thirdRegion.value  ?: RegionItem(null, "")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     val token = activityVM.accessToken.value.orEmpty()
                     if (token.isEmpty()) return@launch
-                    val success = locationSetVM.saveSelection(token, l1.id, l2.id ?: 10, l3.id ?: 100)
+                    val success = locationSetVM.saveSelection(token, l1.id, l2.id , l3.id)
                     if (success) {
                         activityVM.updateSelectedRegion(l1, l2, l3) // 전역 상태 반영
                         findNavController().popBackStack()
