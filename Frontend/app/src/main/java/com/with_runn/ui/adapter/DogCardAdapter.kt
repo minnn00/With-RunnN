@@ -6,12 +6,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.with_runn.R
 
 data class DogCard(
     val name: String,
     val tag: String,
-    val imageResId: Int,
+    val image: String? = null,
     val tags: List<String>
 )
 
@@ -40,10 +41,17 @@ class DogCardAdapter(private var dogCards: List<DogCard>) :
         val dogCard = dogCards[position]
         
         // jonny.png를 항상 사용 (절대 지우지 않음!)
-        holder.dogImage.setImageResource(R.drawable.jonny)
+        //holder.dogImage.setImageResource(R.drawable.jonny)
         holder.dogName.text = dogCard.name
         holder.dogTag.text = dogCard.tag
-        
+        Glide.with(holder.dogImage.context)
+            .load(dogCard.image)
+            .placeholder(R.drawable.ic_fallback)
+            .fallback(R.drawable.jonny)
+            .error(R.drawable.jonny)
+            .into(holder.dogImage)
+
+
         // 태그들도 업데이트
         val tag1 = holder.itemView.findViewById<TextView>(R.id.tag1)
         val tag2 = holder.itemView.findViewById<TextView>(R.id.tag2)

@@ -87,7 +87,7 @@ class RecommendedFriendsFragment : Fragment() {
                     DogCard(
                         name = f.userName ?: "",
                         tag = (f.style?.firstOrNull() ?: "#"),
-                        imageResId = R.drawable.jonny,
+                        image = f.profileImage,
                         tags = ((f.style ?: emptyList()) + (f.characters ?: emptyList())).take(2)
                     )
                 }
