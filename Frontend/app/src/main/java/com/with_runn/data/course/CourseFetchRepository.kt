@@ -21,13 +21,12 @@ class CourseFetchRepository (private val api: CourseApi){
         return api.getCourseDetail("Bearer $accessToken", courseId)
     }
 
-
-    // 1) /api/course/rising  (cached)
+    // 1) /api/course/rising  — 항상 네트워크에서 새로 가져와 캐시 갱신
     suspend fun getRisingCourses(): List<CourseSummary> {
-        risingCached?.let { return it } // 캐시 존재시 반환
-
         return risingMutex.withLock {
-            risingCached ?: api.getRisingCourses(bearer()).also { risingCached = it }
+            val fresh = api.getRisingCourses(bearer())
+            risingCached = fresh
+            fresh
         }
     }
 
@@ -36,19 +35,17 @@ class CourseFetchRepository (private val api: CourseApi){
         return api.searchRisingCourses(bearer(), keyword)
     }
 
-    // 3) /api/course/nearby  (cached per region key)
+    // 3) /api/course/nearby — 항상 네트워크에서 새로 가져와 캐시 갱신
     suspend fun getNearbyCourses(
         provinceId: Int,
         cityId: Int? = null,
         townId: Int? = null
     ): List<CourseSummary> {
         val key = NearbyKey(provinceId, cityId, townId)
-
-        nearbyCache[key]?.let { return it }
-
         return nearbyMutex.withLock {
-            nearbyCache[key] ?: api.getNearbyCourses(bearer(), provinceId, cityId, townId)
-                .also { nearbyCache[key] = it }
+            val fresh = api.getNearbyCourses(bearer(), provinceId, cityId, townId)
+            nearbyCache[key] = fresh
+            fresh
         }
     }
 

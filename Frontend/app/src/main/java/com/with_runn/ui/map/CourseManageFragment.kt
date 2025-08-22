@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -52,8 +51,19 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.with_runn.data.TokenManager
 import com.with_runn.data.course.CourseManageArgs
 import com.with_runn.data.course.CourseMode
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import kotlin.math.min
 import kotlin.math.roundToInt
+import androidx.core.net.toUri
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import android.net.Uri
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.asRequestBody
+import okio.buffer
+import okio.source
+import java.net.URLConnection
+import java.io.File
 
 class CourseManageFragment : Fragment() {
 
@@ -526,11 +536,14 @@ class CourseManageFragment : Fragment() {
             // 저장 버튼 잠금
             binding.btnSave.isEnabled = false
 
+            courseEditViewModel.overrideCourseMeta(course)
+
             // ViewModel의 필드/ActivityVM에서 파라미터 모으기
             val accessToken = TokenManager.getAccessToken().toString()// raw or "Bearer ..."
             val townId = activityVM.thirdRegion.value?.id
             val provinceId = activityVM.firstRegion.value.id
             val cityId = activityVM.secondRegion.value?.id
+            val imagePart = buildImagePart(course.imageUrl)
 
             val keywords = course.keyword?.takeIf { it.isNotBlank() }?.let { listOf(it) } ?: emptyList()
             Log.e("KEYWORDS", "$keywords")
@@ -544,7 +557,7 @@ class CourseManageFragment : Fragment() {
                         townId = townId,
                         provinceId = provinceId ?: 9,
                         cityId = cityId,
-                        courseImg = course.imageUrl
+                        imagePart = imagePart
                     ) { success, createdId ->
                         if (success && createdId != null) {
                             val bundle = Bundle().apply {
@@ -564,11 +577,25 @@ class CourseManageFragment : Fragment() {
                         binding.btnSave.isEnabled = true
                         return@setFragmentResultListener
                     }
-
-                    findNavController().navigate(
-                        R.id.courseDetailFragment,
-                        Bundle().apply { putInt("courseId", editingId) }
-                    )
+                    courseEditViewModel.updateCourse(
+                        accessToken = accessToken,
+                        courseId = editingId,
+                        keywords = keywords,
+                        townId = townId,
+                        provinceId = provinceId ?: 9,
+                        cityId = cityId
+                    ) { success ->
+                        if (success) {
+                            (activity as? MainActivity)?.showSnackbar("코스가 업데이트되었습니다")
+                            findNavController().navigate(
+                                R.id.courseDetailFragment,
+                                Bundle().apply { putInt("courseId", editingId) }
+                            )
+                        } else {
+                            (activity as? MainActivity)?.showSnackbar("코스 수정 실패")
+                            binding.btnSave.isEnabled = true
+                        }
+                    }
                 }
             }
 
@@ -655,5 +682,44 @@ class CourseManageFragment : Fragment() {
         googleMap.animateCamera(
             CameraUpdateFactory.newLatLngBounds(bounds, paddingDp.dp)
         )
+    }
+
+    private fun buildImagePart(uriString: String?): MultipartBody.Part? {
+        if (uriString.isNullOrBlank()) return null
+        val uri = uriString.toUri()
+
+        return when (uri.scheme?.lowercase()) {
+            "content" -> {
+                val cr = requireContext().contentResolver
+                val mime = cr.getType(uri) ?: "image/*"
+                // 파일명
+                val name = cr.query(uri, arrayOf(android.provider.OpenableColumns.DISPLAY_NAME), null, null, null)
+                    ?.use { c -> if (c.moveToFirst()) c.getString(0) else null } ?: "image_${System.currentTimeMillis()}"
+                // 스트리밍 RequestBody (임시파일 없이 업로드)
+                val rb = object : RequestBody() {
+                    override fun contentType() = mime.toMediaTypeOrNull()
+                    override fun writeTo(sink: okio.BufferedSink) {
+                        cr.openInputStream(uri)!!.use { input ->
+                            sink.writeAll(input.source().buffer())
+                        }
+                    }
+                }
+                MultipartBody.Part.createFormData("courseImg", name, rb)
+            }
+            "file" -> {
+                val file = File(requireNotNull(uri.path))
+                val mime = URLConnection.guessContentTypeFromName(file.name) ?: "image/*"
+                val rb = file.asRequestBody(mime.toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("courseImg", file.name, rb)
+            }
+            else -> {
+                // 스킴이 없고 그냥 절대경로인 경우
+                val file = File(uriString)
+                if (!file.exists()) return null
+                val mime = URLConnection.guessContentTypeFromName(file.name) ?: "image/*"
+                val rb = file.asRequestBody(mime.toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("courseImg", file.name, rb)
+            }
+        }
     }
 }

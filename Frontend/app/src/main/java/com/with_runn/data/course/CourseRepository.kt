@@ -4,6 +4,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
 import com.with_runn.ui.course_edit.CourseData
 import com.with_runn.ui.course_edit.PinItem
+import okhttp3.MultipartBody
 import retrofit2.Response
 
 class CourseRepository(
@@ -17,8 +18,8 @@ class CourseRepository(
         regionProvinceId: Int,
         regionsCityId: Int?,
         path: List<LatLng>,
-        courseImg: String?,
-        accessToken: String
+        accessToken: String,
+        imagePart : MultipartBody.Part? = null
     ): Response<CreateCourseResponse> {
 
         // 1) 경로 인코딩 (Google Encoded Polyline)
@@ -46,13 +47,56 @@ class CourseRepository(
             regionProvinceId = regionProvinceId,
             regionsCityId = regionsCityId,
             regionsTownId = regionsTownId,
-            courseImg = courseImg,
             overviewPolyline = encoded
         )
 
-        // 4) 토큰 보정 후 호출
+        // 4) JSON 파트 생성
         val headerToken = normalizeBearer(accessToken)
-        return api.createCourse(headerToken, body)
+        return api.createCourse(headerToken, request = body, image = imagePart)
+    }
+
+    suspend fun updateCourse(
+        courseId: Int,
+        course: CourseData,
+        pins: List<PinItem>,
+        keywords: List<String>,
+        regionsTownId: Int?,
+        regionProvinceId: Int,
+        regionsCityId: Int?,
+        path: List<LatLng>,
+        accessToken: String
+    ): Response<UpdateCourseResponse> {
+
+        // 1) 경로 인코딩
+        val encoded = encodeOverviewPolyline(path, 250)
+
+        // 2) 핀 변환 (업데이트 스펙은 pinOrder 없음)
+        val updatePins = pins.map { p ->
+            UpdatePinPayload(
+                name = p.name,
+                color = null,
+                latitude = p.lat,
+                longitude = p.lng,
+                detail = p.content
+            )
+        }
+
+        // 3) 요청 바디 (필드명은 BE 스펙에 맞춰 keyWords / provinceId / cityId / townId)
+        val body = UpdateCourseRequest(
+            name = course.title,
+            description = course.info ?: "",
+            time = course.time,
+            keyWords = keywords,
+            pins = updatePins,
+            provinceId = regionProvinceId,
+            cityId = regionsCityId,
+            townId = regionsTownId,
+            overviewPolyline = encoded
+        )
+
+        // 4) 호출
+        val headerToken = normalizeBearer(accessToken)
+        return api.updateCourse(headerToken, courseId, body)
     }
 
     private fun normalizeBearer(token: String): String =

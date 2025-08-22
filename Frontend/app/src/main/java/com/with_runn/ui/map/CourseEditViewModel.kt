@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.with_runn.tmap.TmapRetrofit
 import com.with_runn.tmap.TmapDirectionsRepository
+import okhttp3.MultipartBody
 
 class CourseEditViewModel : ViewModel() {
     private val repository: TmapDirectionsRepository by lazy {
@@ -171,7 +172,7 @@ class CourseEditViewModel : ViewModel() {
         townId: Int?,
         provinceId: Int,
         cityId: Int?,
-        courseImg: String?,
+        imagePart: MultipartBody.Part?,
         onComplete: (Boolean, Int?) -> Unit
     ) {
         viewModelScope.launch {
@@ -192,8 +193,8 @@ class CourseEditViewModel : ViewModel() {
                     regionProvinceId = provinceId,
                     regionsCityId = cityId,
                     path = path,
-                    courseImg = courseImg,
-                    accessToken = accessToken
+                    accessToken = accessToken,
+                    imagePart = imagePart
                 )
             }.getOrElse {
                 Log.e("COURSE_CREATE", "request failed", it)
@@ -294,14 +295,43 @@ class CourseEditViewModel : ViewModel() {
         viewModelScope.launch {
             val pins = pinList.value
             val path = polyLineData.value
+
+            // 기본 검증: 핀 >= 2, 경로 존재
             if (pins.size < 2 || path.isEmpty()) {
-                onComplete(false); return@launch
+                Log.w("COURSE_UPDATE", "invalid payload: pins=${pins.size}, path=${path.size}")
+                onComplete(false)
+                return@launch
             }
-            // TODO: PATCH DTO 구성 후 CourseApi에 엔드포인트 추가하여 호출
-            // runCatching { repo.updateCourse("Bearer $accessToken", body) }
-            //   .onSuccess { onComplete(it.isSuccessful) }
-            //   .onFailure { onComplete(false) }
-            onComplete(false) // 임시
+
+            val resp = runCatching {
+                courseRepo.updateCourse(
+                    courseId = courseId,
+                    course = courseData.value,   // title/description/time 등 현재 편집 값
+                    pins = pins,                 // 현재 핀 목록
+                    keywords = keywords,         // 단일 키워드를 List로 만들어 전달
+                    regionsTownId = townId,
+                    regionProvinceId = provinceId,
+                    regionsCityId = cityId,
+                    path = path,                 // 현재 경로(인코딩은 repo에서 처리)
+                    accessToken = accessToken
+                )
+            }.getOrElse { t ->
+                Log.e("COURSE_UPDATE", "request failed", t)
+                onComplete(false)
+                return@launch
+            }
+
+            if (!resp.isSuccessful) {
+                Log.e("COURSE_UPDATE", "http error: code=${resp.code()}")
+                onComplete(false)
+                return@launch
+            }
+
+            val success = resp.body()?.success == true
+            if (!success) {
+                Log.e("COURSE_UPDATE", "api success=false, body=${resp.body()}")
+            }
+            onComplete(success)
         }
     }
 }

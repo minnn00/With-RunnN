@@ -1,5 +1,7 @@
 package com.with_runn.data.course
 
+import com.google.gson.annotations.SerializedName
+
 // 요청 바디
 data class CreateCourseRequest(
     val name: String,
@@ -10,7 +12,6 @@ data class CreateCourseRequest(
     val regionProvinceId: Int,
     val regionsCityId: Int?,
     val regionsTownId: Int?,
-    val courseImg: String? = null,
     val overviewPolyline: String
 )
 
@@ -38,4 +39,30 @@ data class CreateCourseResponse(
 data class CreateCourseResult(
     val courseId: Int,
     val overviewPolyline: String
+)
+
+data class UpdateCourseRequest(
+    val name: String,
+    val description: String?,
+    val time: Int,
+    @SerializedName("keyWords") val keyWords: List<String>,   // BE 스펠링에 맞춤
+    val pins: List<UpdatePinPayload>,
+    val provinceId: Int,
+    val cityId: Int?,
+    val townId: Int?,
+    val overviewPolyline: String
+)
+
+data class UpdatePinPayload(
+    val name: String,
+    val color: String?,
+    val latitude: Double,
+    val longitude: Double,
+    val detail: String
+)
+
+data class UpdateCourseResponse(
+    val code: String?,
+    val message: String?,
+    val success: Boolean
 )
