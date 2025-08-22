@@ -15,7 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresPermission
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -43,7 +42,6 @@ import com.with_runn.populateChips
 import kotlinx.coroutines.launch
 import com.with_runn.ui.map.search.SearchResultFragment
 import com.with_runn.ui.map.search.SearchResultItem
-import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.with_runn.parseOperatingHours
