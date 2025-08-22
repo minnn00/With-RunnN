@@ -6,9 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.Polyline
+import com.google.maps.android.PolyUtil
 import com.with_runn.BuildConfig
 import com.with_runn.data.course.CourseRepository
-import com.with_runn.data.course.RegionDataPayload
+import com.with_runn.data.course.*
 import com.with_runn.ui.course_edit.CourseData
 import com.with_runn.ui.course_edit.PinItem
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,6 +26,19 @@ class CourseEditViewModel : ViewModel() {
     }
 
     private val courseRepo = CourseRepository()
+
+    private val _mode = MutableStateFlow(CourseMode.CREATE)
+    val mode: StateFlow<CourseMode> = _mode
+
+    // 1회 하이드레이션 가드
+    private val _detailHydrated = MutableStateFlow(false)
+    val detailHydrated: StateFlow<Boolean> = _detailHydrated
+
+    // 이미 있는 것들 외
+    private val fetchRepo = CourseFetchRepository(CourseService.api)
+
+    private val _loadedCourseId = MutableStateFlow<Int?>(null)
+    val loadedCourseId: StateFlow<Int?> = _loadedCourseId
 
     private val _courseData = MutableStateFlow<CourseData>(
         CourseData(
@@ -68,6 +82,7 @@ class CourseEditViewModel : ViewModel() {
 
     fun removeTempMarker(){
         _tempMarker.value?.remove()
+        _tempMarker.value = null
     }
 
     fun togglePinningBtn(){
@@ -153,9 +168,10 @@ class CourseEditViewModel : ViewModel() {
     fun postCourse(
         accessToken: String,
         keywords: List<String>,
-        townId: Int,
+        townId: Int?,
         provinceId: Int,
-        cityId: Int,
+        cityId: Int?,
+        courseImg: String?,
         onComplete: (Boolean, Int?) -> Unit
     ) {
         viewModelScope.launch {
@@ -176,6 +192,7 @@ class CourseEditViewModel : ViewModel() {
                     regionProvinceId = provinceId,
                     regionsCityId = cityId,
                     path = path,
+                    courseImg = courseImg,
                     accessToken = accessToken
                 )
             }.getOrElse {
@@ -197,4 +214,94 @@ class CourseEditViewModel : ViewModel() {
         }
     }
 
+    // UI 상태(선택)
+    sealed interface DetailUiState {
+        data object Idle: DetailUiState
+        data object Loading: DetailUiState
+        data class Success(val id:Int): DetailUiState
+        data class Error(val message:String): DetailUiState
+    }
+    private val _detailState = MutableStateFlow<DetailUiState>(DetailUiState.Idle)
+    val detailState: StateFlow<DetailUiState> = _detailState
+
+    fun loadCourseDetail(accessToken: String, courseId: Int) {
+        if (detailHydrated.value && loadedCourseId.value == courseId) return
+
+        viewModelScope.launch {
+            _detailState.value = DetailUiState.Loading
+            runCatching {
+                fetchRepo.getCourseDetail(courseId, accessToken)
+            }.onSuccess { dto ->
+                hydrateFromDetail(dto)
+                _loadedCourseId.value = dto.id
+                _detailHydrated.value = true
+                _detailState.value = DetailUiState.Success(dto.id)
+            }.onFailure { t ->
+                _detailState.value = DetailUiState.Error(t.message ?: "load failed")
+            }
+        }
+    }
+
+    fun setMode(newMode: CourseMode, courseId: Int?) {
+        _mode.value = newMode
+        _loadedCourseId.value = courseId
+    }
+
+    private fun hydrateFromDetail(dto: CourseDetailResponse) {
+        // 1) 코스 메타
+        _courseData.value = CourseData(
+            title = dto.name,
+            keyword = dto.keywords.firstOrNull(), // 기존 구조 유지(단일 keyword 사용 중이면)
+            info = dto.description,
+            time = dto.time   // 이미 분 단위
+        )
+
+        // 2) 핀 목록
+        // 서버 핀을 그대로 PinItem으로 받는 구조라면 index 정규화만
+        val normalized = dto.pins.mapIndexed { idx, p ->
+            p.copy(index = idx + 1)
+        }
+        _pinList.value = normalized
+
+        // 3) 경로
+        val path: List<LatLng> = when {
+            !dto.overviewPolyline.isNullOrBlank() -> decodeOverviewPolyline(dto.overviewPolyline)
+            else -> emptyList() // 서버가 폴리라인을 안 줄 수도 있음
+        }
+        _polyLineData.value = path
+    }
+
+    private fun decodeOverviewPolyline(encoded: String?): List<LatLng> {
+        if (encoded.isNullOrBlank()) return emptyList()
+        return try { PolyUtil.decode(encoded) } catch (_: Exception) { emptyList() }
+    }
+
+    // 1) 코스 메타 교체
+    fun overrideCourseMeta(cd: CourseData) {
+        _courseData.value = cd
+    }
+
+    // 2) UPDATE 시그니처(바디는 스키마 확정 후)
+    fun updateCourse(
+        accessToken: String,
+        courseId: Int,
+        keywords: List<String>,
+        townId: Int?,
+        provinceId: Int,
+        cityId: Int?,
+        onComplete: (Boolean) -> Unit
+    ) {
+        viewModelScope.launch {
+            val pins = pinList.value
+            val path = polyLineData.value
+            if (pins.size < 2 || path.isEmpty()) {
+                onComplete(false); return@launch
+            }
+            // TODO: PATCH DTO 구성 후 CourseApi에 엔드포인트 추가하여 호출
+            // runCatching { repo.updateCourse("Bearer $accessToken", body) }
+            //   .onSuccess { onComplete(it.isSuccessful) }
+            //   .onFailure { onComplete(false) }
+            onComplete(false) // 임시
+        }
+    }
 }

@@ -8,8 +8,6 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -108,7 +106,6 @@ class OnboardingProfileWalkingStyleFragment : Fragment() {
         chip.isClickable = true
 
         chip.setOnClickListener {
-            Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
             if (makeBtn) { // "직접 입력" 칩
                 binding.customLayout.visibility = if (chip.isChecked) View.VISIBLE else View.INVISIBLE
             }

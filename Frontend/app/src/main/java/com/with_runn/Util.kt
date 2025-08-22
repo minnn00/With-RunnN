@@ -32,7 +32,27 @@ fun formatToHHMM(time: Int): String {
     val minute = s.substring(2, 4)
     return "$hour:$minute"
 }
+fun parseTagsAny(src: Any?): List<String> = when (src) {
+    null -> emptyList()
+    is List<*> -> src.filterIsInstance<String>().map { it.trim() }.filter { it.isNotBlank() }
+    is String -> parseTagsString(src)
+    else -> emptyList()
+}
 
+fun parseTagsString(raw: String): List<String> {
+    val s = raw.trim()
+    // ["a","b"] 형태
+    if (s.startsWith("[") && s.endsWith("]")) {
+        return s.substring(1, s.length - 1)
+            .split(',')
+            .map { it.trim().trim('"', '“', '”', '\'') }
+            .filter { it.isNotBlank() }
+    }
+    // "a,b" 형태
+    return s.split(',')
+        .map { it.trim().trim('"', '“', '”', '\'') }
+        .filter { it.isNotBlank() }
+}
 fun getTodayWeekIndex(): Int {
     val calendar = Calendar.getInstance()
     return when (calendar.get(Calendar.DAY_OF_WEEK)) {

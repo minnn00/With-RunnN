@@ -2,7 +2,6 @@ package com.with_runn.ui.map
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -15,8 +14,6 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import androidx.appcompat.content.res.AppCompatResources
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
@@ -49,8 +46,12 @@ import com.with_runn.ui.course_edit.PinItem
 import com.with_runn.ui.course_edit.PinListAdapter
 import kotlinx.coroutines.launch
 import androidx.core.graphics.toColorInt
+import androidx.core.os.BundleCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.with_runn.data.TokenManager
+import com.with_runn.data.course.CourseManageArgs
+import com.with_runn.data.course.CourseMode
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -72,6 +73,7 @@ class CourseManageFragment : Fragment() {
 
     private lateinit var pinListAdapter : PinListAdapter
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -82,11 +84,20 @@ class CourseManageFragment : Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         activityVM.setBottomNavVisibility(false)
+        activityVM.setUpperToolbarVisibility(false)
+
+
+        val args: CourseManageArgs? =
+            if (Build.VERSION.SDK_INT >= 33)
+                requireArguments().getSerializable("args", CourseManageArgs::class.java)
+            else
+                @Suppress("DEPRECATION")
+                requireArguments().getSerializable("args") as CourseManageArgs
+        courseEditViewModel.setMode(args?.mode ?: CourseMode.CREATE, args?.courseId)
 
         binding.mapView.apply {
             onCreate(savedInstanceState)
@@ -124,21 +135,21 @@ class CourseManageFragment : Fragment() {
                     }
 
                     setOnMapClickListener{ latLng ->
-                        if(courseEditViewModel.isPinning.value == true){
-                            PinEditDialogFragment.newInstance(
-                                PinItem(0, "", "", latLng.latitude, latLng.longitude),
-                                Mode.ADD
-                            ).show(parentFragmentManager, "PinEditDialogFragment")
-                        }else{
-                            val marker = googleMap.addMarker(
-                                MarkerOptions()
-                                    .position(latLng)
-                                    .title(latLng.toString())
-                                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
-                            )
-                            courseEditViewModel.setTempMarker(marker)
-                            marker?.showInfoWindow()
-                        }
+//                        if(courseEditViewModel.isPinning.value == true){
+//                            PinEditDialogFragment.newInstance(
+//                                PinItem(0, "", "", latLng.latitude, latLng.longitude),
+//                                Mode.ADD
+//                            ).show(parentFragmentManager, "PinEditDialogFragment")
+//                        }else{
+//                            val marker = googleMap.addMarker(
+//                                MarkerOptions()
+//                                    .position(latLng)
+//                                    .title(latLng.toString())
+//                                    .icon(resToMarkerIcon(R.drawable.ic_basic_pin))
+//                            )
+//                            courseEditViewModel.setTempMarker(marker)
+//                            marker?.showInfoWindow()
+//                        }
 
                     }
 
@@ -174,6 +185,12 @@ class CourseManageFragment : Fragment() {
                 }
 
                 setCoroutines()
+
+                if (courseEditViewModel.mode.value == CourseMode.EDIT) {
+                    val token = TokenManager.getAccessToken().orEmpty()
+                    val id = args?.courseId ?: error("EDIT mode requires courseId")
+                    courseEditViewModel.loadCourseDetail(token, id)
+                }
             }
         }
 
@@ -352,6 +369,43 @@ class CourseManageFragment : Fragment() {
             }
         }
 
+        // Detail 로드 성공 시 한 번만 카메라 맞추기
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                courseEditViewModel.detailState.collect { state ->
+                    when (state) {
+                        is CourseEditViewModel.DetailUiState.Success -> {
+                            // 1) 카메라 핏 (경로 > 핀)
+                            val path = courseEditViewModel.polyLineData.value
+                            if (path.isNotEmpty()) {
+                                fitCameraTo(path, paddingDp = 64)
+                            } else {
+                                val pins = courseEditViewModel.pinList.value
+                                if (pins.isNotEmpty()) fitCameraTo(pins.map { LatLng(it.lat, it.lng) }, paddingDp = 48)
+                            }
+
+                            // 2) 바텀시트 확장 (로드 성공 시 한 번 강제 오픈)
+                            val hasPins = courseEditViewModel.pinList.value.isNotEmpty()
+                            if (hasPins) {
+                                binding.bottomSheetBehaviour.post {
+                                    behavior.isHideable = false
+                                    // 숨겨져 있었다면 먼저 보이게
+                                    if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
+                                        binding.bottomSheetBehaviour.visibility = View.VISIBLE
+                                        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                                    }
+                                    // 최종: 확장
+                                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                                }
+                            }
+                        }
+                        else -> Unit
+                    }
+                }
+            }
+        }
+
+
     }
 
 
@@ -423,7 +477,6 @@ class CourseManageFragment : Fragment() {
         return (fineLocationPermission && coarseLocationPermission)
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun setListeners(){
         binding.apply {
             createPinFab.setOnClickListener {
@@ -452,8 +505,11 @@ class CourseManageFragment : Fragment() {
 
 
         parentFragmentManager.setFragmentResultListener("pin_edit_result", viewLifecycleOwner) { key, bundle ->
-            val pin = bundle.getParcelable<PinItem>("pin_item", PinItem::class.java) ?: error("Pin argument required")
-            val mode = bundle.getSerializable<Mode>("mode", Mode::class.java) ?: error("Mode argument required")
+            val pin  = BundleCompat.getParcelable(bundle, "pin_item", PinItem::class.java)
+                ?: error("Pin argument required")
+
+            val mode = BundleCompat.getSerializable(bundle, "mode", Mode::class.java)
+                ?: error("Mode argument required")
 
             if(mode == Mode.ADD){
                 courseEditViewModel.addPin(pin)
@@ -464,38 +520,58 @@ class CourseManageFragment : Fragment() {
         }
 
         parentFragmentManager.setFragmentResultListener("course_edit_result", viewLifecycleOwner) { key, bundle ->
-            val course = bundle.getParcelable<CourseData>("course_data", CourseData::class.java) ?: error("CourseData argument required")
+            val course = BundleCompat.getParcelable(bundle, "course_data", CourseData::class.java)
+                ?: error("CourseData argument required")
 
             // 저장 버튼 잠금
             binding.btnSave.isEnabled = false
 
             // ViewModel의 필드/ActivityVM에서 파라미터 모으기
-            val accessToken = activityVM.accessToken.value.toString()// raw or "Bearer ..."
+            val accessToken = TokenManager.getAccessToken().toString()// raw or "Bearer ..."
             val townId = activityVM.thirdRegion.value?.id
-            val provinceId = activityVM.firstRegion.value?.id
+            val provinceId = activityVM.firstRegion.value.id
             val cityId = activityVM.secondRegion.value?.id
 
             val keywords = course.keyword?.takeIf { it.isNotBlank() }?.let { listOf(it) } ?: emptyList()
             Log.e("KEYWORDS", "$keywords")
 
-            // ViewModel 통해 호출
-            courseEditViewModel.postCourse(
-                accessToken = accessToken,
-                keywords = keywords,
-                townId = townId ?: 9,
-                provinceId = provinceId ?: 9,
-                cityId = cityId ?: 9
-            ) { success, createdId ->
-                if (success && createdId != null) {
-                    val bundle = Bundle().apply {
-                        putInt("courseId", createdId)
+            when (courseEditViewModel.mode.value) {
+                CourseMode.CREATE -> {
+                    // ViewModel 통해 호출
+                    courseEditViewModel.postCourse(
+                        accessToken = accessToken,
+                        keywords = keywords,
+                        townId = townId,
+                        provinceId = provinceId ?: 9,
+                        cityId = cityId,
+                        courseImg = course.imageUrl
+                    ) { success, createdId ->
+                        if (success && createdId != null) {
+                            val bundle = Bundle().apply {
+                                putInt("courseId", createdId)
+                            }
+                            findNavController().navigate(R.id.courseDetailFragment, bundle)
+                        } else {
+                            (activity as? MainActivity)?.showSnackbar("코스 생성 실패 또는 ID 누락")
+                            binding.btnSave.isEnabled = true
+                        }
                     }
-                    findNavController().navigate(R.id.courseDetailFragment, bundle)
-                } else {
-                    (activity as? MainActivity)?.showSnackbar("코스 생성 실패 또는 ID 누락")
-                    binding.btnSave.isEnabled = true
+                }
+                CourseMode.EDIT -> {
+                    // PATCH 호출. 아직 API 미구현 → ViewModel의 updateCourse 자리만 확보
+                    val editingId = courseEditViewModel.loadedCourseId.value ?: run {
+                        (activity as? MainActivity)?.showSnackbar("코스 ID 누락")
+                        binding.btnSave.isEnabled = true
+                        return@setFragmentResultListener
+                    }
+
+                    findNavController().navigate(
+                        R.id.courseDetailFragment,
+                        Bundle().apply { putInt("courseId", editingId) }
+                    )
                 }
             }
+
         }
     }
 
@@ -569,5 +645,15 @@ class CourseManageFragment : Fragment() {
 
         val bitmap = drawable.toBitmap(outW, outH, Bitmap.Config.ARGB_8888)
         return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
+
+    private fun fitCameraTo(points: List<LatLng>, paddingDp: Int = 48) {
+        if (points.isEmpty()) return
+        val builder = com.google.android.gms.maps.model.LatLngBounds.Builder()
+        points.forEach { builder.include(it) }
+        val bounds = builder.build()
+        googleMap.animateCamera(
+            CameraUpdateFactory.newLatLngBounds(bounds, paddingDp.dp)
+        )
     }
 }

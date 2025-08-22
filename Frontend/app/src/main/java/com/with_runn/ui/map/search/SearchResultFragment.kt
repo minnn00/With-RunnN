@@ -35,8 +35,6 @@ class SearchResultFragment : Fragment() {
             adapter = searchResultAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
-
-        showEmpty("검색할 장소를 선택하세요")
     }
 
     private fun onClickItem(item: SearchResultItem) {

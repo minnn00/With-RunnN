@@ -51,12 +51,10 @@ class OnboardingProfileFragment : Fragment() {
             binding.entryDefault.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_active)
             binding.defaultText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_700))
             binding.defaultText.text = viewModel.name.value
-            Toast.makeText(requireContext(), "1, ${viewModel.hasDefaultBeenSet()}", Toast.LENGTH_SHORT).show()
         } else {
             binding.entryDefault.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_inactive)
             binding.defaultText.setTextColor(ContextCompat.getColor(requireContext(), R.color.gray_400))
             binding.defaultText.text = "입력"
-            Toast.makeText(requireContext(), "2, ${viewModel.hasDefaultBeenSet()}", Toast.LENGTH_SHORT).show()
         }
 
         if (viewModel.hasCharactersBeenSet() && viewModel.characters.value!!.isNotEmpty()){

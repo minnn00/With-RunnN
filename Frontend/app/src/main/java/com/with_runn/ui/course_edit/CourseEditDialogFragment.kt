@@ -18,6 +18,7 @@ import com.with_runn.databinding.DialogCourseEditBinding
 import com.with_runn.formatMinutesToHM
 import kotlinx.parcelize.Parcelize
 import androidx.core.net.toUri
+import androidx.core.os.BundleCompat
 
 @Parcelize
 data class CourseData(
@@ -66,11 +67,11 @@ class CourseEditDialogFragment : DialogFragment(){
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        course = requireArguments().getParcelable<CourseData>(ARG_COURSE, CourseData::class.java) ?: error("Course argument required")
+        course = BundleCompat.getParcelable(requireArguments(), ARG_COURSE, CourseData::class.java)
+            ?: error("Course argument required")
 
         binding.apply{
             courseName.setText(course.title)

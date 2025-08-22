@@ -43,6 +43,8 @@ import com.with_runn.ui.map.search.SearchResultFragment
 import com.with_runn.ui.map.search.SearchResultItem
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.with_runn.data.course.CourseManageArgs
+import com.with_runn.data.course.CourseMode
 import com.with_runn.mapData.MapSearchItem
 import com.with_runn.parseOperatingHours
 import kotlin.math.min
@@ -303,18 +305,17 @@ class MapFragment : Fragment() {
         }
     }
 
-    fun checkLocationPermission() : Boolean{
-        val fineLocationPermission =
-            ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+    fun checkLocationPermission(): Boolean {
+        val fineGranted = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
-        val coarseLocationPermission =
-            ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
+        val coarseGranted = ContextCompat.checkSelfPermission(
+            requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
 
-        return (fineLocationPermission && coarseLocationPermission)
+        // 변경: 하나라도 있으면 true
+        return (fineGranted || coarseGranted)
     }
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
@@ -494,7 +495,14 @@ class MapFragment : Fragment() {
         speedDialView.setOnActionSelectedListener { actionItem ->
             when (actionItem.id) {
                 R.id.create_course -> {
-                    findNavController().navigate(R.id.action_mapFragment_to_courseManageFragment)
+                    val args = CourseManageArgs(
+                        mode = CourseMode.CREATE,
+                        courseId = 0
+                    )
+                    val bundle = Bundle().apply {
+                        putSerializable("args", args)
+                    }
+                    findNavController().navigate(R.id.courseManageFragment, bundle)
                     Log.d("FAB", "테스트 1 클릭됨")
                     speedDialView.close()
                     return@setOnActionSelectedListener true
@@ -509,8 +517,6 @@ class MapFragment : Fragment() {
                 else -> false
             }
         }
-
-
     }
     private fun createSpeedDialActionItem(
         id: Int,
@@ -549,8 +555,9 @@ class MapFragment : Fragment() {
             markerIconCache[category]?.let { return it }
         }
 
-        val resId = getIconResForCategory(category) ?: return null
-        val drawable = getDrawable(requireContext(), resId) ?: return null
+        val resId = getIconResForCategory(category) ?: R.drawable.ic_basic_pin
+        val drawable = getDrawable(requireContext(), resId)
+            ?: return BitmapDescriptorFactory.fromResource(R.drawable.ic_basic_pin)
 
         val dm = resources.displayMetrics
         val density = dm.density

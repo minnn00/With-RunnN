@@ -57,4 +57,19 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="MyPopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <!-- 팝업 배경 -->
+        <item name="android:popupBackground">@drawable/bg_popup_round</item>
+        <item name="android:backgroundTint">@color/gray_050</item>
+        <!-- (선택) 그림자 -->
+        <item name="android:popupElevation">8dp</item>
+        <!-- (선택) 아이템 텍스트 스타일 -->
+        <item name="android:textAppearanceLargePopupMenu">@style/MyPopupText</item>
+        <item name="android:textAppearanceSmallPopupMenu">@style/MyPopupText</item>
+    </style>
+
+    <style name="MyPopupText" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">@color/gray_950</item>
+    </style>
+
 </resources>

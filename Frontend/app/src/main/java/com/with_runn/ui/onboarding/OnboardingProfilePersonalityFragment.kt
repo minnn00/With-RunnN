@@ -111,7 +111,6 @@ class OnboardingProfilePersonalityFragment : Fragment() {
         chip.isClickable = true
 
         chip.setOnClickListener {
-            Toast.makeText(requireContext(), "${chip.text} 클릭됨! ID: ${chip.id}", Toast.LENGTH_SHORT).show()
             if (makeBtn) { // "직접 입력" 칩
                 binding.customLayout.visibility = if (chip.isChecked) View.VISIBLE else View.INVISIBLE
             }

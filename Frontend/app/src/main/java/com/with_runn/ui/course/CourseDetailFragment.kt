@@ -66,7 +66,6 @@ class CourseDetailFragment : Fragment() {
     private lateinit var behavior : BottomSheetBehavior<View>
     private lateinit var googleMap: GoogleMap
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -89,7 +88,6 @@ class CourseDetailFragment : Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         activityVM.setBottomNavVisibility(false)

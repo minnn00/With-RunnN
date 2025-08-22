@@ -1,15 +1,12 @@
 package com.with_runn.ui.onboarding
 
-import android.app.AlertDialog
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.FileUtils
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
@@ -39,6 +36,21 @@ class OnboardingProfileDefaultFragment : Fragment() {
     private var breed_savable: Boolean = false
 
     private var selectedImageUri: Uri? = null
+    private var selectedImageFile: File? = null
+
+    // 시스템 포토 피커 (가능하면 이걸 사용)
+    private val pickImage = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let { handlePickedImage(it) }
+    }
+
+    // 레거시 폴백 (구형 단말용)
+    private val legacyPicker = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let { handlePickedImage(it) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,8 +64,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
         if (!viewModel.hasDefaultBeenSet()){
             setInitialSex("남")
             setInitialSize("소형견")
-        }
-        else{
+        } else {
             binding.nameEditText.setText(viewModel.name.value)
             binding.breedEditText.setText(viewModel.breed.value)
             binding.birthdayEditText.setText(viewModel.birth.value)
@@ -62,8 +73,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
             setInitialSize(viewModel.size.value!!)
         }
 
-
-        // 저장 버튼 클릭
+        // 저장 버튼
         binding.saveButton.setOnClickListener {
             name = binding.nameEditText.text.toString()
             birthday = binding.birthdayEditText.text.toString()
@@ -73,27 +83,26 @@ class OnboardingProfileDefaultFragment : Fragment() {
             if (name_saveable == 0) {
                 showNameError("중복 확인을 해주세요")
                 Toast.makeText(requireContext(), "이름 중복 확인을 해주세요", Toast.LENGTH_SHORT).show()
-            }
-            else if (!breed_savable){
+            } else if (!breed_savable) {
                 Toast.makeText(requireContext(), "견종은 15자 이내로 입력해주세요", Toast.LENGTH_SHORT).show()
-            }
-            else if (name_saveable == 2) {
-
+            } else if (name_saveable == 2) {
                 viewModel.setDefaultValues(name, gender, birthday, breed, size, introduction)
-                // 선택된 이미지가 있으면 업로드
-                selectedImageUri?.let { uri ->
-                    viewModel.setProfileImg(uri)
-                }
 
-                findNavController().popBackStack() // 프로필 프래그먼트로 복귀
+                // 선택 이미지 전달 (기존 로직 유지: URI)
+                selectedImageUri?.let { uri -> viewModel.setProfileImg(uri) }
+
+                // 멀티파트 업로드가 필요한 경우 여기서 File 사용 가능 (예: viewModel.upload(file))
+                // selectedImageFile?.let { file -> viewModel.uploadProfileImage(file) { } }
+
+                findNavController().popBackStack()
             }
         }
 
-        // 성별 버튼 처리
+        // 성별
         binding.buttonMale.setOnClickListener { setGender("남") }
         binding.buttonFemale.setOnClickListener { setGender("여") }
 
-        // 크기 버튼 처리
+        // 크기
         binding.buttonSmall.setOnClickListener { setSize("소형견") }
         binding.buttonMiddle.setOnClickListener { setSize("중형견") }
         binding.buttonBig.setOnClickListener { setSize("대형견") }
@@ -102,7 +111,6 @@ class OnboardingProfileDefaultFragment : Fragment() {
         binding.nameCheckButton.setOnClickListener {
             val currentName = binding.nameEditText.text.toString()
             val savedName = viewModel.name.value
-
             if (currentName == savedName) {
                 showNameError("중복된 이름입니다")
                 name_saveable = 1
@@ -125,7 +133,7 @@ class OnboardingProfileDefaultFragment : Fragment() {
 
         binding.birthdayEditText.setOnClickListener {
             binding.birthdayEditText.setText("")
-            // TODO: DatePicker Fragment 연동
+            // TODO: DatePicker 연동
         }
 
         binding.breedEditText.setOnClickListener {
@@ -145,49 +153,20 @@ class OnboardingProfileDefaultFragment : Fragment() {
             }
         }
 
-        binding.backButton.setOnClickListener {
-            findNavController().popBackStack()
-        }
+        binding.backButton.setOnClickListener { findNavController().popBackStack() }
 
+        // 이미지 변경 버튼: 포토 피커 → 폴백 순
         binding.changeImgBtn.setOnClickListener {
-            val permission = android.Manifest.permission.READ_MEDIA_IMAGES
-            requestPermissionLauncher.launch(permission)
-        }
-    }
-
-    // 1️⃣ 권한 요청
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                openGallery()
+            val available = ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(requireContext())
+            if (available) {
+                pickImage.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
             } else {
-                AlertDialog.Builder(requireContext())
-                    .setTitle("권한 필요")
-                    .setMessage("이미지를 업로드하려면 권한이 필요합니다. 설정에서 권한을 허용해주세요.")
-                    .setPositiveButton("설정") { _, _ ->
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        val uri = Uri.fromParts("package", requireContext().packageName, null)
-                        intent.data = uri
-                        startActivity(intent)
-                    }
-                    .setNegativeButton("취소", null)
-                    .show()
+                legacyPicker.launch("image/*")
             }
         }
-
-    // 2️⃣ 갤러리에서 이미지 선택
-    private val pickImageLauncher =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            uri?.let {
-                selectedImageUri = it
-                Glide.with(this).load(it).circleCrop().into(binding.profileImage)
-            }
-        }
-
-    private fun openGallery() {
-        pickImageLauncher.launch("image/*")
     }
-
 
     private fun showNameError(message: String) {
         binding.entryName.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_entry_error)
@@ -241,16 +220,40 @@ class OnboardingProfileDefaultFragment : Fragment() {
         }
     }
 
-    private fun setInitialSex(sexValue: String) {
-        setGender(sexValue)
-    }
-
-    private fun setInitialSize(sizeValue: String) {
-        setSize(sizeValue)
-    }
+    private fun setInitialSex(sexValue: String) { setGender(sexValue) }
+    private fun setInitialSize(sizeValue: String) { setSize(sizeValue) }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    // 선택 이미지 처리: 미리보기 + File 변환(멀티파트 대응)
+    private fun handlePickedImage(uri: Uri) {
+        selectedImageUri = uri
+        Glide.with(this).load(uri).circleCrop().into(binding.profileImage)
+
+        selectedImageFile = uriToCacheFile(requireContext(), uri)
+        // 여기서 바로 업로드해도 됨:
+        // myPageVM.uploadProfileImage(selectedImageFile!!) { ok -> if (ok) myPageVM.getProfile() }
+    }
+
+    // Uri → 캐시 파일 변환 (멀티파트 업로드용)
+    private fun uriToCacheFile(ctx: android.content.Context, uri: Uri): File {
+        val resolver = ctx.contentResolver
+        val mime = resolver.getType(uri) ?: "image/jpeg"
+        val ext = when {
+            mime.endsWith("png") -> ".png"
+            mime.endsWith("webp") -> ".webp"
+            else -> ".jpg"
+        }
+        val outFile = File.createTempFile("profile_", ext, ctx.cacheDir)
+        resolver.openInputStream(uri).use { input ->
+            outFile.outputStream().use { output ->
+                requireNotNull(input) { "Failed to open input stream for $uri" }
+                input.copyTo(output)
+            }
+        }
+        return outFile
     }
 }

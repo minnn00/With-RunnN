@@ -13,10 +13,11 @@ class CourseRepository(
         course: CourseData,
         pins: List<PinItem>,
         keywords: List<String>,
-        regionsTownId: Int,
+        regionsTownId: Int?,
         regionProvinceId: Int,
-        regionsCityId: Int,
+        regionsCityId: Int?,
         path: List<LatLng>,
+        courseImg: String?,
         accessToken: String
     ): Response<CreateCourseResponse> {
 
@@ -45,6 +46,7 @@ class CourseRepository(
             regionProvinceId = regionProvinceId,
             regionsCityId = regionsCityId,
             regionsTownId = regionsTownId,
+            courseImg = courseImg,
             overviewPolyline = encoded
         )
 

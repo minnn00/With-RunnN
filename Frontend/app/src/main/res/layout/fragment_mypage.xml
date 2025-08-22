@@ -32,9 +32,10 @@
 
         <ImageView
             android:id="@+id/setting_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="18dp"
+            android:scaleType="centerInside"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -63,6 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@drawable/bg_circle"
+                android:clipToOutline="true"
                 android:scaleType="centerInside"
                 android:src="@drawable/logo" />
 
@@ -304,7 +306,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingHorizontal="20dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginVertical="10dp"
         android:gravity="center_vertical">
 
         <TextView
@@ -319,147 +321,25 @@
     </LinearLayout>
 
     <!-- 탭 메뉴 -->
-    <LinearLayout
-        android:id="@+id/layout_tab"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp">
+        android:background="@color/white"
+        app:tabIndicatorColor="@color/green_700"
+        app:tabSelectedTextColor="@color/gray_950"
+        app:tabTextColor="@color/gray_400"
+        app:tabIndicatorHeight="2dp"
+        app:tabMode="fixed"
+        app:tabGravity="fill">
 
-        <!-- 탭 텍스트 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
 
-            <TextView
-                android:id="@+id/tab_scrap"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="스크랩"
-                android:textSize="14sp"
-                android:fontFamily="@font/pretendard_medium"
-                android:textColor="@color/gray_700"
-                android:gravity="center"
-                android:paddingVertical="12dp" />
-
-            <TextView
-                android:id="@+id/tab_like"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="좋아요"
-                android:textSize="14sp"
-                android:fontFamily="@font/pretendard_medium"
-                android:textColor="@color/gray_400"
-                android:gravity="center"
-                android:paddingVertical="12dp" />
-
-            <TextView
-                android:id="@+id/tab_mycourses"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="나의 산책코스"
-                android:textSize="14sp"
-                android:fontFamily="@font/pretendard_medium"
-                android:textColor="@color/gray_400"
-                android:gravity="center"
-                android:paddingVertical="12dp" />
-        </LinearLayout>
-
-        <!-- 인디케이터 -->
-        <LinearLayout
-            android:id="@+id/layout_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:orientation="horizontal">
-
-            <View
-                android:id="@+id/indicator_scrap"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_weight="1"
-                android:background="@color/green_700" />
-
-            <View
-                android:id="@+id/indicator_like"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/transparent" />
-
-            <View
-                android:id="@+id/indicator_mycourses"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@android:color/transparent" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!--  리스트 영역 -->
+    </com.google.android.material.tabs.TabLayout>
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_mypage"
+        android:id="@+id/mypage_rcv"
+        android:padding="18dp"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingHorizontal="20dp"
-        android:clipToPadding="false" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"/>
 
-
-    <LinearLayout
-        android:id="@+id/editBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:padding="12dp"
-        android:elevation="12dp">
-
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDeleteMode"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:visibility="gone"
-            android:text="편집"
-            android:fontFamily="@font/pretendard_regular"
-            android:textSize="14sp"
-            android:textColor="@color/gray_600"
-            app:icon="@drawable/pen"
-            app:iconTint="@color/gray_600"
-            app:iconSize="14dp"
-            app:iconPadding="4dp"
-            app:iconGravity="textStart"
-            app:cornerRadius="18dp"
-            app:backgroundTint="@color/white"
-            app:strokeColor="@color/gray_300"
-            app:strokeWidth="1dp"
-            android:paddingHorizontal="8dp" />
-
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnDone"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:visibility="gone"
-        android:text="완료"
-        android:fontFamily="@font/pretendard_regular"
-        android:textSize="14sp"
-        android:textColor="@color/gray_600"
-        app:icon="@drawable/check"
-        app:iconTint="@color/gray_600"
-        app:iconSize="14dp"
-        app:iconPadding="4dp"
-        app:iconGravity="textStart"
-        app:cornerRadius="18dp"
-        app:backgroundTint="@color/white"
-        app:strokeColor="@color/gray_300"
-        app:strokeWidth="1dp"
-        android:paddingHorizontal="8dp" />
 </LinearLayout>
-
-    </LinearLayout>

@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.os.BundleCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.chip.Chip
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -51,12 +52,14 @@ class PinEditDialogFragment : DialogFragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // TODO: SDK 버전에 따른 분기
-        pin = requireArguments().getParcelable<PinItem>(ARG_PIN, PinItem::class.java) ?: error("Pin argument required")
-        mode = requireArguments().getSerializable<Mode>(ARG_MODE, Mode::class.java) ?: error("Mode argument required")
+        pin = BundleCompat.getParcelable(requireArguments(), ARG_PIN, PinItem::class.java)
+            ?: error("Pin argument required")
+
+        mode = BundleCompat.getSerializable(requireArguments(), ARG_MODE, Mode::class.java)
+            ?: error("Mode argument required")
 
         binding.apply {
             // 이름

@@ -30,7 +30,7 @@
             android:layout_weight="1"
 
             android:gravity="center"
-            android:text="지역 설정"
+            android:text="설정"
             android:textColor="@color/gray_950"
             android:textSize="16sp" />
 

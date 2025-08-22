@@ -1,7 +1,5 @@
 package com.with_runn.data.course
 
-import com.google.gson.annotations.SerializedName
-
 // 요청 바디
 data class CreateCourseRequest(
     val name: String,
@@ -10,8 +8,9 @@ data class CreateCourseRequest(
     val keywords: List<String>,
     val pins: List<PinPayload>,
     val regionProvinceId: Int,
-    val regionsCityId: Int,
-    val regionsTownId: Int,
+    val regionsCityId: Int?,
+    val regionsTownId: Int?,
+    val courseImg: String? = null,
     val overviewPolyline: String
 )
 
