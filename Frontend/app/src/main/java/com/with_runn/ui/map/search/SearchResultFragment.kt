@@ -35,6 +35,8 @@ class SearchResultFragment : Fragment() {
             adapter = searchResultAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
+
+        showEmpty("검색할 장소를 선택하세요")
     }
 
     private fun onClickItem(item: SearchResultItem) {
@@ -42,7 +44,27 @@ class SearchResultFragment : Fragment() {
         onPlaceSelected?.invoke(item)
     }
 
+    fun showLoading() {
+        binding.loadingView.root.visibility = View.VISIBLE
+        binding.emptyView.root.visibility = View.GONE
+        binding.searchResultRcv.visibility = View.GONE
+    }
+
+    fun showEmpty(message: String) {
+        binding.loadingView.root.visibility = View.GONE
+        binding.emptyView.root.visibility = View.VISIBLE
+        binding.searchResultRcv.visibility = View.GONE
+        binding.emptyView.emptyMessage.text = message
+    }
+
     fun setResults(results: List<SearchResultItem>) {
+        binding.loadingView.root.visibility = View.GONE
+        if (results.isEmpty()) {
+            showEmpty("검색 결과가 없습니다")
+            return
+        }
+        binding.emptyView.root.visibility = View.GONE
+        binding.searchResultRcv.visibility = View.VISIBLE
         if (this::searchResultAdapter.isInitialized) {
             searchResultAdapter.submitList(results)
         }

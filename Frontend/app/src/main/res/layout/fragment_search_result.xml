@@ -32,6 +32,18 @@
 <!--                android:src="@drawable/ic_check_inactive"/>-->
 <!--        </LinearLayout>-->
 <!--    </LinearLayout>-->
+
+    <include
+        android:id="@+id/loading_view"
+        layout="@layout/view_loading_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <include
+        android:id="@+id/empty_view"
+        layout="@layout/view_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/search_result_rcv"
         android:layout_width="match_parent"

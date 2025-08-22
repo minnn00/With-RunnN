@@ -1,6 +1,5 @@
 package com.with_runn.ui.map
 
-import FacilityItem
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -44,6 +43,7 @@ import com.with_runn.ui.map.search.SearchResultFragment
 import com.with_runn.ui.map.search.SearchResultItem
 import androidx.core.graphics.drawable.toBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.with_runn.mapData.MapSearchItem
 import com.with_runn.parseOperatingHours
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -254,61 +254,50 @@ class MapFragment : Fragment() {
         }else{
             mapViewModel.setCurrentChipType(category)
 
-            val sido = activityVM.firstRegion.value?.name ?: "서울특별시"
+            var sido = activityVM.firstRegion.value.name
             val gugun = activityVM.secondRegion.value?.name
             val dong = activityVM.thirdRegion.value?.name
 
+            if (sido.isBlank()){sido = "서울"}
+
+            searchResultFragment.showLoading()
+            behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+
             mapViewModel.loadFacilities(
-                sido = null,
-                gugun = null,
-                dong = null,
+                sido = sido,
+                gugun = gugun,
+                dong  = dong,
                 category = category
-            ){ success ->
-                if (success){
-                    val items = mapViewModel.facilityList.value
-
-
-                    val filteredData = items
-                        .asSequence()
-                        .filter { item ->
-                            // 지역 필터
-                            (item.sido_name == sido) &&
-                            (gugun == null || item.gugun_name == gugun) &&
-                            (dong == null || item.dong_name == dong) &&
-                            (item.ctg3_name == category)
-                        }.toList()
-
-                    showFacilityMarkers(filteredData)
-
-                    val results = filteredData
-                        .map { item ->
-                            val (openInt, closeInt) = parseOperatingHours(item.weekday_oper_time)
-                            Log.d(
-                                "OPER_HOURS",
-                                "name=${item.fac_name} raw=\"${item.weekday_oper_time}\" -> parsed=($openInt,$closeInt)")
-                            val now = getCurrentTimeInt()
-                            val isOpen = if (closeInt < openInt) {
-                                now >= openInt || now < closeInt
-                            } else {
-                                now in openInt until closeInt
-                            }
-
-                            SearchResultItem(
-                                placeId = "${item.latitude},${item.longitude}",
-                                name = item.fac_name ?: "(이름 없음)",
-                                isOpen = isOpen,
-                                openTime = openInt,
-                                closeTime = closeInt,
-                                isParkable = item.parking_poss_yn?.uppercase() == "Y",
-                                imageUri = null,
-                                latitude = item.latitude?.toDouble() ?: 0.0,
-                                longitude = item.longitude?.toDouble() ?: 0.0
-                            )
-                        }
+            ) { success ->
+                val items = mapViewModel.facilityList.value
+                if (!success) {
+                    searchResultFragment.showEmpty("검색 중 오류가 발생했어요")
+                    return@loadFacilities
+                }
+                val results = items.map { item ->
+                    val (openInt, closeInt) = parseOperatingHours(item.runningTime.orEmpty())
+                    val now = getCurrentTimeInt()
+                    val isOpen = if (closeInt > 0) {
+                        if (closeInt < openInt) now >= openInt || now < closeInt
+                        else now in openInt until closeInt
+                    } else false
+                    SearchResultItem(
+                        placeId   = "${item.latitude},${item.longitude}",
+                        name      = item.name,
+                        isOpen    = isOpen,
+                        openTime  = openInt,
+                        closeTime = closeInt,
+                        isParkable= item.hasParking?.equals("Y", true) == true,
+                        imageUri  = null,
+                        latitude  = item.latitude,
+                        longitude = item.longitude
+                    )
+                }
+                if (results.isEmpty()) {
+                    searchResultFragment.showEmpty("검색 결과가 없어요")
+                } else {
                     searchResultFragment.setResults(results)
-                    behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-                }else{
-                    Snackbar.make(requireView(), "검색 결과가 없습니다.", Snackbar.LENGTH_SHORT).show()
+                    showFacilityMarkers(items)
                 }
             }
         }
@@ -380,7 +369,7 @@ class MapFragment : Fragment() {
         }
     }
 
-    private fun showFacilityMarkers(items: List<FacilityItem>) {
+    private fun showFacilityMarkers(items: List<MapSearchItem>) {
         googleMap.clear()
 
         val cat = mapViewModel.currentChipType.value.takeIf { it.isNotBlank() }
@@ -388,18 +377,14 @@ class MapFragment : Fragment() {
             ?: BitmapDescriptorFactory.fromResource(R.drawable.ic_basic_pin)
 
         for (item in items) {
-            val lat = item.latitude?.toDoubleOrNull()
-            val lng = item.longitude?.toDoubleOrNull()
-            if (lat != null && lng != null) {
-                val position = LatLng(lat, lng)
-                val title = item.fac_name ?: "이름 없음"
-                val marker = googleMap.addMarker(
-                    MarkerOptions()
-                        .position(position)
-                        .title(title)
-                        .icon(icon)
-                )
-            }
+            val position = LatLng(item.latitude, item.longitude)
+            val title = item.name
+            googleMap.addMarker(
+                MarkerOptions()
+                    .position(position)
+                    .title(title)
+                    .icon(icon)
+            )
         }
     }
 
