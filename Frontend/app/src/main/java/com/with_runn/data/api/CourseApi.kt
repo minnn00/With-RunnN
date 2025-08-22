@@ -6,17 +6,13 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-import com.with_runn.data.LikeRequest
-import com.with_runn.data.ScrapRequest
 import com.with_runn.data.ShareRequest
-import com.with_runn.data.Friend
 import com.with_runn.data.LikeResponse
 import com.with_runn.data.NeighborhoodPreviewResponse
 import com.with_runn.data.RisingCourseResponse
 import com.with_runn.data.RisingPreviewResponse
 import com.with_runn.data.ScrapResponse
 import com.with_runn.data.ShareResponse
-import com.with_runn.data.WalkCourseResponse
 import retrofit2.http.DELETE
 import retrofit2.http.Header
 

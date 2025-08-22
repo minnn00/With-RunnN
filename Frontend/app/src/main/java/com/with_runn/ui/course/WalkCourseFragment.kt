@@ -21,8 +21,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 
 class WalkCourseFragment : Fragment() {
-
-    // ✅ 액티비티 스코프 ViewModel만 사용 (중복 생성 방지)
     private val viewModel: WalkCourseViewModel by activityViewModels()
     private val activityVM: ActivityViewModel by activityViewModels()
 
