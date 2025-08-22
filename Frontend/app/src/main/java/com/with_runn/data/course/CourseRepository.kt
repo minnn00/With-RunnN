@@ -4,7 +4,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.PolyUtil
 import com.with_runn.ui.course_edit.CourseData
 import com.with_runn.ui.course_edit.PinItem
-import okhttp3.ResponseBody
 import retrofit2.Response
 
 class CourseRepository(

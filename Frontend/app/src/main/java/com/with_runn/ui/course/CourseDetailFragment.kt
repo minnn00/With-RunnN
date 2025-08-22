@@ -178,7 +178,9 @@ class CourseDetailFragment : Fragment() {
 
                         Glide.with(requireContext())
                             .load(course?.imageUrl)
-                            .error(R.drawable.img_app_logo)
+                            .placeholder(R.drawable.ic_fallback)
+                            .fallback(R.drawable.ic_new_logo_gray)
+                            .error(R.drawable.ic_new_logo_gray)
                             .into(courseImage)
                     }
 

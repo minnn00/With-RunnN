@@ -14,3 +14,12 @@ data class CourseDetailResponse(
     val isLiked : Boolean = false,
     val isScrapped: Boolean = false
 )
+
+data class CourseSummary(
+    val courseId: Int,
+    val name: String,
+    val keyword: List<String>? = emptyList(),
+    val time: Int,
+    val courseImage: String? = null,
+    val location: String? = null
+)

@@ -79,6 +79,8 @@ class CourseEditDialogFragment : DialogFragment(){
 
             course.imageUrl?.let { url ->
                 binding.courseImage.setImageURI(url.toUri())
+            } ?: with(binding){
+                courseImage.setImageResource(R.drawable.ic_fallback)
             }
 
 

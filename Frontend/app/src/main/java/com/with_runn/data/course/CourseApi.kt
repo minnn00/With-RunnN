@@ -19,4 +19,32 @@ interface CourseApi {
         @Header("Authorization") accessToken: String,
         @Body body: CreateCourseRequest
     ): Response<CreateCourseResponse>
+
+    @GET("api/course/rising")
+    suspend fun getRisingCourses(
+        @Header("Authorization") accessToken: String
+    ): List<CourseSummary>
+
+    @GET("api/course/rising/search")
+    suspend fun searchRisingCourses(
+        @Header("Authorization") accessToken: String,
+        @Query("keyword") keyword: String? = null
+    ): List<CourseSummary>
+
+    @GET("api/course/nearby")
+    suspend fun getNearbyCourses(
+        @Header("Authorization") accessToken: String,
+        @Query("provinceId") provinceId: Int,
+        @Query("cityId") cityId: Int? = null,
+        @Query("townId") townId: Int? = null
+    ): List<CourseSummary>
+
+    @GET("api/course/nearby/search")
+    suspend fun searchNearbyCourses(
+        @Header("Authorization") accessToken: String,
+        @Query("provinceId") provinceId: Int,
+        @Query("cityId") cityId: Int? = null,
+        @Query("townId") townId: Int? = null,
+        @Query("keyword") keyword: String? = null
+    ): List<CourseSummary>
 }

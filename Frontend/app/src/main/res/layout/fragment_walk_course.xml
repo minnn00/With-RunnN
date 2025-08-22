@@ -1,129 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical">
+    android:fillViewport="true"
+    android:background="@color/white">
 
-
-    <!-- 우리 동네 산책 코스 섹션 -->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="4dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/text_local_title"
-            android:layout_width="wrap_content"
+        <!-- 우리 동네 산책 코스 섹션 -->
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="우리 동네 산책 코스"
-            android:textColor="@color/gray_950"
-            android:textSize="16sp"
-            android:fontFamily="@font/pretendard_medium" />
-
-        <!-- 더보기 -->
-        <LinearLayout
-            android:id="@+id/layout_local_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            android:focusable="true">
+            android:layout_marginBottom="18dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="4dp">
 
             <TextView
-                android:id="@+id/text_local_more"
+                android:id="@+id/text_local_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="더보기"
-                android:textColor="@color/gray_500"
-                android:textSize="14sp"
-                android:fontFamily="@font/pretendard_medium"/>
-
-            <ImageView
-                android:id="@+id/icon_local_more_arrow"
-                android:layout_width="23dp"
-                android:layout_height="23dp"
-                android:layout_marginStart="4dp"
-                android:src="@drawable/arrow"/>
-        </LinearLayout>
-    </RelativeLayout>
-
-    <!-- 가로 스크롤 RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_local_course"
-        android:layout_width="match_parent"
-        android:layout_height="187dp"
-        android:orientation="horizontal"
-        android:overScrollMode="never"
-        android:clipToPadding="false"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_marginBottom="16dp" />
-
-
-    <!-- 떠오르는 산책 코스 섹션 -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="4dp">
-
-        <TextView
-            android:id="@+id/text_hot_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="떠오르는 산책 코스"
-            android:textColor="@color/gray_950"
-            android:textSize="16sp"
-            android:fontFamily="@font/pretendard_medium" />
-
-        <!-- 더보기 -->
-        <LinearLayout
-            android:id="@+id/layout_hot_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:clickable="true"
-            android:focusable="true">
-
-            <TextView
-                android:id="@+id/textRisingMore"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="더보기"
-                android:textColor="@color/gray_500"
-                android:textSize="14sp"
+                android:text="우리 동네 산책 코스"
+                android:textColor="@color/gray_950"
+                android:textSize="16sp"
                 android:fontFamily="@font/pretendard_medium" />
 
-            <ImageView
-                android:id="@+id/icon_hot_more_arrow"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginStart="4dp"
-                android:src="@drawable/arrow"/>
-        </LinearLayout>
-    </RelativeLayout>
+            <!-- 더보기 -->
+            <LinearLayout
+                android:id="@+id/local_more_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
 
-    <!-- 세로 스크롤 RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerRisingCourse"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:nestedScrollingEnabled="false"
-        android:clipToPadding="false"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:overScrollMode="never" />
+                <TextView
+                    android:id="@+id/text_local_more"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="더보기"
+                    android:textColor="@color/gray_500"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/pretendard_medium" />
 
-</LinearLayout>
+                <ImageView
+                    android:id="@+id/icon_local_more_arrow"
+                    android:layout_width="23dp"
+                    android:layout_height="23dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/arrow" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- 가로 스크롤 RecyclerView (자체 스크롤 유지) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_local_course"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:clipToPadding="false"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp" />
+
+        <!-- Local: Empty View -->
+        <include
+            android:id="@+id/emptyLocal"
+            layout="@layout/view_empty_state"
+            android:visibility="gone" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="50dp"/>
+
+        <!-- 떠오르는 산책 코스 섹션 -->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:paddingStart="16dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="4dp">
+
+            <TextView
+                android:id="@+id/text_hot_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="떠오르는 산책 코스"
+                android:textColor="@color/gray_950"
+                android:textSize="16sp"
+                android:fontFamily="@font/pretendard_medium" />
+
+            <!-- 더보기 -->
+            <LinearLayout
+                android:id="@+id/rising_more_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/textRisingMore"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="더보기"
+                    android:textColor="@color/gray_500"
+                    android:textSize="14sp"
+                    android:fontFamily="@font/pretendard_medium" />
+
+                <ImageView
+                    android:id="@+id/icon_hot_more_arrow"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/arrow" />
+            </LinearLayout>
+        </RelativeLayout>
+
+        <!-- 세로 스크롤 RecyclerView (자체 스크롤 비활성화, 전체 NestedScrollView가 스크롤) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerRisingCourse"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:clipToPadding="false"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:overScrollMode="never" />
+
+        <!-- Rising: Empty View -->
+        <include
+            android:id="@+id/emptyRising"
+            layout="@layout/view_empty_state"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
